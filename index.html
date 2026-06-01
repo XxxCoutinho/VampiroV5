@@ -130,15 +130,22 @@
         #fab-container {
             position: fixed;
             bottom: 20px;
+<<<<<<< HEAD
             right: calc(50% - 480px - 64px);
+=======
+            right: 20px;
+>>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
             display: flex;
             flex-direction: column;
             gap: 12px;
             z-index: 500;
         }
+<<<<<<< HEAD
         @media (max-width: 1088px) {
             #fab-container { right: 20px; }
         }
+=======
+>>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
         .fab-btn {
             width: 52px; height: 52px;
             border-radius: 50%;
@@ -166,7 +173,11 @@
         .side-popup {
             position: fixed;
             bottom: 84px;
+<<<<<<< HEAD
             right: calc(50% - 480px - 64px);
+=======
+            right: 20px;
+>>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
             width: 310px;
             max-height: calc(100vh - 110px);
             background: var(--panel-bg);
@@ -177,9 +188,12 @@
             z-index: 490;
             overflow: hidden;
         }
+<<<<<<< HEAD
         @media (max-width: 1088px) {
             .side-popup { right: 20px; }
         }
+=======
+>>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
         .side-popup.open { display: flex; }
         .popup-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -859,7 +873,11 @@ window.closePopup = window.closePopup || function(id) {
             <input type="text" id="player-name" data-field="player-name" placeholder="Quem controla o monstro?" style="font-size: 0.9em; padding: 6px;">
 
             <button class="btn-roll" onclick="window.novaFicha()" style="border-color:#aaa; color:#aaa; padding:8px; font-size:0.8em;">[ NOVA FICHA / LIMPAR ]</button>
+<<<<<<< HEAD
             <button class="btn-roll" id="btn-salvar-ficha" onclick="window.salvarFicha()" style="border-color:#33ff33; color:#33ff33; padding:8px; font-size:0.8em;">[ SALVAR FICHA ]</button>
+=======
+            <button class="btn-roll" onclick="window.salvarFicha()" style="border-color:#33ff33; color:#33ff33; padding:8px; font-size:0.8em;">[ SALVAR FICHA ]</button>
+>>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
             <button class="btn-roll" onclick="window.excluirFicha()" style="border-color:#ff4444; color:#ff4444; padding:8px; font-size:0.8em;">[ EXCLUIR FICHA ]</button>
             <button onclick="window.carregarTodasAsFichas()" style="background:#4a0000; color:white; padding:8px; border:1px solid #ff1a1a; cursor:pointer; font-family:var(--font-main); font-size:0.8em; width:100%;">[ PAINEL DO NARRADOR ]</button>
 
@@ -1182,11 +1200,15 @@ window.closePopup = window.closePopup || function(id) {
         window.inventory.forEach(item => {
             const wrapper = document.createElement('div');
             wrapper.style.cssText = 'margin-bottom:6px;';
+<<<<<<< HEAD
             wrapper.classList.add('inv-wrapper');
+=======
+>>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
 
             const li = document.createElement('div');
             li.className = 'inv-item';
             li.style.marginBottom = '0';
+<<<<<<< HEAD
 
             let nameHtml = document.createElement('span');
             let nameText = item.name;
@@ -1221,6 +1243,19 @@ window.closePopup = window.closePopup || function(id) {
 
             li.appendChild(nameHtml);
             li.appendChild(delBtn);
+=======
+            let nameHtml = item.name;
+            if (item.displayVal) {
+                if (item.type === 'sobrenatural') {
+                    nameHtml += ' <span style="color:#aa66ff;font-weight:bold;margin-left:8px;">' + item.displayVal + '</span>';
+                } else {
+                    nameHtml += ' <span class="weapon-val">' + item.displayVal + '</span>';
+                }
+            }
+            const descBtn = item.desc ? ' <button type="button" style="background:none;border:none;color:#666;cursor:pointer;font-size:0.8em;padding:0 4px;" title="Ver descrição" onclick="this.closest('.inv-wrapper').querySelector('.inv-desc-box').classList.toggle('open')">ℹ</button>' : '';
+            li.innerHTML = '<span>' + nameHtml + descBtn + '</span><button type="button" class="btn-del" onclick="window.removeInventoryItem(' + item.id + ')">X</button>';
+            wrapper.classList.add('inv-wrapper');
+>>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
             wrapper.appendChild(li);
 
             if (item.desc) {
