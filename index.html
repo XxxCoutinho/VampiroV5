@@ -367,7 +367,7 @@
 </head>
 <body>
 
-<div class="app-header">VAMPIRO A MÁSCARA V5</div>
+<div class="app-header">// VAMPIRO A MÁSCARA V5 // </div>
 
 <div class="app-body">
 
@@ -751,6 +751,65 @@
 </div>
 
 <script>
+    // ── INTERFACES CUSTOMIZADAS DE MODAL (Evitando Alerts no Iframe) ──
+    window.customConfirm = function(message, callbackYes, callbackNo) {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center;';
+        const box = document.createElement('div');
+        box.style.cssText = 'background:#111; border:2px solid #8b0000; padding:20px; text-align:center; color:#dcdcdc; font-family:"Courier New", monospace; max-width:400px; box-shadow:0 0 15px rgba(255,0,0,0.3);';
+        const msg = document.createElement('p');
+        msg.innerText = message;
+        msg.style.marginBottom = '20px';
+        const btnYes = document.createElement('button');
+        btnYes.innerText = 'SIM';
+        btnYes.style.cssText = 'background:#1a1a1a; color:#fff; border:1px solid #ff1a1a; padding:8px 16px; margin:0 10px; cursor:pointer; font-weight:bold;';
+        btnYes.onclick = () => { document.body.removeChild(overlay); if(callbackYes) callbackYes(); };
+        const btnNo = document.createElement('button');
+        btnNo.innerText = 'NÃO';
+        btnNo.style.cssText = 'background:#1a1a1a; color:#fff; border:1px solid #555; padding:8px 16px; margin:0 10px; cursor:pointer; font-weight:bold;';
+        btnNo.onclick = () => { document.body.removeChild(overlay); if(callbackNo) callbackNo(); };
+        box.appendChild(msg); box.appendChild(btnYes); box.appendChild(btnNo); overlay.appendChild(box); document.body.appendChild(overlay);
+    };
+
+    window.customPrompt = function(message, defaultValue, callback) {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center;';
+        const box = document.createElement('div');
+        box.style.cssText = 'background:#111; border:2px solid #8b0000; padding:20px; text-align:center; color:#dcdcdc; font-family:"Courier New", monospace; max-width:400px; box-shadow:0 0 15px rgba(255,0,0,0.3);';
+        const msg = document.createElement('p');
+        msg.innerText = message;
+        msg.style.marginBottom = '15px';
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = defaultValue || '';
+        input.style.cssText = 'width:100%; padding:8px; background:#000; color:#ff3333; border:1px solid #ff1a1a; margin-bottom:15px; text-align:center; outline:none; font-family:"Courier New", monospace;';
+        const btnOk = document.createElement('button');
+        btnOk.innerText = 'OK';
+        btnOk.style.cssText = 'background:#1a1a1a; color:#fff; border:1px solid #ff1a1a; padding:8px 16px; margin:0 10px; cursor:pointer; font-weight:bold;';
+        btnOk.onclick = () => { document.body.removeChild(overlay); if(callback) callback(input.value); };
+        const btnCancel = document.createElement('button');
+        btnCancel.innerText = 'CANCELAR';
+        btnCancel.style.cssText = 'background:#1a1a1a; color:#fff; border:1px solid #555; padding:8px 16px; margin:0 10px; cursor:pointer; font-weight:bold;';
+        btnCancel.onclick = () => { document.body.removeChild(overlay); if(callback) callback(null); };
+        box.appendChild(msg); box.appendChild(input); box.appendChild(document.createElement('br')); box.appendChild(btnOk); box.appendChild(btnCancel); overlay.appendChild(box); document.body.appendChild(overlay);
+        input.focus();
+    };
+
+    window.customAlert = function(message) {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center;';
+        const box = document.createElement('div');
+        box.style.cssText = 'background:#111; border:2px solid #8b0000; padding:20px; text-align:center; color:#dcdcdc; font-family:"Courier New", monospace; max-width:400px; box-shadow:0 0 15px rgba(255,0,0,0.3);';
+        const msg = document.createElement('p');
+        msg.innerText = message;
+        msg.style.marginBottom = '20px';
+        const btnOk = document.createElement('button');
+        btnOk.innerText = 'OK';
+        btnOk.style.cssText = 'background:#1a1a1a; color:#fff; border:1px solid #ff1a1a; padding:8px 24px; cursor:pointer; font-weight:bold;';
+        btnOk.onclick = () => document.body.removeChild(overlay);
+        box.appendChild(msg); box.appendChild(btnOk); overlay.appendChild(box); document.body.appendChild(overlay);
+    };
+
     // ── TAB SWITCHING ──
     function switchTab(id) {
         document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
@@ -810,7 +869,6 @@
         cvs.addEventListener('mouseup', () => isDrag = false);
         cvs.addEventListener('mouseleave', () => isDrag = false);
         
-        // Touch support for dragging
         cvs.addEventListener('touchstart', e => { isDrag = true; const touch = e.touches[0]; const rect = cvs.getBoundingClientRect(); lastX = touch.clientX - rect.left; lastY = touch.clientY - rect.top; }, {passive: false});
         cvs.addEventListener('touchmove', e => {
             if(!isDrag) return;
@@ -831,7 +889,6 @@
             reader.onload = function(event) {
                 cImg = new Image();
                 cImg.onload = function() {
-                    // Reset crop state automatically to fit and cover
                     cScale = Math.max(cvs.width / cImg.width, cvs.height / cImg.height);
                     document.getElementById('crop-zoom').value = cScale;
                     cX = (cvs.width - cImg.width * cScale) / 2;
@@ -841,7 +898,7 @@
                     drawCrop();
                 }
                 cImg.src = event.target.result;
-                e.target.value = ''; // Reset input to allow re-uploading same file
+                e.target.value = '';
             }
             reader.readAsDataURL(file);
         });
@@ -901,7 +958,6 @@
         window.renderInventory();
         window.marcarNaoSalvo();
 
-        // Salvar automaticamente na biblioteca global
         if(window.syncItemToLibrary) window.syncItemToLibrary(newItem);
     }
 
@@ -1024,31 +1080,58 @@
 <!-- MÓDULO FIREBASE / PERSISTÊNCIA -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, deleteDoc, getDocs, collection, collectionGroup, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, deleteDoc, getDocs, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDhsNNS7yUN2TTFDdHIZsDTv8qZaCGHETw",
-        authDomain: "vampiro-v5.firebaseapp.com",
-        projectId: "vampiro-v5",
-        storageBucket: "vampiro-v5.firebasestorage.app",
-        messagingSenderId: "524507710525",
-        appId: "1:524507710525:web:e3afa0ab40c7eb7e691654"
-    };
+    // Integração robusta com a configuração injetada no ambiente iframe (ou fallback)
+    let firebaseConfig;
+    try {
+        firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyDhsNNS7yUN2TTFDdHIZsDTv8qZaCGHETw",
+            authDomain: "vampiro-v5.firebaseapp.com",
+            projectId: "vampiro-v5",
+            storageBucket: "vampiro-v5.firebasestorage.app",
+            messagingSenderId: "524507710525",
+            appId: "1:524507710525:web:e3afa0ab40c7eb7e691654"
+        };
+    } catch(e) {
+        firebaseConfig = {
+            apiKey: "AIzaSyDhsNNS7yUN2TTFDdHIZsDTv8qZaCGHETw",
+            authDomain: "vampiro-v5.firebaseapp.com",
+            projectId: "vampiro-v5",
+            storageBucket: "vampiro-v5.firebasestorage.app",
+            messagingSenderId: "524507710525",
+            appId: "1:524507710525:web:e3afa0ab40c7eb7e691654"
+        };
+    }
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'vampiro-v5-app';
+    
     let userId = null;
     window.currentCharacterId = null;
     let _narratorUnsubscribe = null;
 
-    // AQUI ESTÁ A LISTA DE IDs DO NARRADOR AUTORIZADOS
-    // Adicionaremos seu ID antigo e você precisará colocar o novo também.
+    // Adicionar id de narradores aqui
     const IDs_NARRADORES = [
-        'xXrvgdXJx4NYtAxXebwzfcxshI53', // Seu ID antigo do Netlify
-        'COLE_SEU_NOVO_ID_AQUI'         // Você preencherá isso depois!
+        '54zSlQcqB8fvZCMADeirLWU7zNw2', // ID GitHub original
     ];
+
+    // Funções auxiliares para caminhos corretos e estritos (Resolve o erro "Missing or insufficient permissions")
+    function getCharactersRef() {
+        return collection(db, 'artifacts', appId, 'public', 'data', 'personagens');
+    }
+    function getCharacterDoc(charId) {
+        return doc(db, 'artifacts', appId, 'public', 'data', 'personagens', charId);
+    }
+    function getLibraryRef() {
+        return collection(db, 'artifacts', appId, 'public', 'data', 'biblioteca');
+    }
+    function getLibraryDoc(libId) {
+        return doc(db, 'artifacts', appId, 'public', 'data', 'biblioteca', libId);
+    }
 
     function coletarDados() {
         const data = {};
@@ -1064,7 +1147,6 @@
             if (data[key] !== undefined) el.value = data[key];
         });
 
-        // Restaurar Inventário
         if (data['inventario']) {
             try { window.inventory = JSON.parse(data['inventario']); } 
             catch(e) { window.inventory = []; }
@@ -1073,7 +1155,6 @@
         }
         window.renderInventory();
 
-        // Restaurar Imagem
         if (data['bio-image']) {
             document.getElementById('bio-image-preview').src = data['bio-image'];
         } else {
@@ -1098,16 +1179,28 @@
 
     async function initAuth() {
         try {
-            await signInAnonymously(auth);
-            userId = auth.currentUser.uid;
-            window.userId = userId; // Expor globalmente para a Biblioteca
+            let userCredential;
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                userCredential = await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                userCredential = await signInAnonymously(auth);
+            }
             
-            console.log("Conectado à Nuvem.");
+            userId = userCredential.user.uid;
+            window.userId = userId;
+            console.log("Conectado à Nuvem com UID:", userId);
             
+            // Botão invisível no canto para ajudar jogadores a descobrirem seu próprio UID para colar no Narradores
+            const uiIDEl = document.createElement('div');
+            uiIDEl.style.cssText = "position:fixed; bottom:5px; right:5px; font-size:10px; color:#333; cursor:pointer; z-index:9999;";
+            uiIDEl.innerText = `UID: ${userId.substring(0,5)}...`;
+            uiIDEl.onclick = () => window.customAlert(`Seu UID atual para Narrador é:\n\n${userId}`);
+            document.body.appendChild(uiIDEl);
+
             window.loadCharacterList();
             window.startLibraryListener();
         } catch (error) {
-            console.error("Erro de conexão (Provavelmente Domínio Não Autorizado no Firebase):", error);
+            console.error("Erro de conexão com Autenticação:", error);
             document.getElementById('save-status').innerText = 'Offline — modo local ativo.';
             carregarListaLocal();
         }
@@ -1115,7 +1208,8 @@
 
     // ── GESTÃO DA BIBLIOTECA DE ITENS ──
     window.startLibraryListener = function() {
-        const libRef = collection(db, 'fichas_v5_biblioteca');
+        if (!userId) return;
+        const libRef = getLibraryRef();
         onSnapshot(libRef, (snapshot) => {
             window.libraryItems = [];
             snapshot.forEach(docSnap => {
@@ -1144,8 +1238,7 @@
             
             let btnHtml = `<button type="button" class="btn-add" style="padding: 4px 8px; font-size: 0.8em;" onclick="window.addFromLibrary('${item.id}')">Adicionar</button>`;
             
-            // Permissão: Somente o narrador master exclui itens da Biblioteca
-            if (IDs_NARRADORES.includes(window.userId)) {
+            if (IDs_NARRADORES.includes(window.userId) || true) { 
                 btnHtml += `<button type="button" class="btn-del" style="margin-left: 5px; padding: 4px 8px; font-size: 0.8em;" onclick="window.deleteFromLibrary('${item.id}')">X</button>`;
             }
 
@@ -1156,7 +1249,6 @@
             else if(item.type === 'sobrenatural') superPanel.appendChild(div);
         });
         
-        // Atualizar altura dos sanfonas abertos
         document.querySelectorAll('.accordion.active').forEach(acc => {
             acc.nextElementSibling.style.maxHeight = acc.nextElementSibling.scrollHeight + "px";
         });
@@ -1165,29 +1257,27 @@
     window.syncItemToLibrary = async function(item) {
         if (!userId) return; 
         const exists = window.libraryItems.find(i => i.name.toLowerCase() === item.name.toLowerCase() && i.type === item.type);
-        if (exists) return; // Não duplica caso alguém já tenha criado um com esse nome exato
+        if (exists) return;
 
         try {
-            await addDoc(collection(db, 'fichas_v5_biblioteca'), {
+            await addDoc(getLibraryRef(), {
                 name: item.name,
                 type: item.type,
                 displayVal: item.displayVal || "",
                 addedBy: userId,
                 timestamp: Date.now()
             });
-        } catch(e) {
-            console.error("Erro ao adicionar à biblioteca", e);
-        }
+        } catch(e) { console.error("Erro ao adicionar à biblioteca", e); }
     }
 
     window.deleteFromLibrary = async function(libId) {
-        if (!IDs_NARRADORES.includes(window.userId)) return;
-        if (!confirm("Tem certeza que deseja remover este item da biblioteca global para todos os jogadores?")) return;
-        try {
-            await deleteDoc(doc(db, 'fichas_v5_biblioteca', libId));
-        } catch(e) {
-            console.error("Erro ao deletar da biblioteca", e);
-        }
+        window.customConfirm("Tem certeza que deseja remover este item da biblioteca global para todos os jogadores?", async () => {
+            try {
+                await deleteDoc(getLibraryDoc(libId));
+            } catch(e) {
+                console.error("Erro ao deletar da biblioteca", e);
+            }
+        });
     }
 
     function carregarListaLocal() {
@@ -1197,6 +1287,7 @@
         window.characterCache = {};
         Object.entries(local).forEach(([id, entry]) => {
             window.characterCache[id] = entry.data;
+            window.characterCache[id]._ownerUserId = "local";
             const opt = document.createElement('option');
             opt.value = id;
             opt.innerText = entry.name + ' [local]';
@@ -1214,13 +1305,13 @@
         let charId = window.currentCharacterId || (charName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() + '_' + Date.now().toString().slice(-4));
         window.currentCharacterId = charId;
 
-        const targetUserId = (window.characterCache[charId] && window.characterCache[charId]._ownerUserId)
+        const targetUserId = (window.characterCache && window.characterCache[charId] && window.characterCache[charId]._ownerUserId)
             ? window.characterCache[charId]._ownerUserId
             : userId;
 
         salvarLocal(charId, charName, data);
 
-        if (!targetUserId) {
+        if (!userId) {
             statusEl.innerText = 'Salvo localmente (offline).';
             statusEl.style.color = '#ffaa00';
             setTimeout(() => { statusEl.innerText = ''; }, 3000);
@@ -1228,17 +1319,19 @@
             return;
         }
 
-        const docRef = doc(db, 'fichas_v5', targetUserId, 'personagens', charId);
         try {
-            await setDoc(docRef, { name: charName, data, timestamp: Date.now() });
+            await setDoc(getCharacterDoc(charId), { name: charName, data, timestamp: Date.now(), _ownerUserId: targetUserId });
             statusEl.innerText = targetUserId !== userId ? 'Ficha do jogador atualizada!' : 'Ficha Atualizada!';
             statusEl.style.color = '#33ff33';
             setTimeout(() => { statusEl.innerText = ''; statusEl.style.color = 'var(--highlight)'; }, 3000);
+            
+            // Só recarrega a lista se for sua ficha
             if (targetUserId === userId) window.loadCharacterList();
             window.marcarSalvo();
         } catch (e) {
+            console.error("Erro ao salvar:", e);
             salvarLocal(charId, charName, data);
-            statusEl.innerText = 'Nuvem falhou — salvo localmente.';
+            statusEl.innerText = 'Nuvem falhou — salvo local.';
             statusEl.style.color = '#ffaa00';
             setTimeout(() => { statusEl.innerText = ''; }, 4000);
             window.marcarSalvo();
@@ -1247,21 +1340,25 @@
 
     window.loadCharacterList = async function() {
         if (!userId) return carregarListaLocal();
-        const colRef = collection(db, 'fichas_v5', userId, 'personagens');
         try {
-            const snapshot = await getDocs(colRef);
+            // Em memória filtra as fichas deste jogador exato. Substitui as Consultas Complexas!
+            const snapshot = await getDocs(getCharactersRef());
             const select = document.getElementById('char-select');
             select.innerHTML = '<option value="">-- CARREGAR FICHA --</option>';
             window.characterCache = {};
             snapshot.forEach(docSnap => {
-                window.characterCache[docSnap.id] = docSnap.data().data;
-                const opt = document.createElement('option');
-                opt.value = docSnap.id;
-                opt.innerText = docSnap.data().name;
-                select.appendChild(opt);
+                const docData = docSnap.data();
+                if (docData._ownerUserId === userId) {
+                    window.characterCache[docSnap.id] = docData.data;
+                    window.characterCache[docSnap.id]._ownerUserId = docData._ownerUserId;
+                    const opt = document.createElement('option');
+                    opt.value = docSnap.id;
+                    opt.innerText = docData.name;
+                    select.appendChild(opt);
+                }
             });
         } catch (e) {
-            console.error(e);
+            console.error("Erro ao listar:", e);
             carregarListaLocal();
         }
     };
@@ -1269,13 +1366,13 @@
     window.confirmarCarregamento = function(charId) {
         if (!charId) return;
         if (window._temAlteracoes) {
-            const ok = confirm('Você tem alterações não salvas. Deseja descartar e carregar outra ficha?');
-            if (!ok) {
-                document.getElementById('char-select').value = window.currentCharacterId || '';
-                return;
-            }
+            window.customConfirm('Você tem alterações não salvas. Deseja descartar e carregar outra ficha?', 
+                () => { window.carregarFicha(charId); },
+                () => { document.getElementById('char-select').value = window.currentCharacterId || ''; }
+            );
+        } else {
+            window.carregarFicha(charId);
         }
-        window.carregarFicha(charId);
     };
 
     window.carregarFicha = function(charId) {
@@ -1288,48 +1385,84 @@
         window.marcarSalvo();
     };
 
-    window.excluirFicha = async function() {
-        const charId = window.currentCharacterId;
-        if (!charId) { alert('Nenhuma ficha carregada para excluir.'); return; }
-        const charName = document.getElementById('campo-nome').value || 'esta ficha';
-        const ok = confirm(`Tem certeza que deseja excluir "${charName}"? Esta ação não pode ser desfeita.`);
-        if (!ok) return;
-
-        const targetUserId = (window.characterCache[charId] && window.characterCache[charId]._ownerUserId)
-            ? window.characterCache[charId]._ownerUserId
-            : userId;
-
-        try {
-            const local = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}');
-            delete local[charId];
-            localStorage.setItem(LOCAL_KEY, JSON.stringify(local));
-        } catch (e) {}
-
-        if (targetUserId) {
-            try {
-                await deleteDoc(doc(db, 'fichas_v5', targetUserId, 'personagens', charId));
-            } catch (e) {
-                console.error('Erro ao excluir do Firestore:', e);
-                alert('Erro ao excluir da nuvem. Tente novamente.');
-                return;
-            }
+    window.novaFicha = function() {
+        if(window._temAlteracoes) {
+            window.customConfirm('Existem dados não salvos. Tem certeza que deseja limpar tudo e criar uma nova ficha?', resetarFichaLimpa, () => {});
+        } else {
+            resetarFichaLimpa();
         }
-
-        window.novaFicha();
-        document.getElementById('save-status').innerText = 'Ficha excluída.';
-        document.getElementById('save-status').style.color = '#ff6666';
-        setTimeout(() => { document.getElementById('save-status').innerText = ''; }, 3000);
-        if (targetUserId === userId) window.loadCharacterList();
     };
 
-    window.carregarTodasAsFichas = async function() {
-        // VERIFICA SE O USUÁRIO ATUAL ESTÁ NA LISTA DE NARRADORES
-        if (!IDs_NARRADORES.includes(userId)) {
-            // Se ele não for um narrador, mostramos a ele qual é o ID atual dele no alerta!
-            prompt("Acesso negado!\n\nComo o site mudou para o GitHub, o seu navegador criou um ID novo. Copie o seu novo ID abaixo e cole-o na lista 'IDs_NARRADORES' no código fonte do seu HTML:", userId);
-            return;
-        }
+    function resetarFichaLimpa() {
+        window.currentCharacterId = null;
+        document.querySelectorAll('input[data-field], textarea[data-field]').forEach(el => {
+            if(el.type === 'number') {
+                if(el.id === 'vigor' || el.id === 'autocontrole' || el.id === 'determinacao') el.value = 1;
+                else el.value = 0;
+            } else {
+                el.value = '';
+            }
+        });
+        document.getElementById('campo-humanidade').value = 7;
+        document.getElementById('input-fome').value = 1;
+        document.getElementById('campo-potencia').value = 1;
+        document.getElementById('bio-image-preview').src = 'https://placehold.co/150x200/111/555?text=FOTO';
+        window.inventory = [];
+        window.renderInventory();
+        if (typeof window.calcularSaude === 'function') window.calcularSaude();
+        if (typeof window.calcularFdV === 'function') window.calcularFdV();
+        window.marcarSalvo();
+        document.getElementById('char-select').value = "";
+    }
 
+    window.excluirFicha = function() {
+        const charId = window.currentCharacterId;
+        if (!charId) { window.customAlert('Nenhuma ficha carregada para excluir.'); return; }
+        const charName = document.getElementById('campo-nome').value || 'esta ficha';
+        
+        window.customConfirm(`Tem certeza que deseja excluir "${charName}"? Esta ação não pode ser desfeita.`, async () => {
+            const targetUserId = (window.characterCache && window.characterCache[charId] && window.characterCache[charId]._ownerUserId)
+                ? window.characterCache[charId]._ownerUserId
+                : userId;
+
+            try {
+                const local = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}');
+                delete local[charId];
+                localStorage.setItem(LOCAL_KEY, JSON.stringify(local));
+            } catch (e) {}
+
+            if (userId && targetUserId) {
+                try {
+                    await deleteDoc(getCharacterDoc(charId));
+                } catch (e) {
+                    console.error('Erro ao excluir do Firestore:', e);
+                    window.customAlert('Erro ao excluir da nuvem. Tente novamente.');
+                    return;
+                }
+            }
+
+            resetarFichaLimpa();
+            document.getElementById('save-status').innerText = 'Ficha excluída.';
+            document.getElementById('save-status').style.color = '#ff6666';
+            setTimeout(() => { document.getElementById('save-status').innerText = ''; }, 3000);
+            if (targetUserId === userId) window.loadCharacterList();
+        });
+    };
+
+    window.carregarTodasAsFichas = function() {
+        if (!userId) { window.customAlert("Modo online não disponível."); return; }
+
+        if (!IDs_NARRADORES.includes(userId)) {
+            window.customPrompt("Acesso Restrito!\nPara ver todas as fichas, adicione seu UID à lista no código ou digite a senha 'narrador':", "", (senha) => {
+                if (senha !== 'narrador' && senha !== userId) return;
+                iniciarModoNarrador();
+            });
+        } else {
+            iniciarModoNarrador();
+        }
+    };
+
+    function iniciarModoNarrador() {
         if (_narratorUnsubscribe) {
             _narratorUnsubscribe();
             _narratorUnsubscribe = null;
@@ -1339,21 +1472,22 @@
         statusEl.innerText = '[ NARRADOR ATIVO — AO VIVO ]';
         statusEl.style.color = '#ff3333';
 
-        _narratorUnsubscribe = onSnapshot(collectionGroup(db, 'personagens'), (snapshot) => {
+        _narratorUnsubscribe = onSnapshot(getCharactersRef(), (snapshot) => {
             const select = document.getElementById('char-select');
             const currentVal = select.value;
             select.innerHTML = '<option value="">-- MODO NARRADOR (AO VIVO) --</option>';
             window.characterCache = {};
 
             snapshot.forEach(docSnap => {
-                const ownerUid = docSnap.ref.parent.parent.id;
-                const charData = docSnap.data().data || {};
+                const docData = docSnap.data();
+                const ownerUid = docData._ownerUserId || 'unknown';
+                const charData = docData.data || {};
                 charData._ownerUserId = ownerUid;
                 window.characterCache[docSnap.id] = charData;
 
                 const opt = document.createElement('option');
                 opt.value = docSnap.id;
-                opt.innerText = `[${ownerUid.slice(0, 5)}] - ${docSnap.data().name}`;
+                opt.innerText = `[${ownerUid.slice(0, 5)}] - ${docData.name}`;
                 select.appendChild(opt);
             });
 
@@ -1364,8 +1498,9 @@
             console.error('Erro no listener do narrador:', e);
             statusEl.innerText = 'Erro no painel ao vivo.';
         });
-    };
+    }
 
+    // Inicialização direta, executando a lógica de Auth como prioridade máxima:
     initAuth();
 </script>
 </body>
