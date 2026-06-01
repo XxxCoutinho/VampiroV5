@@ -31,6 +31,95 @@
             line-height: 1.4;
         }
 
+        /* ── MOBILE HAMBURGER ── */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            z-index: 500;
+            width: 48px; height: 48px;
+            background: #111;
+            border: 2px solid var(--border-color);
+            color: var(--highlight);
+            font-size: 1.4em;
+            cursor: pointer;
+            border-radius: 4px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 12px rgba(139,0,0,0.5);
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 299;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            :root {
+                --header-h: 42px;
+                --tabs-h: 38px;
+            }
+            html, body { font-size: 15px; }
+
+            .app-body { flex-direction: column; }
+
+            .main-area { border-right: none; border-bottom: 2px solid var(--border-color); }
+
+            /* Sidebar vira drawer lateral */
+            .dice-sidebar {
+                position: fixed;
+                top: var(--header-h);
+                right: -100%;
+                bottom: 0;
+                width: min(320px, 90vw);
+                z-index: 300;
+                transition: right 0.3s ease;
+                border-left: 2px solid var(--border-color);
+            }
+            .dice-sidebar.open { right: 0; }
+            .sidebar-overlay.open { display: block; }
+            .sidebar-toggle { display: flex; }
+
+            /* Tab labels menores */
+            .tab-btn { font-size: 0.62em; padding: 0 3px; }
+
+            /* Grids colapsam para 1 ou 2 colunas */
+            .grid-3 { grid-template-columns: 1fr 1fr; }
+            .grid-4 { grid-template-columns: 1fr 1fr; }
+
+            /* Bio header empilha */
+            .bio-header { flex-direction: column; align-items: center; }
+            .bio-photo-box { width: 100%; align-items: center; }
+            .bio-photo-box img { width: 120px; height: 144px; }
+
+            /* Inventory form empilha */
+            .inv-form-row { grid-template-columns: 1fr 1fr; }
+            .inv-form-row .btn-add { grid-column: span 2; }
+
+            /* Items de inventário */
+            .inv-item { flex-wrap: wrap; gap: 6px; }
+
+            /* stat-list textos legíveis */
+            .stat label { font-size: 0.82em; }
+            .stat input[type="number"] { width: 38px; font-size: 0.9em; }
+
+            /* Vitals lado a lado ok */
+            .vitals-box { padding: 8px; }
+            .tracker { font-size: 1.6em; }
+        }
+
+        @media (max-width: 420px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .grid-3 { grid-template-columns: 1fr; }
+            .inv-form-row { grid-template-columns: 1fr; }
+            .inv-form-row .btn-add { grid-column: span 1; }
+            .tab-btn { font-size: 0.58em; letter-spacing: 0; }
+        }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-color); }
         ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
@@ -253,9 +342,13 @@
             display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 12px; align-items: end;
         }
         .inv-item {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex; justify-content: space-between; align-items: flex-start;
             background: #111; border: 1px solid #333; padding: 8px 12px; margin-bottom: 6px;
+            gap: 8px;
         }
+        .inv-item-body { flex: 1; min-width: 0; }
+        .inv-item-name { font-weight: bold; font-size: 0.95em; }
+        .inv-item-desc { font-size: 0.75em; color: #777; margin-top: 2px; font-style: italic; white-space: pre-wrap; word-break: break-word; }
         .weapon-val { color: var(--highlight); font-weight: bold; margin-left: 8px; }
         .btn-add, .btn-del {
             background: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color);
@@ -387,6 +480,10 @@
 <body>
 
 <div class="app-header">// VAMPIRO A MÁSCARA V5.1 // </div>
+
+<!-- Mobile sidebar toggle -->
+<button class="sidebar-toggle" id="sidebar-toggle-btn" onclick="window.toggleSidebar()" title="Abrir painel de dados / rolagem">⚄</button>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="window.closeSidebar()"></div>
 
 <div class="app-body">
 
@@ -643,8 +740,13 @@
                     </div>
                     <button type="button" class="btn-add" onclick="window.addInventoryItem()">Adicionar</button>
                 </div>
+                <!-- Linha de descrição separada, largura total -->
+                <div class="input-group" style="margin-bottom:12px;">
+                    <label>Descrição do Item (opcional)</label>
+                    <input type="text" id="inv-desc" placeholder="Ex: Pertenceu ao avô, tem inscrições rúnicas... deixe em branco para omitir.">
+                </div>
 
-                <div style="margin-top: 20px;">
+                <div style="margin-top: 8px;">
                     <h3>ITENS ATUAIS</h3>
                     <!-- JSON Oculto para salvar via sistema padrão -->
                     <input type="hidden" id="inventory-data" data-field="inventario" value="[]">
@@ -834,6 +936,21 @@
         box.appendChild(msg); box.appendChild(btnOk); overlay.appendChild(box); document.body.appendChild(overlay);
     };
 
+    // ── MOBILE SIDEBAR TOGGLE ──
+    window.toggleSidebar = function() {
+        const sidebar = document.querySelector('.dice-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const btn = document.getElementById('sidebar-toggle-btn');
+        const isOpen = sidebar.classList.toggle('open');
+        overlay.classList.toggle('open', isOpen);
+        btn.textContent = isOpen ? '✕' : '⚄';
+    };
+    window.closeSidebar = function() {
+        document.querySelector('.dice-sidebar').classList.remove('open');
+        document.getElementById('sidebar-overlay').classList.remove('open');
+        document.getElementById('sidebar-toggle-btn').textContent = '⚄';
+    };
+
     // ── TAB SWITCHING ──
     function switchTab(id) {
         document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
@@ -963,6 +1080,7 @@
         const name = document.getElementById('inv-name').value;
         if(!name.trim()) return;
         const type = document.getElementById('inv-type').value;
+        const desc = (document.getElementById('inv-desc').value || '').trim();
         let displayVal = "";
         
         if (type === 'arma') {
@@ -975,9 +1093,10 @@
             displayVal = `+${modVal}`;
         }
         
-        const newItem = { id: Date.now(), name: name.trim(), type, displayVal };
+        const newItem = { id: Date.now(), name: name.trim(), type, displayVal, desc };
         window.inventory.push(newItem);
         document.getElementById('inv-name').value = '';
+        document.getElementById('inv-desc').value = '';
         window.renderInventory();
         window.marcarNaoSalvo();
 
@@ -987,7 +1106,7 @@
     window.addFromLibrary = function(libId) {
         const item = window.libraryItems.find(i => i.id === libId);
         if(!item) return;
-        window.inventory.push({ id: Date.now(), name: item.name, type: item.type, displayVal: item.displayVal });
+        window.inventory.push({ id: Date.now(), name: item.name, type: item.type, displayVal: item.displayVal, desc: item.desc || '' });
         window.renderInventory();
         window.marcarNaoSalvo();
     }
@@ -1004,11 +1123,15 @@
         window.inventory.forEach(item => {
             const li = document.createElement('div');
             li.className = 'inv-item';
-            let text = item.name;
+            let nameHtml = `<span class="inv-item-name">${item.name}`;
             if(item.type === 'arma' && item.displayVal) {
-                text += ` <span class="weapon-val">${item.displayVal}</span>`;
+                nameHtml += ` <span class="weapon-val">${item.displayVal}</span>`;
+            } else if(item.type === 'sobrenatural' && item.displayVal) {
+                nameHtml += ` <span class="weapon-val">${item.displayVal}</span>`;
             }
-            li.innerHTML = `<span>${text}</span> <button type="button" class="btn-del" onclick="window.removeInventoryItem(${item.id})">X</button>`;
+            nameHtml += `</span>`;
+            let descHtml = item.desc ? `<div class="inv-item-desc">${item.desc}</div>` : '';
+            li.innerHTML = `<div class="inv-item-body">${nameHtml}${descHtml}</div><button type="button" class="btn-del" onclick="window.removeInventoryItem(${item.id})">X</button>`;
             list.appendChild(li);
         });
         document.getElementById('inventory-data').value = JSON.stringify(window.inventory);
@@ -1277,13 +1400,14 @@
 
             let text = item.name;
             if (item.displayVal) text += ` <span class="weapon-val">${item.displayVal}</span>`;
+            let descHtml = item.desc ? `<div class="inv-item-desc" style="margin-top:3px;">${item.desc}</div>` : '';
 
             let btnHtml = `<button type="button" class="btn-add" style="padding:4px 8px;font-size:0.8em;" onclick="window.addFromLibrary('${item.id}')">+ Adicionar</button>`;
             if (isNarrador) {
                 btnHtml += `<button type="button" class="btn-del" style="margin-left:5px;padding:4px 8px;font-size:0.8em;" onclick="window.deleteFromLibrary('${item.id}')">X</button>`;
             }
 
-            div.innerHTML = `<span>${text}</span><div style="display:flex;gap:4px;flex-shrink:0;">${btnHtml}</div>`;
+            div.innerHTML = `<div class="inv-item-body"><span>${text}</span>${descHtml}</div><div style="display:flex;gap:4px;flex-shrink:0;">${btnHtml}</div>`;
             targetPanel.appendChild(div);
         });
 
@@ -1327,6 +1451,7 @@
                 name: item.name,
                 type: item.type,
                 displayVal: item.displayVal || "",
+                desc: item.desc || "",
                 addedBy: userId,
                 timestamp: Date.now()
             });
