@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>// Vampiro V5.2 //</title>
+    <title>// Vampiro V5.1 //</title>
     <style>
         :root {
             --bg-color: #050505;
@@ -14,7 +14,6 @@
             --highlight: #ff3333;
             --font-main: 'Courier New', Courier, monospace;
             --input-bg: #1a1a1a;
-            --sidebar-w: 300px;
             --header-h: 48px;
             --tabs-h: 42px;
         }
@@ -69,7 +68,6 @@
             display: flex;
             flex-direction: column;
             min-width: 0;
-            border-right: 2px solid var(--border-color);
         }
 
         /* ── TAB BAR ── */
@@ -122,16 +120,81 @@
         .tab-pane { display: none; padding: 14px; }
         .tab-pane.active { display: block; }
 
-        /* ── SIDEBAR ── */
-        .dice-sidebar {
-            width: var(--sidebar-w);
-            flex-shrink: 0;
-            background: var(--panel-bg);
+        /* ── MAIN AREA now full width ── */
+        .main-area { border-right: none; }
+
+        /* ── FLOATING ACTION BUTTONS ── */
+        #fab-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
+            gap: 12px;
+            z-index: 500;
+        }
+        .fab-btn {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            background: #0f0f0f;
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 1.4em;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+            box-shadow: 0 0 14px rgba(139,0,0,0.5);
+            transition: all 0.2s;
+        }
+        .fab-btn:hover {
+            background: #1a1a1a;
+            border-color: var(--highlight);
+            box-shadow: 0 0 20px rgba(255,51,51,0.5);
+            transform: scale(1.08);
+        }
+        .fab-btn .unsaved-indicator {
+            position: absolute; top: 4px; right: 4px;
         }
 
+        /* ── SIDE POPUPS ── */
+        .side-popup {
+            position: fixed;
+            bottom: 84px;
+            right: 20px;
+            width: 310px;
+            max-height: calc(100vh - 110px);
+            background: var(--panel-bg);
+            border: 2px solid var(--border-color);
+            box-shadow: -4px 0 24px rgba(139,0,0,0.4);
+            display: none;
+            flex-direction: column;
+            z-index: 490;
+            overflow: hidden;
+        }
+        .side-popup.open { display: flex; }
+        .popup-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 14px;
+            background: #080808;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--highlight);
+            font-size: 0.78em;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .popup-close {
+            background: none; border: none; color: #666;
+            cursor: pointer; font-size: 1em; padding: 0 4px;
+            transition: color 0.2s;
+        }
+        .popup-close:hover { color: var(--highlight); }
+        .popup-body {
+            padding: 14px;
+            overflow-y: auto;
+            flex: 1;
+        }
         .sidebar-section {
             padding: 14px;
             border-bottom: 1px solid #222;
@@ -382,6 +445,28 @@
             color: #555; font-size: 0.9em; pointer-events: none;
         }
         .lib-empty-msg { color: #555; font-size: 0.8em; padding: 8px 0; font-style: italic; }
+
+        /* ── ITEM DESCRIPTION BOX (inventory) ── */
+        .inv-desc-box {
+            display: none;
+            background: #0d0d0d;
+            border: 1px dashed #333;
+            border-top: none;
+            padding: 7px 12px;
+            font-size: 0.78em;
+            color: #888;
+            line-height: 1.5;
+        }
+        .inv-desc-box.open { display: block; }
+
+        /* ── LIBRARY ITEM DESCRIPTION ── */
+        .lib-item-desc {
+            font-size: 0.75em;
+            color: #666;
+            margin-top: 4px;
+            line-height: 1.4;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -643,6 +728,10 @@
                     </div>
                     <button type="button" class="btn-add" onclick="window.addInventoryItem()">Adicionar</button>
                 </div>
+                <div class="input-group" style="margin-bottom: 4px;">
+                    <label>Descrição do Item (opcional)</label>
+                    <textarea id="inv-desc" rows="2" placeholder="Efeitos, história, propriedades especiais..."></textarea>
+                </div>
 
                 <div style="margin-top: 20px;">
                     <h3>ITENS ATUAIS</h3>
@@ -715,49 +804,59 @@
         </div><!-- end tab-content-area -->
     </div><!-- end main-area -->
 
-    <!-- ══ SIDEBAR ══ -->
-    <aside class="dice-sidebar">
-
-        <!-- Sistema de Arquivos -->
-        <div class="sidebar-section">
-            <div class="section-label">SISTEMA DE ARQUIVOS</div>
-            <div class="dice-controls">
-                <label for="player-name">Nome do Jogador:</label>
-                <input type="text" id="player-name" data-field="player-name" placeholder="Quem controla o monstro?" style="font-size: 0.9em; padding: 6px;">
-
-                <button class="btn-roll" onclick="window.novaFicha()" style="border-color:#aaa; color:#aaa; padding:8px; font-size:0.8em;">[ NOVA FICHA / LIMPAR ]</button>
-                <button class="btn-roll" onclick="window.salvarFicha()" style="border-color:#33ff33; color:#33ff33; padding:8px; font-size:0.8em;">
-                    [ SALVAR FICHA ]<span class="unsaved-indicator" id="unsaved-dot"></span>
-                </button>
-                <button class="btn-roll" onclick="window.excluirFicha()" style="border-color:#ff4444; color:#ff4444; padding:8px; font-size:0.8em;">[ EXCLUIR FICHA ]</button>
-                <button onclick="window.carregarTodasAsFichas()" style="background:#4a0000; color:white; padding:8px; border:1px solid #ff1a1a; cursor:pointer; font-family:var(--font-main); font-size:0.8em; width:100%;">[ PAINEL DO NARRADOR ]</button>
-
-                <div id="offline-toast">⚠ OFFLINE — dados salvos localmente</div>
-                <div id="save-status" style="color:var(--highlight); text-align:center; font-size:0.75em; min-height:14px;"></div>
-
-                <select id="char-select" onchange="window.confirmarCarregamento(this.value)" style="width:100%; padding:6px; background:#000; color:var(--text-color); border:1px solid var(--border-color); font-family:var(--font-main); cursor:pointer; font-size:0.82em;">
-                    <option value="">-- CARREGAR FICHA --</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Módulo de Rolagem -->
-        <div class="sidebar-section" style="flex:1; display:flex; flex-direction:column; gap:10px;">
-            <div class="section-label" style="margin-bottom:0;">MÓDULO DE ROLAGEM</div>
-
-            <div class="dice-controls">
-                <label for="dice-pool">Parada de Dados (Total):</label>
-                <input type="number" id="dice-pool" min="1" max="20" value="5">
-                <button class="btn-roll" onclick="window.rollV5()">▶ INICIAR ROLAGEM</button>
-            </div>
-
-            <div class="roll-result-text" id="roll-result-text">AGUARDANDO INPUT...</div>
-            <div class="dice-display" id="dice-display"></div>
-        </div>
-
-    </aside>
-
 </div><!-- end app-body -->
+
+<!-- ══ FLOATING ACTION BUTTONS ══ -->
+<div id="fab-container">
+    <button class="fab-btn" id="fab-files" onclick="window.togglePopup('popup-files')" title="Sistema de Arquivos">
+        <span>🗂</span>
+        <span class="unsaved-indicator" id="unsaved-dot"></span>
+    </button>
+    <button class="fab-btn" id="fab-dice" onclick="window.togglePopup('popup-dice')" title="Módulo de Rolagem">🎲</button>
+</div>
+
+<!-- ══ POPUP: SISTEMA DE ARQUIVOS ══ -->
+<div class="side-popup" id="popup-files">
+    <div class="popup-header">
+        <span>◈ SISTEMA DE ARQUIVOS</span>
+        <button class="popup-close" onclick="window.closePopup('popup-files')">✕</button>
+    </div>
+    <div class="popup-body">
+        <div class="dice-controls">
+            <label for="player-name">Nome do Jogador:</label>
+            <input type="text" id="player-name" data-field="player-name" placeholder="Quem controla o monstro?" style="font-size: 0.9em; padding: 6px;">
+
+            <button class="btn-roll" onclick="window.novaFicha()" style="border-color:#aaa; color:#aaa; padding:8px; font-size:0.8em;">[ NOVA FICHA / LIMPAR ]</button>
+            <button class="btn-roll" onclick="window.salvarFicha()" style="border-color:#33ff33; color:#33ff33; padding:8px; font-size:0.8em;">[ SALVAR FICHA ]</button>
+            <button class="btn-roll" onclick="window.excluirFicha()" style="border-color:#ff4444; color:#ff4444; padding:8px; font-size:0.8em;">[ EXCLUIR FICHA ]</button>
+            <button onclick="window.carregarTodasAsFichas()" style="background:#4a0000; color:white; padding:8px; border:1px solid #ff1a1a; cursor:pointer; font-family:var(--font-main); font-size:0.8em; width:100%;">[ PAINEL DO NARRADOR ]</button>
+
+            <div id="offline-toast">⚠ OFFLINE — dados salvos localmente</div>
+            <div id="save-status" style="color:var(--highlight); text-align:center; font-size:0.75em; min-height:14px;"></div>
+
+            <select id="char-select" onchange="window.confirmarCarregamento(this.value)" style="width:100%; padding:6px; background:#000; color:var(--text-color); border:1px solid var(--border-color); font-family:var(--font-main); cursor:pointer; font-size:0.82em;">
+                <option value="">-- CARREGAR FICHA --</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- ══ POPUP: MÓDULO DE ROLAGEM ══ -->
+<div class="side-popup" id="popup-dice">
+    <div class="popup-header">
+        <span>◈ MÓDULO DE ROLAGEM</span>
+        <button class="popup-close" onclick="window.closePopup('popup-dice')">✕</button>
+    </div>
+    <div class="popup-body">
+        <div class="dice-controls">
+            <label for="dice-pool">Parada de Dados (Total):</label>
+            <input type="number" id="dice-pool" min="1" max="20" value="5">
+            <button class="btn-roll" onclick="window.rollV5()">▶ INICIAR ROLAGEM</button>
+        </div>
+        <div class="roll-result-text" id="roll-result-text">AGUARDANDO INPUT...</div>
+        <div class="dice-display" id="dice-display"></div>
+    </div>
+</div>
 
 <!-- Crop Modal -->
 <div id="crop-modal" class="crop-modal">
@@ -833,6 +932,26 @@
         btnOk.onclick = () => document.body.removeChild(overlay);
         box.appendChild(msg); box.appendChild(btnOk); overlay.appendChild(box); document.body.appendChild(overlay);
     };
+
+    // ── POPUP TOGGLE ──
+    window.togglePopup = function(id) {
+        const el = document.getElementById(id);
+        const isOpen = el.classList.contains('open');
+        // Close all popups first
+        document.querySelectorAll('.side-popup').forEach(p => p.classList.remove('open'));
+        if (!isOpen) el.classList.add('open');
+    };
+
+    window.closePopup = function(id) {
+        document.getElementById(id).classList.remove('open');
+    };
+
+    // Close popups when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.side-popup') && !e.target.closest('.fab-btn')) {
+            document.querySelectorAll('.side-popup').forEach(p => p.classList.remove('open'));
+        }
+    });
 
     // ── TAB SWITCHING ──
     function switchTab(id) {
@@ -963,6 +1082,7 @@
         const name = document.getElementById('inv-name').value;
         if(!name.trim()) return;
         const type = document.getElementById('inv-type').value;
+        const desc = document.getElementById('inv-desc').value.trim();
         let displayVal = "";
         
         if (type === 'arma') {
@@ -972,12 +1092,13 @@
             if(match) displayVal = match[1];
         } else if (type === 'sobrenatural') {
             const modVal = document.getElementById('inv-manual-mod').value;
-            displayVal = `+${modVal}`;
+            displayVal = '+' + modVal;
         }
         
-        const newItem = { id: Date.now(), name: name.trim(), type, displayVal };
+        const newItem = { id: Date.now(), name: name.trim(), type, displayVal, desc };
         window.inventory.push(newItem);
         document.getElementById('inv-name').value = '';
+        document.getElementById('inv-desc').value = '';
         window.renderInventory();
         window.marcarNaoSalvo();
 
@@ -987,7 +1108,7 @@
     window.addFromLibrary = function(libId) {
         const item = window.libraryItems.find(i => i.id === libId);
         if(!item) return;
-        window.inventory.push({ id: Date.now(), name: item.name, type: item.type, displayVal: item.displayVal });
+        window.inventory.push({ id: Date.now(), name: item.name, type: item.type, displayVal: item.displayVal, desc: item.desc || '' });
         window.renderInventory();
         window.marcarNaoSalvo();
     }
@@ -1002,14 +1123,33 @@
         const list = document.getElementById('inventory-list');
         list.innerHTML = '';
         window.inventory.forEach(item => {
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = 'margin-bottom:6px;';
+
             const li = document.createElement('div');
             li.className = 'inv-item';
-            let text = item.name;
-            if(item.type === 'arma' && item.displayVal) {
-                text += ` <span class="weapon-val">${item.displayVal}</span>`;
+            li.style.marginBottom = '0';
+            let nameHtml = item.name;
+            if (item.displayVal) {
+                if (item.type === 'sobrenatural') {
+                    nameHtml += ' <span style="color:#aa66ff;font-weight:bold;margin-left:8px;">' + item.displayVal + '</span>';
+                } else {
+                    nameHtml += ' <span class="weapon-val">' + item.displayVal + '</span>';
+                }
             }
-            li.innerHTML = `<span>${text}</span> <button type="button" class="btn-del" onclick="window.removeInventoryItem(${item.id})">X</button>`;
-            list.appendChild(li);
+            const descBtn = item.desc ? ' <button type="button" style="background:none;border:none;color:#666;cursor:pointer;font-size:0.8em;padding:0 4px;" title="Ver descrição" onclick="this.closest('.inv-wrapper').querySelector('.inv-desc-box').classList.toggle('open')">ℹ</button>' : '';
+            li.innerHTML = '<span>' + nameHtml + descBtn + '</span><button type="button" class="btn-del" onclick="window.removeInventoryItem(' + item.id + ')">X</button>';
+            wrapper.classList.add('inv-wrapper');
+            wrapper.appendChild(li);
+
+            if (item.desc) {
+                const descBox = document.createElement('div');
+                descBox.className = 'inv-desc-box';
+                descBox.textContent = item.desc;
+                wrapper.appendChild(descBox);
+            }
+
+            list.appendChild(wrapper);
         });
         document.getElementById('inventory-data').value = JSON.stringify(window.inventory);
     }
@@ -1283,7 +1423,8 @@
                 btnHtml += `<button type="button" class="btn-del" style="margin-left:5px;padding:4px 8px;font-size:0.8em;" onclick="window.deleteFromLibrary('${item.id}')">X</button>`;
             }
 
-            div.innerHTML = `<span>${text}</span><div style="display:flex;gap:4px;flex-shrink:0;">${btnHtml}</div>`;
+            const descHtml = item.desc ? `<div class="lib-item-desc">${item.desc}</div>` : '';
+            div.innerHTML = `<div style="width:100%"><div style="display:flex;justify-content:space-between;align-items:center;"><span>${text}</span><div style="display:flex;gap:4px;flex-shrink:0;">${btnHtml}</div></div>${descHtml}</div>`;
             targetPanel.appendChild(div);
         });
 
@@ -1327,6 +1468,7 @@
                 name: item.name,
                 type: item.type,
                 displayVal: item.displayVal || "",
+                desc: item.desc || "",
                 addedBy: userId,
                 timestamp: Date.now()
             });
@@ -1372,6 +1514,9 @@
             ? window.characterCache[charId]._ownerUserId
             : userId;
 
+        const isNarrador = IDs_NARRADORES.includes(userId);
+        const isFichaAjena = targetUserId && targetUserId !== userId;
+
         salvarLocal(charId, charName, data);
 
         if (!userId) {
@@ -1382,14 +1527,30 @@
             return;
         }
 
+        // Narrador editando ficha de jogador: usa a chave especial de narrador
+        if (isNarrador && isFichaAjena) {
+            try {
+                await setDoc(getCharacterDoc(charId), { name: charName, data, timestamp: Date.now(), _ownerUserId: targetUserId, _lastEditedByNarrador: userId });
+                statusEl.innerText = 'Ficha do jogador atualizada pelo Narrador!';
+                statusEl.style.color = '#ff9900';
+                setTimeout(() => { statusEl.innerText = ''; statusEl.style.color = 'var(--highlight)'; }, 3000);
+                window.marcarSalvo();
+            } catch (e) {
+                console.error("Erro ao salvar como narrador:", e);
+                statusEl.innerText = 'Erro — verifique as regras do Firestore.';
+                statusEl.style.color = '#ff4444';
+                setTimeout(() => { statusEl.innerText = ''; }, 5000);
+            }
+            return;
+        }
+
         try {
             await setDoc(getCharacterDoc(charId), { name: charName, data, timestamp: Date.now(), _ownerUserId: targetUserId });
-            statusEl.innerText = targetUserId !== userId ? 'Ficha do jogador atualizada!' : 'Ficha Atualizada!';
+            statusEl.innerText = 'Ficha Atualizada!';
             statusEl.style.color = '#33ff33';
             setTimeout(() => { statusEl.innerText = ''; statusEl.style.color = 'var(--highlight)'; }, 3000);
             
-            // Só recarrega a lista se for sua ficha
-            if (targetUserId === userId) window.loadCharacterList();
+            window.loadCharacterList();
             window.marcarSalvo();
         } catch (e) {
             console.error("Erro ao salvar:", e);
