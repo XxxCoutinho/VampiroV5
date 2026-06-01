@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>// Vampiro V5 //</title>
+    <title>// Vampiro V5.1 //</title>
     <style>
         :root {
             --bg-color: #050505;
@@ -1123,18 +1123,18 @@
         '54zSlQcqB8fvZCMADeirLWU7zNw2', // ID GitHub original
     ];
 
-    // Funções auxiliares para caminhos corretos e estritos (Resolve o erro "Missing or insufficient permissions")
+    // Funções auxiliares para caminhos corretos (GitHub Pages — sem prefixo artifacts/)
     function getCharactersRef() {
-        return collection(db, 'artifacts', appId, 'public', 'data', 'personagens');
+        return collection(db, 'personagens');
     }
     function getCharacterDoc(charId) {
-        return doc(db, 'artifacts', appId, 'public', 'data', 'personagens', charId);
+        return doc(db, 'personagens', charId);
     }
     function getLibraryRef() {
-        return collection(db, 'artifacts', appId, 'public', 'data', 'biblioteca');
+        return collection(db, 'biblioteca');
     }
     function getLibraryDoc(libId) {
-        return doc(db, 'artifacts', appId, 'public', 'data', 'biblioteca', libId);
+        return doc(db, 'biblioteca', libId);
     }
 
     function coletarDados() {
