@@ -84,6 +84,8 @@
             display: flex; flex-direction: column;
             border-right: 1px solid var(--border);
             min-width: 0;
+            min-height: 0; /* crucial: permite que o flex-child não estoure o grid */
+            overflow: hidden;
         }
 
         /* desktop tab bar */
@@ -117,8 +119,11 @@
 
         /* tab panes */
         #tab-content {
-            flex: 1; overflow-y: auto; overflow-x: hidden;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
             background: var(--surface);
+            min-height: 0; /* sem isso o flex-child ignora o limite do pai */
         }
         .pane { display: none; padding: 14px; }
         .pane.on { display: block; }
@@ -128,6 +133,7 @@
             background: var(--bg);
             display: flex; flex-direction: column;
             overflow-y: auto;
+            min-height: 0; /* idem */
         }
         .sb-section {
             padding: 14px;
@@ -1071,55 +1077,56 @@ window.addFromLibrary = function(libId) {
 };
 
 // ══ DICE ══
+// Valor unificado da parada — os dois inputs ficam sincronizados via DOMContentLoaded
+window._dicePool = 5;
+
 window.rollV5 = function() {
-    // get pool from whichever input is visible
-    const poolEl = document.getElementById('dice-pool') || document.getElementById('dice-pool-m');
-    const mEl = document.getElementById('dice-pool-m');
-    const dEl = document.getElementById('dice-pool');
-    const pool = parseInt((dEl?.offsetParent ? dEl : mEl)?.value) || 5;
-    const hunger = parseInt(document.getElementById('input-fome')?.value)||0;
+    const pool   = window._dicePool || 5;
+    const hunger = parseInt(document.getElementById('input-fome')?.value) || 0;
 
     const normalDice = Math.max(0, pool - Math.max(0, hunger));
     const hungerDice = Math.min(pool, Math.max(0, hunger));
 
     let successes=0, normalTens=0, hungerTens=0, hungerOnes=0;
-    const display = document.getElementById('dice-display');
+    const display  = document.getElementById('dice-display');
     const resultEl = document.getElementById('roll-result');
     display.innerHTML = '';
 
-    for (let i=0;i<normalDice;i++){
+    for (let i=0; i<normalDice; i++) {
         const r = Math.floor(Math.random()*10)+1;
-        let cls='die d-n';
-        if(r===10){normalTens++;successes++;cls+=' d-c';}
-        else if(r>=6){successes++;cls+=' d-s';}
-        else{cls+=' d-f';}
-        display.innerHTML+=`<div class="${cls}">${r}</div>`;
+        let cls = 'die d-n';
+        if      (r===10)  { normalTens++; successes++; cls += ' d-c'; }
+        else if (r >= 6)  { successes++;               cls += ' d-s'; }
+        else              {                             cls += ' d-f'; }
+        display.innerHTML += `<div class="${cls}">${r}</div>`;
     }
-    for(let i=0;i<hungerDice;i++){
-        const r=Math.floor(Math.random()*10)+1;
-        let cls='die d-h';
-        if(r===10){hungerTens++;successes++;cls+=' d-c';}
-        else if(r>=6){successes++;cls+=' d-s';}
-        else if(r===1){hungerOnes++;cls+=' d-b';}
-        else{cls+=' d-f';}
-        display.innerHTML+=`<div class="${cls}">${r}</div>`;
+    for (let i=0; i<hungerDice; i++) {
+        const r = Math.floor(Math.random()*10)+1;
+        let cls = 'die d-h';
+        if      (r===10) { hungerTens++;  successes++; cls += ' d-c'; }
+        else if (r >= 6) {                successes++; cls += ' d-s'; }
+        else if (r === 1){ hungerOnes++;               cls += ' d-b'; }
+        else             {                             cls += ' d-f'; }
+        display.innerHTML += `<div class="${cls}">${r}</div>`;
     }
 
-    const totalTens=normalTens+hungerTens;
-    const critPairs=Math.floor(totalTens/2);
-    successes+=critPairs*2;
-    const isCritical=critPairs>0;
-    const isMessy=isCritical&&hungerTens>0&&(normalTens+hungerTens>=2);
-    const isBestial=successes===0&&hungerOnes>0;
+    const totalTens  = normalTens + hungerTens;
+    const critPairs  = Math.floor(totalTens / 2);
+    successes += critPairs * 2;
 
-    let txt=`${successes} SUCESSO(S)`, color='var(--text)';
-    if(isMessy){txt=`CRÍTICO BAGUNÇADO! (${successes})`;color='#e74c3c';}
-    else if(isCritical){txt=`ACERTO CRÍTICO! (${successes})`;color='#f1c40f';}
-    else if(isBestial){txt='FALHA BESTIAL! (0)';color='#e74c3c';}
-    else if(successes===0){txt='FALHA TOTAL.';color='#555';}
-    else{color='#27ae60';if(hungerOnes>0)txt+=` ⚠ Bestial`;}
+    const isCritical = critPairs > 0;
+    const isMessy    = isCritical && hungerTens > 0 && (normalTens + hungerTens >= 2);
+    const isBestial  = successes === 0 && hungerOnes > 0;
 
-    resultEl.innerText=txt; resultEl.style.color=color;
+    let txt = `${successes} SUCESSO(S)`, color = 'var(--text)';
+    if      (isMessy)       { txt = `CRÍTICO BAGUNÇADO! (${successes})`; color = '#e74c3c'; }
+    else if (isCritical)    { txt = `ACERTO CRÍTICO! (${successes})`;    color = '#f1c40f'; }
+    else if (isBestial)     { txt = 'FALHA BESTIAL! (0)';                color = '#e74c3c'; }
+    else if (successes===0) { txt = 'FALHA TOTAL.';                      color = '#555';    }
+    else { color = '#27ae60'; if (hungerOnes > 0) txt += ' ⚠ Bestial'; }
+
+    resultEl.innerText   = txt;
+    resultEl.style.color = color;
 };
 
 // ══ IMAGE CROP ══
@@ -1142,13 +1149,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const m=document.getElementById('offline-toast-m');if(m)m.style.display='none';
     });
 
-    // sync mobile dice-pool with desktop
-    const dp=document.getElementById('dice-pool');
-    const dpm=document.getElementById('dice-pool-m');
-    if(dp&&dpm){
-        dp.addEventListener('input',()=>dpm.value=dp.value);
-        dpm.addEventListener('input',()=>dp.value=dpm.value);
+    // sync mobile/desktop dice-pool via shared variable
+    const dp  = document.getElementById('dice-pool');
+    const dpm = document.getElementById('dice-pool-m');
+    function syncPool(val) {
+        window._dicePool = parseInt(val) || 5;
+        if (dp)  dp.value  = window._dicePool;
+        if (dpm) dpm.value = window._dicePool;
     }
+    if (dp)  dp.addEventListener('input',  () => syncPool(dp.value));
+    if (dpm) dpm.addEventListener('input', () => syncPool(dpm.value));
+    syncPool(dp?.value || dpm?.value || 5);
 
     // crop logic
     let cImg=null,cX=0,cY=0,cScale=1,isDrag=false,lastX,lastY;
@@ -1290,6 +1301,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             userId = cred.user.uid;
             window.userId = userId;
+
+            // ── UID no console para debug ──
+            console.log('%c[Vampiro V5] UID autenticado:', 'color:#e74c3c;font-weight:bold;', userId);
 
             const uiID=document.createElement('div');
             uiID.style.cssText='position:fixed;bottom:4px;right:4px;font-size:10px;color:#222;cursor:pointer;z-index:9999;';
