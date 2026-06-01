@@ -31,29 +31,52 @@
             line-height: 1.4;
         }
 
-        /* ── MOBILE HAMBURGER ── */
+        /* ── MOBILE NAV GRID (estilo Cris Ordem Paranormal) ── */
+        .mobile-nav {
+            display: none; /* só aparece no mobile */
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 400;
+            background: #0a0a0a;
+            border-top: 2px solid var(--border-color);
+            padding: 8px;
+        }
+        .mobile-nav-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 7px;
+        }
+        .mobile-nav-btn {
+            background: #0f0f0f;
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            font-size: 0.78em;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 13px 6px;
+            cursor: pointer;
+            transition: all 0.18s;
+            text-align: center;
+        }
+        .mobile-nav-btn:active,
+        .mobile-nav-btn.active {
+            background: var(--border-color);
+            color: #fff;
+            border-color: var(--highlight);
+            box-shadow: 0 0 10px rgba(255,51,51,0.4);
+        }
+
+        /* Sidebar toggle — só no mobile */
         .sidebar-toggle {
             display: none;
-            position: fixed;
-            bottom: 16px;
-            right: 16px;
-            z-index: 500;
-            width: 48px; height: 48px;
-            background: #111;
-            border: 2px solid var(--border-color);
-            color: var(--highlight);
-            font-size: 1.4em;
-            cursor: pointer;
-            border-radius: 4px;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 12px rgba(139,0,0,0.5);
         }
         .sidebar-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.75);
             z-index: 299;
         }
 
@@ -61,13 +84,24 @@
         @media (max-width: 768px) {
             :root {
                 --header-h: 42px;
-                --tabs-h: 38px;
+                --tabs-h: 0px; /* tab bar some no mobile */
+                --mobile-nav-h: 130px; /* altura da grade de botões */
             }
             html, body { font-size: 15px; }
 
-            .app-body { flex-direction: column; }
+            /* Tab bar horizontal some */
+            .tab-bar { display: none; }
 
-            .main-area { border-right: none; border-bottom: 2px solid var(--border-color); }
+            /* Nav grid aparece */
+            .mobile-nav { display: block; }
+
+            /* Layout principal: apenas main-area ocupa tudo */
+            .app-body { flex-direction: column; }
+            .main-area {
+                border-right: none;
+                /* deixa espaço para a grade de botões na base */
+                padding-bottom: var(--mobile-nav-h);
+            }
 
             /* Sidebar vira drawer lateral */
             .dice-sidebar {
@@ -75,19 +109,16 @@
                 top: var(--header-h);
                 right: -100%;
                 bottom: 0;
-                width: min(320px, 90vw);
+                width: min(340px, 92vw);
                 z-index: 300;
-                transition: right 0.3s ease;
+                transition: right 0.28s ease;
                 border-left: 2px solid var(--border-color);
+                overflow-y: auto;
             }
             .dice-sidebar.open { right: 0; }
             .sidebar-overlay.open { display: block; }
-            .sidebar-toggle { display: flex; }
 
-            /* Tab labels menores */
-            .tab-btn { font-size: 0.62em; padding: 0 3px; }
-
-            /* Grids colapsam para 1 ou 2 colunas */
+            /* Grids colapsam */
             .grid-3 { grid-template-columns: 1fr 1fr; }
             .grid-4 { grid-template-columns: 1fr 1fr; }
 
@@ -99,15 +130,12 @@
             /* Inventory form empilha */
             .inv-form-row { grid-template-columns: 1fr 1fr; }
             .inv-form-row .btn-add { grid-column: span 2; }
-
-            /* Items de inventário */
             .inv-item { flex-wrap: wrap; gap: 6px; }
 
-            /* stat-list textos legíveis */
+            /* Stat lists */
             .stat label { font-size: 0.82em; }
             .stat input[type="number"] { width: 38px; font-size: 0.9em; }
 
-            /* Vitals lado a lado ok */
             .vitals-box { padding: 8px; }
             .tracker { font-size: 1.6em; }
         }
@@ -117,7 +145,6 @@
             .grid-3 { grid-template-columns: 1fr; }
             .inv-form-row { grid-template-columns: 1fr; }
             .inv-form-row .btn-add { grid-column: span 1; }
-            .tab-btn { font-size: 0.58em; letter-spacing: 0; }
         }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -481,8 +508,18 @@
 
 <div class="app-header">// VAMPIRO A MÁSCARA V5.1 // </div>
 
-<!-- Mobile sidebar toggle -->
-<button class="sidebar-toggle" id="sidebar-toggle-btn" onclick="window.toggleSidebar()" title="Abrir painel de dados / rolagem">⚄</button>
+<!-- Mobile nav grid — estilo Cris Ordem Paranormal -->
+<nav class="mobile-nav" id="mobile-nav">
+    <div class="mobile-nav-grid">
+        <button class="mobile-nav-btn active" id="mnav-personagem" onclick="switchTab('personagem')">PERSONAGEM</button>
+        <button class="mobile-nav-btn" id="mnav-poder"      onclick="switchTab('poder')">PODER</button>
+        <button class="mobile-nav-btn" id="mnav-inventario" onclick="switchTab('inventario')">INVENTÁRIO</button>
+        <button class="mobile-nav-btn" id="mnav-biografia"  onclick="switchTab('biografia')">BIOGRAFIA</button>
+        <button class="mobile-nav-btn" id="mnav-arquivos"   onclick="window.openSidebarSection('arquivos')">SISTEMA DE ARQUIVOS</button>
+        <button class="mobile-nav-btn" id="mnav-rolagem"    onclick="window.openSidebarSection('rolagem')">MÓDULO DE ROLAGEM</button>
+    </div>
+</nav>
+
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="window.closeSidebar()"></div>
 
 <div class="app-body">
@@ -937,18 +974,24 @@
     };
 
     // ── MOBILE SIDEBAR TOGGLE ──
-    window.toggleSidebar = function() {
+    window.openSidebarSection = function(section) {
         const sidebar = document.querySelector('.dice-sidebar');
         const overlay = document.getElementById('sidebar-overlay');
-        const btn = document.getElementById('sidebar-toggle-btn');
-        const isOpen = sidebar.classList.toggle('open');
-        overlay.classList.toggle('open', isOpen);
-        btn.textContent = isOpen ? '✕' : '⚄';
+        sidebar.classList.add('open');
+        overlay.classList.add('open');
+        // Scroll para a seção correta dentro da sidebar
+        const target = section === 'rolagem'
+            ? sidebar.querySelector('.sidebar-section:last-child')
+            : sidebar.querySelector('.sidebar-section:first-child');
+        if (target) setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+        // Atualiza botão ativo no mobile nav
+        document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+        const btn = document.getElementById('mnav-' + section);
+        if (btn) btn.classList.add('active');
     };
     window.closeSidebar = function() {
         document.querySelector('.dice-sidebar').classList.remove('open');
         document.getElementById('sidebar-overlay').classList.remove('open');
-        document.getElementById('sidebar-toggle-btn').textContent = '⚄';
     };
 
     // ── TAB SWITCHING ──
@@ -958,6 +1001,14 @@
         document.getElementById('tab-' + id).classList.add('active');
         const idx = ['personagem','poder','inventario','biografia'].indexOf(id);
         if(idx !== -1) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+
+        // Atualiza mobile nav
+        document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+        const mBtn = document.getElementById('mnav-' + id);
+        if (mBtn) mBtn.classList.add('active');
+
+        // Fecha sidebar se estiver aberta
+        window.closeSidebar();
     }
 
     // ── CÁLCULOS AUTOMÁTICOS ──
