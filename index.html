@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>// Vampiro V5.2 //</title>
     <style>
         :root {
@@ -21,10 +21,10 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
+        /* Comportamento Base / Desktop */
         html, body {
             height: 100%;
-            overflow: hidden;
-            /* Fundo puramente preto para destacar a interface centralizada no desktop */
+            overflow: hidden; /* Desktop usa scroll interno nas abas */
             background-color: #000; 
             color: var(--text-color);
             font-family: var(--font-main);
@@ -32,15 +32,15 @@
             line-height: 1.4;
         }
 
-        /* ── MOBILE NAV GRID (estilo Cris Ordem Paranormal) ── */
+        /* ── MOBILE NAV GRID ── */
         .mobile-nav {
-            display: none; /* só aparece no mobile */
+            display: none;
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            z-index: 400;
             background: #0a0a0a;
             border-top: 2px solid var(--border-color);
             padding: 8px;
+            z-index: 100; /* Fica abaixo do menu lateral e overlay */
         }
         .mobile-nav-grid {
             display: grid;
@@ -52,11 +52,11 @@
             border: 2px solid var(--border-color);
             color: var(--text-color);
             font-family: var(--font-main);
-            font-size: 0.78em;
+            font-size: 0.72em;
             font-weight: bold;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            padding: 13px 6px;
+            padding: 10px 4px;
             cursor: pointer;
             transition: all 0.18s;
             text-align: center;
@@ -69,60 +69,69 @@
             box-shadow: 0 0 10px rgba(255,51,51,0.4);
         }
 
-        /* Sidebar toggle — só no mobile */
-        .sidebar-toggle {
-            display: none;
-        }
         .sidebar-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.75);
-            z-index: 299;
+            background: rgba(0,0,0,0.85);
+            z-index: 200; /* Escurece o site e o mobile-nav, mas fica atrás do menu lateral */
         }
 
-        /* ── RESPONSIVE ── */
+        /* ── RESPONSIVE (Telas Menores) ── */
         @media (max-width: 768px) {
             :root {
-                --header-h: 42px;
-                --tabs-h: 0px; /* tab bar some no mobile */
-                --mobile-nav-h: 130px; /* altura da grade de botões */
+                --header-h: 44px;
+                --mobile-nav-h: 110px; 
             }
-            html, body { font-size: 15px; }
+            
+            /* Permite o Scroll Nativo no celular para a barra do navegador recolher */
+            html, body { 
+                font-size: 15px; 
+                overflow-y: auto !important; 
+                overflow-x: hidden;
+                height: auto;
+                min-height: 100%;
+            }
 
-            /* Tab bar horizontal some */
-            .tab-bar { display: none; }
+            /* Força a remoção das abas superiores no mobile para evitar sobreposição */
+            .tab-bar { display: none !important; }
 
-            /* Nav grid aparece */
             .mobile-nav { display: block; }
 
-            /* Layout principal: reseta para ocupar 100% da tela no mobile */
+            /* Remove os limites fixos de janela do Desktop para usar o fluxo normal */
             .app-body { 
-                flex-direction: column; 
-                top: var(--header-h);
-                bottom: 0;
-                width: 100vw;
+                position: static !important;
+                display: block;
+                margin-top: var(--header-h) !important;
+                margin-bottom: calc(var(--mobile-nav-h) + 15px) !important;
+                width: 100%;
                 max-width: 100%;
-                margin: 0;
                 border: none;
                 border-radius: 0;
                 box-shadow: none;
+                height: auto !important;
             }
             
             .main-area {
+                display: block;
                 border-right: none;
-                /* deixa espaço para a grade de botões na base */
-                padding-bottom: var(--mobile-nav-h);
+                height: auto;
             }
 
-            /* Sidebar vira drawer lateral */
+            /* Desativa scroll interno, deixa o body fazer o trabalho */
+            .tab-content-area {
+                overflow: visible !important;
+                height: auto;
+            }
+
             .dice-sidebar {
                 position: fixed;
                 top: var(--header-h);
                 right: -100%;
                 bottom: 0;
-                width: min(340px, 92vw);
-                z-index: 300;
+                height: calc(100vh - var(--header-h));
+                width: 85vw;
+                z-index: 300 !important; /* Por cima de tudo (overlay e mobile nav) */
                 transition: right 0.28s ease;
                 border-left: 2px solid var(--border-color);
                 overflow-y: auto;
@@ -130,31 +139,21 @@
             .dice-sidebar.open { right: 0; }
             .sidebar-overlay.open { display: block; }
 
-            /* Grids colapsam */
-            .grid-3 { grid-template-columns: 1fr 1fr; }
-            .grid-4 { grid-template-columns: 1fr 1fr; }
-
-            /* Bio header empilha */
+            .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
             .bio-header { flex-direction: column; align-items: center; }
             .bio-photo-box { width: 100%; align-items: center; }
             .bio-photo-box img { width: 120px; height: 144px; }
-
-            /* Inventory form empilha */
             .inv-form-row { grid-template-columns: 1fr 1fr; }
             .inv-form-row .btn-add { grid-column: span 2; }
             .inv-item { flex-wrap: wrap; gap: 6px; }
-
-            /* Stat lists */
             .stat label { font-size: 0.82em; }
             .stat input[type="number"] { width: 38px; font-size: 0.9em; }
-
             .vitals-box { padding: 8px; }
             .tracker { font-size: 1.6em; }
         }
 
         @media (max-width: 420px) {
-            .grid-2 { grid-template-columns: 1fr; }
-            .grid-3 { grid-template-columns: 1fr; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
             .inv-form-row { grid-template-columns: 1fr; }
             .inv-form-row .btn-add { grid-column: span 1; }
         }
@@ -174,7 +173,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 100;
+            z-index: 400; /* Sempre no topo */
             letter-spacing: 3px;
             text-transform: uppercase;
             font-weight: bold;
@@ -183,28 +182,24 @@
             text-shadow: 0 0 8px rgba(255,51,51,0.4);
         }
 
-        /* ── ROOT LAYOUT (MODIFICADO PARA DESKTOP) ── */
+        /* ── ROOT LAYOUT DESKTOP ── */
         .app-body {
             position: fixed;
-            /* Margens superiores e inferiores para criar a "janela" */
             top: calc(var(--header-h) + 20px);
             bottom: 20px;
-            /* Centraliza horizontalmente */
             left: 0; right: 0;
             margin: 0 auto;
-            /* Largura máxima contida */
             max-width: 1200px;
             width: 95vw;
             display: flex;
             background-color: var(--bg-color);
-            /* Visual de janela separada do fundo */
             border: 1px solid #2a0000;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             border-radius: 8px;
-            overflow: hidden; /* Garante que os filhos respeitem o border-radius */
+            overflow: hidden; 
         }
 
-        /* ── MAIN AREA (tabs + content) ── */
+        /* ── MAIN AREA ── */
         .main-area {
             flex: 1;
             display: flex;
@@ -213,7 +208,7 @@
             border-right: 2px solid var(--border-color);
         }
 
-        /* ── TAB BAR ── */
+        /* ── TAB BAR DESKTOP ── */
         .tab-bar {
             height: var(--tabs-h);
             display: flex;
@@ -221,7 +216,6 @@
             border-bottom: 2px solid var(--border-color);
             flex-shrink: 0;
         }
-
         .tab-btn {
             flex: 1;
             background: transparent;
@@ -237,7 +231,6 @@
             padding: 0 6px;
             position: relative;
         }
-
         .tab-btn:last-child { border-right: none; }
         .tab-btn:hover { color: #aaa; background: #111; }
         .tab-btn.active {
@@ -259,7 +252,6 @@
             overflow-x: hidden;
             background: var(--panel-bg);
         }
-
         .tab-pane { display: none; padding: 14px; }
         .tab-pane.active { display: block; }
 
@@ -272,13 +264,12 @@
             flex-direction: column;
             overflow-y: auto;
         }
-
         .sidebar-section {
             padding: 14px;
             border-bottom: 1px solid #222;
         }
 
-        /* ── SECTION HEADERS ── */
+        /* ── TYPOGRAPHY & COMPONENTS ── */
         h2 {
             color: var(--highlight);
             border-bottom: 1px solid var(--border-color);
@@ -290,7 +281,6 @@
             letter-spacing: 1px;
         }
         h2:first-child { margin-top: 0; }
-
         h3 {
             color: var(--text-color);
             margin-bottom: 8px;
@@ -300,7 +290,6 @@
             border-bottom: 1px dotted #444;
             padding-bottom: 4px;
         }
-
         .section-label {
             color: var(--highlight);
             font-size: 0.8em;
@@ -312,25 +301,12 @@
             margin-bottom: 12px;
             font-weight: bold;
         }
-
-        /* ── GRIDS ── */
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 
-        /* ── INPUT GROUPS ── */
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 8px;
-        }
-        .input-group label {
-            font-size: 0.7em;
-            color: #888;
-            text-transform: uppercase;
-            margin-bottom: 3px;
-            letter-spacing: 1px;
-        }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 8px; }
+        .input-group label { font-size: 0.7em; color: #888; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 1px; }
         input[type="text"], input[type="number"], input[type="date"], textarea, select {
             background-color: var(--input-bg);
             border: 1px solid #333;
@@ -342,121 +318,47 @@
             transition: all 0.2s ease;
         }
         input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--border-light);
-            background-color: #222;
-            box-shadow: 0 0 6px rgba(255, 26, 26, 0.2);
+            outline: none; border-color: var(--border-light); background-color: #222; box-shadow: 0 0 6px rgba(255, 26, 26, 0.2);
         }
         textarea { resize: vertical; min-height: 60px; }
 
-        /* ── STAT LISTS ── */
-        .stat-list {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 8px;
-            border: 1px solid #222;
-        }
-        .stat {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 5px; border-bottom: 1px dashed #2a2a2a; padding-bottom: 3px;
-        }
+        .stat-list { background: rgba(0, 0, 0, 0.3); padding: 8px; border: 1px solid #222; }
+        .stat { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; border-bottom: 1px dashed #2a2a2a; padding-bottom: 3px; }
         .stat:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
         .stat label { flex-grow: 1; font-weight: bold; font-size: 0.88em; }
-        .stat input[type="text"] {
-            width: 60%; border: none; border-bottom: 1px solid #555;
-            background: transparent; padding: 2px 4px;
-        }
-        .stat input[type="number"] {
-            width: 44px; text-align: center; border: 1px solid var(--border-color);
-            background: #000; color: var(--highlight); font-weight: bold;
-            font-size: 1em; padding: 2px; flex-shrink: 0;
-        }
+        .stat input[type="text"] { width: 60%; border: none; border-bottom: 1px solid #555; background: transparent; padding: 2px 4px; }
+        .stat input[type="number"] { width: 44px; text-align: center; border: 1px solid var(--border-color); background: #000; color: var(--highlight); font-weight: bold; font-size: 1em; padding: 2px; flex-shrink: 0; }
 
-        /* ── VITALS ── */
-        .vitals-box {
-            border: 1px solid var(--border-color);
-            background-color: #0a0a0a;
-            padding: 10px;
-            text-align: center;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-        }
-        .tracker {
-            font-size: 2em; color: var(--highlight); font-weight: bold;
-            text-shadow: 0 0 10px rgba(255, 51, 51, 0.4); margin-top: 6px;
-        }
-        .big-number {
-            font-size: 2em; text-align: center; border: none !important;
-            color: var(--highlight) !important; background: transparent !important;
-            padding: 0 !important; margin: 6px 0; box-shadow: none !important;
-        }
+        .vitals-box { border: 1px solid var(--border-color); background-color: #0a0a0a; padding: 10px; text-align: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
+        .tracker { font-size: 2em; color: var(--highlight); font-weight: bold; text-shadow: 0 0 10px rgba(255, 51, 51, 0.4); margin-top: 6px; }
+        .big-number { font-size: 2em; text-align: center; border: none !important; color: var(--highlight) !important; background: transparent !important; padding: 0 !important; margin: 6px 0; box-shadow: none !important; }
 
-        /* ── INVENTORY & BIO UI ── */
-        .inv-form-row {
-            display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 12px; align-items: end;
-        }
-        .inv-item {
-            display: flex; justify-content: space-between; align-items: flex-start;
-            background: #111; border: 1px solid #333; padding: 8px 12px; margin-bottom: 6px;
-            gap: 8px;
-        }
+        .inv-form-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 12px; align-items: end; }
+        .inv-item { display: flex; justify-content: space-between; align-items: flex-start; background: #111; border: 1px solid #333; padding: 8px 12px; margin-bottom: 6px; gap: 8px; }
         .inv-item-body { flex: 1; min-width: 0; }
         .inv-item-name { font-weight: bold; font-size: 0.95em; }
         .inv-item-desc { font-size: 0.75em; color: #777; margin-top: 2px; font-style: italic; white-space: pre-wrap; word-break: break-word; }
         .weapon-val { color: var(--highlight); font-weight: bold; margin-left: 8px; }
-        .btn-add, .btn-del {
-            background: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color);
-            padding: 6px 12px; cursor: pointer; text-transform: uppercase; font-family: var(--font-main);
-            transition: 0.2s;
-        }
+        .btn-add, .btn-del { background: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color); padding: 6px 12px; cursor: pointer; text-transform: uppercase; font-family: var(--font-main); transition: 0.2s; }
         .btn-add:hover, .btn-del:hover { background: var(--highlight); color: #000; }
         .btn-del { padding: 4px 8px; border-color: #550000; color: #ff5555; }
         .btn-del:hover { background: #ff5555; color: #fff; }
 
         .bio-header { display: flex; gap: 15px; margin-bottom: 15px; }
-        .bio-photo-box {
-            width: 150px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px;
-        }
-        .bio-photo-box img {
-            width: 150px; height: 180px; object-fit: cover; border: 1px solid var(--border-color);
-            background: #000; display: block;
-        }
-        .bio-photo-box input[type="file"] {
-            font-size: 0.7em; padding: 4px; border: 1px dashed #444; background: transparent; color: #888;
-            cursor: pointer;
-        }
+        .bio-photo-box { width: 150px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+        .bio-photo-box img { width: 150px; height: 180px; object-fit: cover; border: 1px solid var(--border-color); background: #000; display: block; }
+        .bio-photo-box input[type="file"] { font-size: 0.7em; padding: 4px; border: 1px dashed #444; background: transparent; color: #888; cursor: pointer; }
         .bio-data-box { flex: 1; display: flex; flex-direction: column; gap: 10px; }
 
-        /* ── DICE SIDEBAR SPECIFICS ── */
-        .dice-controls {
-            display: flex; flex-direction: column; gap: 8px; align-items: stretch;
-        }
-        .dice-controls label {
-            color: var(--text-color); font-weight: bold; text-transform: uppercase;
-            letter-spacing: 1px; text-align: center; font-size: 0.8em;
-        }
-        .dice-controls input[type="number"] {
-            padding: 8px; font-size: 1.6em; text-align: center; background: #000;
-            color: var(--highlight); border: 1px solid var(--border-color); width: 100%;
-        }
+        .dice-controls { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+        .dice-controls label { color: var(--text-color); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; text-align: center; font-size: 0.8em; }
+        .dice-controls input[type="number"] { padding: 8px; font-size: 1.6em; text-align: center; background: #000; color: var(--highlight); border: 1px solid var(--border-color); width: 100%; }
 
-        .btn-roll {
-            background: #111; color: var(--highlight); border: 1px solid var(--highlight);
-            padding: 10px; font-family: var(--font-main); font-weight: bold;
-            cursor: pointer; transition: 0.3s; letter-spacing: 2px; font-size: 0.9em; width: 100%;
-        }
+        .btn-roll { background: #111; color: var(--highlight); border: 1px solid var(--highlight); padding: 10px; font-family: var(--font-main); font-weight: bold; cursor: pointer; transition: 0.3s; letter-spacing: 2px; font-size: 0.9em; width: 100%; }
         .btn-roll:hover { background: var(--highlight); color: #000; box-shadow: 0 0 12px var(--highlight); }
 
-        .dice-display {
-            display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
-            width: 100%; margin-top: 10px;
-        }
-
-        .die {
-            width: 38px; height: 38px;
-            display: flex; justify-content: center; align-items: center;
-            font-weight: bold; font-size: 1.2em;
-            border: 1px solid #555; border-radius: 4px;
-            box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
-        }
+        .dice-display { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%; margin-top: 10px; }
+        .die { width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.2em; border: 1px solid #555; border-radius: 4px; box-shadow: inset 0 0 8px rgba(0,0,0,0.8); }
         .die-normal { background: #222; color: #ccc; }
         .die-hunger { background: #500; color: #fff; border-color: #a00; }
         .die-success { border-color: #0f0; color: #0f0; text-shadow: 0 0 5px #0f0; }
@@ -464,68 +366,29 @@
         .die-fail { opacity: 0.4; }
         .die-botch { border-color: #f00; color: #f00; text-shadow: 0 0 5px #f00; font-weight: 900; }
 
-        .roll-result-text {
-            font-size: 0.95em; font-weight: bold; color: var(--text-color);
-            text-transform: uppercase; letter-spacing: 1px; text-align: center;
-            min-height: 48px; display: flex; align-items: center; justify-content: center;
-            padding: 10px 0; border-top: 1px dashed #444; border-bottom: 1px dashed #444; width: 100%;
-        }
+        .roll-result-text { font-size: 0.95em; font-weight: bold; color: var(--text-color); text-transform: uppercase; letter-spacing: 1px; text-align: center; min-height: 48px; display: flex; align-items: center; justify-content: center; padding: 10px 0; border-top: 1px dashed #444; border-bottom: 1px dashed #444; width: 100%; }
 
-        /* ── UNSAVED INDICATOR ── */
-        .unsaved-indicator {
-            display: none; width: 7px; height: 7px; border-radius: 50%;
-            background: #ffaa00; box-shadow: 0 0 5px #ffaa00; margin-left: 5px; vertical-align: middle;
-        }
+        .unsaved-indicator { display: none; width: 7px; height: 7px; border-radius: 50%; background: #ffaa00; box-shadow: 0 0 5px #ffaa00; margin-left: 5px; vertical-align: middle; }
         .has-unsaved .unsaved-indicator { display: inline-block; }
-
-        /* ── OFFLINE TOAST ── */
-        #offline-toast {
-            display: none; background: #330000; border: 1px solid var(--border-color);
-            color: var(--highlight); padding: 6px 10px; font-size: 0.75em; text-align: center; width: 100%;
-        }
-
+        #offline-toast { display: none; background: #330000; border: 1px solid var(--border-color); color: var(--highlight); padding: 6px 10px; font-size: 0.75em; text-align: center; width: 100%; }
         .mt8 { margin-top: 8px; }
-        .mt12 { margin-top: 12px; }
 
-        /* ── MODAL CROP ── */
-        .crop-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 2000; flex-direction: column;
-            align-items: center; justify-content: center;
-        }
+        .crop-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; }
         .crop-canvas-wrapper { border: 2px dashed var(--border-color); cursor: grab; background: #000; margin-bottom: 15px;}
         .crop-canvas-wrapper:active { cursor: grabbing; }
         .crop-controls { display: flex; gap: 15px; align-items: center; background: var(--panel-bg); padding: 15px; border: 1px solid #333; }
         
-        /* ── ACCORDION BIBLIOTECA ── */
-        .accordion {
-            background-color: #111; color: var(--highlight); cursor: pointer; padding: 10px;
-            width: 100%; text-align: left; border: 1px solid #333; outline: none;
-            transition: 0.3s; font-family: var(--font-main); font-weight: bold; text-transform: uppercase;
-            margin-top: 5px;
-        }
+        .accordion { background-color: #111; color: var(--highlight); cursor: pointer; padding: 10px; width: 100%; text-align: left; border: 1px solid #333; outline: none; transition: 0.3s; font-family: var(--font-main); font-weight: bold; text-transform: uppercase; margin-top: 5px; }
         .accordion.active, .accordion:hover { background-color: #222; }
         .panel { padding: 0 10px; background-color: #0a0a0a; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; border-left: 1px solid #333; border-right: 1px solid #333; }
         .lib-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #222; }
         .lib-item:last-child { border-bottom: none; }
         .lib-item.hidden { display: none; }
-
-        /* ── BIBLIOTECA SEARCH ── */
-        .lib-search-wrap {
-            position: relative; margin-bottom: 12px;
-        }
-        .lib-search-wrap input {
-            width: 100%; padding: 8px 32px 8px 10px;
-            background: #0a0a0a; border: 1px solid #8b0000;
-            color: var(--text-color); font-family: var(--font-main); font-size: 0.85em;
-            letter-spacing: 1px;
-        }
+        .lib-search-wrap { position: relative; margin-bottom: 12px; }
+        .lib-search-wrap input { width: 100%; padding: 8px 32px 8px 10px; background: #0a0a0a; border: 1px solid #8b0000; color: var(--text-color); font-family: var(--font-main); font-size: 0.85em; letter-spacing: 1px; }
         .lib-search-wrap input:focus { outline: none; border-color: var(--highlight); box-shadow: 0 0 6px rgba(255,51,51,0.25); }
         .lib-search-wrap input::placeholder { color: #555; }
-        .lib-search-icon {
-            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-            color: #555; font-size: 0.9em; pointer-events: none;
-        }
+        .lib-search-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #555; font-size: 0.9em; pointer-events: none; }
         .lib-empty-msg { color: #555; font-size: 0.8em; padding: 8px 0; font-style: italic; }
     </style>
 </head>
@@ -533,23 +396,26 @@
 
 <div class="app-header">// VAMPIRO A MÁSCARA V5.1 // </div>
 
-<nav class="mobile-nav" id="mobile-nav">
-    <div class="mobile-nav-grid">
-        <button class="mobile-nav-btn active" id="mnav-personagem" onclick="switchTab('personagem')">PERSONAGEM</button>
-        <button class="mobile-nav-btn" id="mnav-poder"      onclick="switchTab('poder')">PODER</button>
-        <button class="mobile-nav-btn" id="mnav-inventario" onclick="switchTab('inventario')">INVENTÁRIO</button>
-        <button class="mobile-nav-btn" id="mnav-biografia"  onclick="switchTab('biografia')">BIOGRAFIA</button>
-        <button class="mobile-nav-btn" id="mnav-arquivos"   onclick="window.openSidebarSection('arquivos')">SISTEMA DE ARQUIVOS</button>
-        <button class="mobile-nav-btn" id="mnav-rolagem"    onclick="window.openSidebarSection('rolagem')">MÓDULO DE ROLAGEM</button>
-    </div>
-</nav>
-
-<div class="sidebar-overlay" id="sidebar-overlay" onclick="window.closeSidebar()"></div>
-
+<!-- Movemos o Menu Mobile e o Overlay para DENTRO do App Body para resolver problemas de z-index nativos -->
 <div class="app-body">
+    
+    <nav class="mobile-nav" id="mobile-nav">
+        <div class="mobile-nav-grid">
+            <button class="mobile-nav-btn active" id="mnav-personagem" onclick="switchTab('personagem')">PERSONAGEM</button>
+            <button class="mobile-nav-btn" id="mnav-poder"      onclick="switchTab('poder')">PODER</button>
+            <button class="mobile-nav-btn" id="mnav-inventario" onclick="switchTab('inventario')">INVENTÁRIO</button>
+            <button class="mobile-nav-btn" id="mnav-biografia"  onclick="switchTab('biografia')">BIOGRAFIA</button>
+            <button class="mobile-nav-btn" id="mnav-arquivos"   onclick="window.openSidebarSection('arquivos')">SISTEMA DE ARQUIVOS</button>
+            <button class="mobile-nav-btn" id="mnav-rolagem"    onclick="window.openSidebarSection('rolagem')">MÓDULO DE ROLAGEM</button>
+        </div>
+    </nav>
 
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="window.closeSidebar()"></div>
+
+    <!-- ══ MAIN TABBED AREA ══ -->
     <div class="main-area">
 
+        <!-- TAB BAR -->
         <div class="tab-bar">
             <button class="tab-btn active" onclick="switchTab('personagem')">◈ Personagem</button>
             <button class="tab-btn" onclick="switchTab('poder')">◈ Poder</button>
@@ -557,8 +423,10 @@
             <button class="tab-btn" onclick="switchTab('biografia')">◈ Biografia</button>
         </div>
 
+        <!-- TAB CONTENT -->
         <div class="tab-content-area">
 
+            <!-- ── ABA 1: PERSONAGEM ── -->
             <div class="tab-pane active" id="tab-personagem">
                 <div class="grid-3" style="margin-bottom:12px;">
                     <div class="input-group">
@@ -675,6 +543,7 @@
                 </div>
             </div>
 
+            <!-- ── ABA 2: PODER ── -->
             <div class="tab-pane" id="tab-poder">
                 <div class="grid-3" style="margin-bottom:12px;">
                     <div class="vitals-box">
@@ -754,6 +623,7 @@
                 </div>
             </div>
 
+            <!-- ── ABA 3: INVENTÁRIO ── -->
             <div class="tab-pane" id="tab-inventario">
                 <h2>INVENTÁRIO E POSSESSÕES</h2>
                 
@@ -795,9 +665,7 @@
                 <div style="margin-top: 8px;">
                     <h3>ITENS ATUAIS</h3>
                     <input type="hidden" id="inventory-data" data-field="inventario" value="[]">
-                    
-                    <div id="inventory-list">
-                        </div>
+                    <div id="inventory-list"></div>
                 </div>
 
                 <div style="margin-top: 30px;">
@@ -820,6 +688,7 @@
                 </div>
             </div>
 
+            <!-- ── ABA 4: BIOGRAFIA ── -->
             <div class="tab-pane" id="tab-biografia">
                 <h2>DADOS BIOGRÁFICOS & EXPERIÊNCIA</h2>
                 
@@ -856,8 +725,12 @@
                 </div>
             </div>
 
-        </div></div><aside class="dice-sidebar">
+        </div><!-- end tab-content-area -->
+    </div><!-- end main-area -->
 
+    <!-- ══ SIDEBAR ══ -->
+    <aside class="dice-sidebar">
+        <!-- Sistema de Arquivos -->
         <div class="sidebar-section">
             <div class="section-label">SISTEMA DE ARQUIVOS</div>
             <div class="dice-controls">
@@ -880,6 +753,7 @@
             </div>
         </div>
 
+        <!-- Módulo de Rolagem -->
         <div class="sidebar-section" style="flex:1; display:flex; flex-direction:column; gap:10px;">
             <div class="section-label" style="margin-bottom:0;">MÓDULO DE ROLAGEM</div>
 
@@ -892,10 +766,12 @@
             <div class="roll-result-text" id="roll-result-text">AGUARDANDO INPUT...</div>
             <div class="dice-display" id="dice-display"></div>
         </div>
-
     </aside>
 
-</div><div id="crop-modal" class="crop-modal">
+</div><!-- end app-body -->
+
+<!-- Crop Modal -->
+<div id="crop-modal" class="crop-modal">
     <h2 style="color: white; margin-bottom: 10px; border:none; text-shadow: none;">AJUSTAR IMAGEM</h2>
     <p style="color:#aaa; font-size:0.8em; margin-bottom:15px;">Arraste para posicionar. Use a barra para dar zoom.</p>
     <div class="crop-canvas-wrapper">
@@ -910,7 +786,6 @@
 </div>
 
 <script>
-    // ── INTERFACES CUSTOMIZADAS DE MODAL (Evitando Alerts no Iframe) ──
     window.customConfirm = function(message, callbackYes, callbackNo) {
         const overlay = document.createElement('div');
         overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center;';
@@ -969,28 +844,27 @@
         box.appendChild(msg); box.appendChild(btnOk); overlay.appendChild(box); document.body.appendChild(overlay);
     };
 
-    // ── MOBILE SIDEBAR TOGGLE ──
     window.openSidebarSection = function(section) {
         const sidebar = document.querySelector('.dice-sidebar');
         const overlay = document.getElementById('sidebar-overlay');
         sidebar.classList.add('open');
         overlay.classList.add('open');
-        // Scroll para a seção correta dentro da sidebar
+        
         const target = section === 'rolagem'
             ? sidebar.querySelector('.sidebar-section:last-child')
             : sidebar.querySelector('.sidebar-section:first-child');
         if (target) setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
-        // Atualiza botão ativo no mobile nav
+        
         document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
         const btn = document.getElementById('mnav-' + section);
         if (btn) btn.classList.add('active');
     };
+
     window.closeSidebar = function() {
         document.querySelector('.dice-sidebar').classList.remove('open');
         document.getElementById('sidebar-overlay').classList.remove('open');
     };
 
-    // ── TAB SWITCHING ──
     function switchTab(id) {
         document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -998,16 +872,18 @@
         const idx = ['personagem','poder','inventario','biografia'].indexOf(id);
         if(idx !== -1) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
 
-        // Atualiza mobile nav
         document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
         const mBtn = document.getElementById('mnav-' + id);
         if (mBtn) mBtn.classList.add('active');
 
-        // Fecha sidebar se estiver aberta
         window.closeSidebar();
+        
+        // Retorna ao topo automaticamente ao mudar de aba no celular
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const contentArea = document.querySelector('.tab-content-area');
+        if (contentArea) contentArea.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // ── CÁLCULOS AUTOMÁTICOS ──
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('vigor').addEventListener('input', window.calcularSaude);
         document.getElementById('autocontrole').addEventListener('input', window.calcularFdV);
@@ -1026,7 +902,6 @@
             document.getElementById('offline-toast').style.display = 'none';
         });
 
-        // ── IMAGE CROPPER SETUP ──
         let cImg = null;
         let cX = 0, cY = 0, cScale = 1;
         let isDrag = false, lastX, lastY;
@@ -1069,7 +944,6 @@
         }, {passive: false});
         cvs.addEventListener('touchend', () => isDrag = false);
 
-        // ── IMAGE UPLOAD HANDLING ──
         document.getElementById('bio-image-upload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -1099,7 +973,6 @@
             window.marcarNaoSalvo();
         };
 
-        // ── ACCORDION LOGIC ── (delegated, works after dynamic re-renders)
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('accordion')) {
                 e.target.classList.toggle('active');
@@ -1113,7 +986,6 @@
         });
     });
 
-    // ── INVENTORY LOGIC ──
     window.inventory = [];
     window.libraryItems = [];
 
@@ -1184,7 +1056,6 @@
         document.getElementById('inventory-data').value = JSON.stringify(window.inventory);
     }
 
-    // ── GLOBAL VARIABLES & UTILS ──
     window._temAlteracoes = false;
 
     window.marcarNaoSalvo = function() {
@@ -1211,7 +1082,6 @@
         document.getElementById('tracker-fdv').innerText = autocontrole + determinacao;
     }
 
-    // ── SISTEMA DE ROLAGEM V5 ──
     window.rollV5 = function() {
         const pool = parseInt(document.getElementById('dice-pool').value) || 1;
         const hungerField = document.getElementById('input-fome');
@@ -1275,7 +1145,6 @@
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, deleteDoc, getDocs, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Integração robusta com a configuração injetada no ambiente iframe (ou fallback)
     let firebaseConfig;
     try {
         firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
@@ -1300,30 +1169,19 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'vampiro-v5-app';
     
     let userId = null;
     window.currentCharacterId = null;
     let _narratorUnsubscribe = null;
 
-    // Adicionar id de narradores aqui
     const IDs_NARRADORES = [
-        '54zSlQcqB8fvZCMADeirLWU7zNw2', // ID GitHub original
+        '54zSlQcqB8fvZCMADeirLWU7zNw2',
     ];
 
-    // Funções auxiliares para caminhos corretos (GitHub Pages — sem prefixo artifacts/)
-    function getCharactersRef() {
-        return collection(db, 'personagens');
-    }
-    function getCharacterDoc(charId) {
-        return doc(db, 'personagens', charId);
-    }
-    function getLibraryRef() {
-        return collection(db, 'biblioteca');
-    }
-    function getLibraryDoc(libId) {
-        return doc(db, 'biblioteca', libId);
-    }
+    function getCharactersRef() { return collection(db, 'personagens'); }
+    function getCharacterDoc(charId) { return doc(db, 'personagens', charId); }
+    function getLibraryRef() { return collection(db, 'biblioteca'); }
+    function getLibraryDoc(libId) { return doc(db, 'biblioteca', libId); }
 
     function coletarDados() {
         const data = {};
@@ -1361,7 +1219,7 @@
             const local = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}');
             local[charId] = { name: charName, data, timestamp: Date.now() };
             localStorage.setItem(LOCAL_KEY, JSON.stringify(local));
-        } catch (e) { console.warn('localStorage indisponível:', e); }
+        } catch (e) { }
     }
 
     function carregarLocal() {
@@ -1380,9 +1238,7 @@
             
             userId = userCredential.user.uid;
             window.userId = userId;
-            console.log("Conectado à Nuvem com UID:", userId);
             
-            // Botão invisível no canto para ajudar jogadores a descobrirem seu próprio UID para colar no Narradores
             const uiIDEl = document.createElement('div');
             uiIDEl.style.cssText = "position:fixed; bottom:5px; right:5px; font-size:10px; color:#333; cursor:pointer; z-index:9999;";
             uiIDEl.innerText = `UID: ${userId.substring(0,5)}...`;
@@ -1392,13 +1248,11 @@
             window.loadCharacterList();
             window.startLibraryListener();
         } catch (error) {
-            console.error("Erro de conexão com Autenticação:", error);
             document.getElementById('save-status').innerText = 'Offline — modo local ativo.';
             carregarListaLocal();
         }
     }
 
-    // ── GESTÃO DA BIBLIOTECA DE ITENS ──
     window.startLibraryListener = function() {
         if (!userId) return;
         const libRef = getLibraryRef();
@@ -1408,8 +1262,6 @@
                 window.libraryItems.push({ id: docSnap.id, ...docSnap.data() });
             });
             window.renderLibraryAccordions();
-        }, (error) => {
-            console.error("Erro ao carregar biblioteca:", error);
         });
     }
 
@@ -1427,7 +1279,6 @@
         const query = (document.getElementById('lib-search')?.value || '').toLowerCase().trim();
 
         const panels = { comum: commonPanel, arma: weaponPanel, sobrenatural: superPanel };
-        const counts = { comum: 0, arma: 0, sobrenatural: 0 };
 
         window.libraryItems.forEach(item => {
             const targetPanel = panels[item.type];
@@ -1437,11 +1288,8 @@
             div.className = 'lib-item';
             div.dataset.name = item.name.toLowerCase();
 
-            // Ocultar se não bater na pesquisa
             if (query && !item.name.toLowerCase().includes(query)) {
                 div.classList.add('hidden');
-            } else {
-                counts[item.type] = (counts[item.type] || 0) + 1;
             }
 
             let text = item.name;
@@ -1457,7 +1305,6 @@
             targetPanel.appendChild(div);
         });
 
-        // Mensagens de lista vazia por seção
         ['comum', 'arma', 'sobrenatural'].forEach(type => {
             const panel = panels[type];
             const visibleCount = Array.from(panel.querySelectorAll('.lib-item:not(.hidden)')).length;
@@ -1469,7 +1316,6 @@
             }
         });
 
-        // Atualizar altura dos accordions que estão abertos
         document.querySelectorAll('.accordion.active').forEach(acc => {
             const panel = acc.nextElementSibling;
             panel.style.maxHeight = panel.scrollHeight + "px";
@@ -1478,7 +1324,6 @@
 
     window.filterLibrary = function(query) {
         window.renderLibraryAccordions();
-        // Abrir automaticamente todas as seções ao pesquisar
         if (query.trim()) {
             document.querySelectorAll('.accordion').forEach(acc => {
                 acc.classList.add('active');
@@ -1501,16 +1346,12 @@
                 addedBy: userId,
                 timestamp: Date.now()
             });
-        } catch(e) { console.error("Erro ao adicionar à biblioteca", e); }
+        } catch(e) {}
     }
 
     window.deleteFromLibrary = async function(libId) {
-        window.customConfirm("Tem certeza que deseja remover este item da biblioteca global para todos os jogadores?", async () => {
-            try {
-                await deleteDoc(getLibraryDoc(libId));
-            } catch(e) {
-                console.error("Erro ao deletar da biblioteca", e);
-            }
+        window.customConfirm("Tem certeza que deseja remover este item?", async () => {
+            try { await deleteDoc(getLibraryDoc(libId)); } catch(e) {}
         });
     }
 
@@ -1559,11 +1400,9 @@
             statusEl.style.color = '#33ff33';
             setTimeout(() => { statusEl.innerText = ''; statusEl.style.color = 'var(--highlight)'; }, 3000);
             
-            // Só recarrega a lista se for sua ficha
             if (targetUserId === userId) window.loadCharacterList();
             window.marcarSalvo();
         } catch (e) {
-            console.error("Erro ao salvar:", e);
             salvarLocal(charId, charName, data);
             statusEl.innerText = 'Nuvem falhou — salvo local.';
             statusEl.style.color = '#ffaa00';
@@ -1575,7 +1414,6 @@
     window.loadCharacterList = async function() {
         if (!userId) return carregarListaLocal();
         try {
-            // Em memória filtra as fichas deste jogador exato. Substitui as Consultas Complexas!
             const snapshot = await getDocs(getCharactersRef());
             const select = document.getElementById('char-select');
             select.innerHTML = '<option value="">-- CARREGAR FICHA --</option>';
@@ -1591,10 +1429,7 @@
                     select.appendChild(opt);
                 }
             });
-        } catch (e) {
-            console.error("Erro ao listar:", e);
-            carregarListaLocal();
-        }
+        } catch (e) { carregarListaLocal(); }
     };
 
     window.confirmarCarregamento = function(charId) {
@@ -1669,7 +1504,6 @@
                 try {
                     await deleteDoc(getCharacterDoc(charId));
                 } catch (e) {
-                    console.error('Erro ao excluir do Firestore:', e);
                     window.customAlert('Erro ao excluir da nuvem. Tente novamente.');
                     return;
                 }
@@ -1728,13 +1562,9 @@
             if (currentVal && window.characterCache[currentVal]) {
                 select.value = currentVal;
             }
-        }, (e) => {
-            console.error('Erro no listener do narrador:', e);
-            statusEl.innerText = 'Erro no painel ao vivo.';
         });
     }
 
-    // Inicialização direta, executando a lógica de Auth como prioridade máxima:
     initAuth();
 </script>
 </body>
