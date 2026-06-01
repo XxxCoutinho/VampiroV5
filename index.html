@@ -1043,6 +1043,13 @@
     window.currentCharacterId = null;
     let _narratorUnsubscribe = null;
 
+    // AQUI ESTÁ A LISTA DE IDs DO NARRADOR AUTORIZADOS
+    // Adicionaremos seu ID antigo e você precisará colocar o novo também.
+    const IDs_NARRADORES = [
+        'xXrvgdXJx4NYtAxXebwzfcxshI53', // Seu ID antigo do Netlify
+        'COLE_SEU_NOVO_ID_AQUI'         // Você preencherá isso depois!
+    ];
+
     function coletarDados() {
         const data = {};
         document.querySelectorAll('[data-field]').forEach(el => {
@@ -1094,11 +1101,13 @@
             await signInAnonymously(auth);
             userId = auth.currentUser.uid;
             window.userId = userId; // Expor globalmente para a Biblioteca
+            
             console.log("Conectado à Nuvem.");
+            
             window.loadCharacterList();
             window.startLibraryListener();
         } catch (error) {
-            console.error("Erro de conexão:", error);
+            console.error("Erro de conexão (Provavelmente Domínio Não Autorizado no Firebase):", error);
             document.getElementById('save-status').innerText = 'Offline — modo local ativo.';
             carregarListaLocal();
         }
@@ -1136,7 +1145,7 @@
             let btnHtml = `<button type="button" class="btn-add" style="padding: 4px 8px; font-size: 0.8em;" onclick="window.addFromLibrary('${item.id}')">Adicionar</button>`;
             
             // Permissão: Somente o narrador master exclui itens da Biblioteca
-            if (window.userId === 'xXrvgdXJx4NYtAxXebwzfcxshI53') {
+            if (IDs_NARRADORES.includes(window.userId)) {
                 btnHtml += `<button type="button" class="btn-del" style="margin-left: 5px; padding: 4px 8px; font-size: 0.8em;" onclick="window.deleteFromLibrary('${item.id}')">X</button>`;
             }
 
@@ -1172,7 +1181,7 @@
     }
 
     window.deleteFromLibrary = async function(libId) {
-        if (window.userId !== 'xXrvgdXJx4NYtAxXebwzfcxshI53') return;
+        if (!IDs_NARRADORES.includes(window.userId)) return;
         if (!confirm("Tem certeza que deseja remover este item da biblioteca global para todos os jogadores?")) return;
         try {
             await deleteDoc(doc(db, 'fichas_v5_biblioteca', libId));
@@ -1313,26 +1322,11 @@
         if (targetUserId === userId) window.loadCharacterList();
     };
 
-    window.novaFicha = function() {
-        if (window._temAlteracoes) {
-            const ok = confirm('Você tem alterações não salvas. Deseja descartar e criar uma nova ficha?');
-            if (!ok) return;
-        }
-        window.currentCharacterId = null;
-        document.querySelectorAll('[data-field]').forEach(el => {
-            el.value = (el.type === 'number') ? (el.min || 0) : '';
-        });
-        window.inventory = [];
-        window.renderInventory();
-        document.getElementById('bio-image-preview').src = 'https://placehold.co/150x200/111/555?text=FOTO';
-        if (typeof window.calcularSaude === 'function') window.calcularSaude();
-        if (typeof window.calcularFdV === 'function') window.calcularFdV();
-        window.marcarSalvo();
-    };
-
     window.carregarTodasAsFichas = async function() {
-        if (userId !== 'xXrvgdXJx4NYtAxXebwzfcxshI53') {
-            alert("Acesso negado.");
+        // VERIFICA SE O USUÁRIO ATUAL ESTÁ NA LISTA DE NARRADORES
+        if (!IDs_NARRADORES.includes(userId)) {
+            // Se ele não for um narrador, mostramos a ele qual é o ID atual dele no alerta!
+            prompt("Acesso negado!\n\nComo o site mudou para o GitHub, o seu navegador criou um ID novo. Copie o seu novo ID abaixo e cole-o na lista 'IDs_NARRADORES' no código fonte do seu HTML:", userId);
             return;
         }
 
