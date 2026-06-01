@@ -24,7 +24,8 @@
         html, body {
             height: 100%;
             overflow: hidden;
-            background-color: var(--bg-color);
+            /* Fundo puramente preto para destacar a interface centralizada no desktop */
+            background-color: #000; 
             color: var(--text-color);
             font-family: var(--font-main);
             font-size: 18px;
@@ -95,8 +96,19 @@
             /* Nav grid aparece */
             .mobile-nav { display: block; }
 
-            /* Layout principal: apenas main-area ocupa tudo */
-            .app-body { flex-direction: column; }
+            /* Layout principal: reseta para ocupar 100% da tela no mobile */
+            .app-body { 
+                flex-direction: column; 
+                top: var(--header-h);
+                bottom: 0;
+                width: 100vw;
+                max-width: 100%;
+                margin: 0;
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            
             .main-area {
                 border-right: none;
                 /* deixa espaço para a grade de botões na base */
@@ -171,12 +183,25 @@
             text-shadow: 0 0 8px rgba(255,51,51,0.4);
         }
 
-        /* ── ROOT LAYOUT ── */
+        /* ── ROOT LAYOUT (MODIFICADO PARA DESKTOP) ── */
         .app-body {
             position: fixed;
-            top: var(--header-h);
-            left: 0; right: 0; bottom: 0;
+            /* Margens superiores e inferiores para criar a "janela" */
+            top: calc(var(--header-h) + 20px);
+            bottom: 20px;
+            /* Centraliza horizontalmente */
+            left: 0; right: 0;
+            margin: 0 auto;
+            /* Largura máxima contida */
+            max-width: 1200px;
+            width: 95vw;
             display: flex;
+            background-color: var(--bg-color);
+            /* Visual de janela separada do fundo */
+            border: 1px solid #2a0000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border-radius: 8px;
+            overflow: hidden; /* Garante que os filhos respeitem o border-radius */
         }
 
         /* ── MAIN AREA (tabs + content) ── */
@@ -508,7 +533,6 @@
 
 <div class="app-header">// VAMPIRO A MÁSCARA V5.1 // </div>
 
-<!-- Mobile nav grid — estilo Cris Ordem Paranormal -->
 <nav class="mobile-nav" id="mobile-nav">
     <div class="mobile-nav-grid">
         <button class="mobile-nav-btn active" id="mnav-personagem" onclick="switchTab('personagem')">PERSONAGEM</button>
@@ -524,10 +548,8 @@
 
 <div class="app-body">
 
-    <!-- ══ MAIN TABBED AREA ══ -->
     <div class="main-area">
 
-        <!-- TAB BAR -->
         <div class="tab-bar">
             <button class="tab-btn active" onclick="switchTab('personagem')">◈ Personagem</button>
             <button class="tab-btn" onclick="switchTab('poder')">◈ Poder</button>
@@ -535,12 +557,9 @@
             <button class="tab-btn" onclick="switchTab('biografia')">◈ Biografia</button>
         </div>
 
-        <!-- TAB CONTENT -->
         <div class="tab-content-area">
 
-            <!-- ── ABA 1: PERSONAGEM (Atributos + Habilidades) ── -->
             <div class="tab-pane active" id="tab-personagem">
-                <!-- Cabeçalho -->
                 <div class="grid-3" style="margin-bottom:12px;">
                     <div class="input-group">
                         <label for="campo-nome">Nome</label>
@@ -580,7 +599,6 @@
                     </div>
                 </div>
 
-                <!-- Vitalidade e FdV -->
                 <div class="grid-2">
                     <div class="vitals-box">
                         <h3>Vitalidade (Vigor + 3)</h3>
@@ -594,7 +612,6 @@
                     </div>
                 </div>
 
-                <!-- Atributos -->
                 <h2>ATRIBUTOS</h2>
                 <div class="grid-3" style="margin-bottom:12px;">
                     <div class="stat-list">
@@ -617,7 +634,6 @@
                     </div>
                 </div>
 
-                <!-- Habilidades (Mescladas) -->
                 <h2>HABILIDADES</h2>
                 <div class="grid-3">
                     <div class="stat-list">
@@ -659,9 +675,7 @@
                 </div>
             </div>
 
-            <!-- ── ABA 2: PODER (Disciplinas + Identidade) ── -->
             <div class="tab-pane" id="tab-poder">
-                <!-- Humanidade / Fome / Potência -->
                 <div class="grid-3" style="margin-bottom:12px;">
                     <div class="vitals-box">
                         <h3>Humanidade</h3>
@@ -681,7 +695,6 @@
                     </div>
                 </div>
 
-                <!-- Disciplinas + Efeitos do Sangue -->
                 <div class="grid-2">
                     <div>
                         <h2>DISCIPLINAS</h2>
@@ -706,7 +719,6 @@
                     </div>
                 </div>
 
-                <!-- Identidade e Princípios (Mesclados) -->
                 <h2>IDENTIDADE & CREDO</h2>
                 <div class="grid-3" style="margin-bottom:12px;">
                     <div class="input-group">
@@ -723,7 +735,6 @@
                     </div>
                 </div>
 
-                <!-- Vantagens & Defeitos (Mesclados) -->
                 <h2>VANTAGENS & DEFEITOS</h2>
                 <div class="grid-2">
                     <div class="stat-list">
@@ -743,7 +754,6 @@
                 </div>
             </div>
 
-            <!-- ── ABA 3: INVENTÁRIO (Nova Aba) ── -->
             <div class="tab-pane" id="tab-inventario">
                 <h2>INVENTÁRIO E POSSESSÕES</h2>
                 
@@ -777,7 +787,6 @@
                     </div>
                     <button type="button" class="btn-add" onclick="window.addInventoryItem()">Adicionar</button>
                 </div>
-                <!-- Linha de descrição separada, largura total -->
                 <div class="input-group" style="margin-bottom:12px;">
                     <label>Descrição do Item (opcional)</label>
                     <input type="text" id="inv-desc" placeholder="Ex: Pertenceu ao avô, tem inscrições rúnicas... deixe em branco para omitir.">
@@ -785,12 +794,10 @@
 
                 <div style="margin-top: 8px;">
                     <h3>ITENS ATUAIS</h3>
-                    <!-- JSON Oculto para salvar via sistema padrão -->
                     <input type="hidden" id="inventory-data" data-field="inventario" value="[]">
                     
                     <div id="inventory-list">
-                        <!-- Itens serão renderizados aqui via JS -->
-                    </div>
+                        </div>
                 </div>
 
                 <div style="margin-top: 30px;">
@@ -813,7 +820,6 @@
                 </div>
             </div>
 
-            <!-- ── ABA 4: BIOGRAFIA ── -->
             <div class="tab-pane" id="tab-biografia">
                 <h2>DADOS BIOGRÁFICOS & EXPERIÊNCIA</h2>
                 
@@ -822,7 +828,6 @@
                         <img id="bio-image-preview" src="https://placehold.co/150x200/111/555?text=FOTO" alt="Foto do Personagem" style="cursor: pointer;" onclick="document.getElementById('bio-image-upload').click()">
                         <div style="position:absolute; bottom:0; width:100%; text-align:center; background:rgba(0,0,0,0.7); font-size:0.75em; padding:4px 0; pointer-events:none; font-weight:bold;">CLIQUE PARA ALTERAR</div>
                         <input type="file" id="bio-image-upload" accept="image/*" style="display: none;">
-                        <!-- Campo oculto salva base64 -->
                         <input type="hidden" id="bio-image-data" data-field="bio-image">
                     </div>
                     
@@ -851,13 +856,8 @@
                 </div>
             </div>
 
-        </div><!-- end tab-content-area -->
-    </div><!-- end main-area -->
+        </div></div><aside class="dice-sidebar">
 
-    <!-- ══ SIDEBAR ══ -->
-    <aside class="dice-sidebar">
-
-        <!-- Sistema de Arquivos -->
         <div class="sidebar-section">
             <div class="section-label">SISTEMA DE ARQUIVOS</div>
             <div class="dice-controls">
@@ -880,7 +880,6 @@
             </div>
         </div>
 
-        <!-- Módulo de Rolagem -->
         <div class="sidebar-section" style="flex:1; display:flex; flex-direction:column; gap:10px;">
             <div class="section-label" style="margin-bottom:0;">MÓDULO DE ROLAGEM</div>
 
@@ -896,10 +895,7 @@
 
     </aside>
 
-</div><!-- end app-body -->
-
-<!-- Crop Modal -->
-<div id="crop-modal" class="crop-modal">
+</div><div id="crop-modal" class="crop-modal">
     <h2 style="color: white; margin-bottom: 10px; border:none; text-shadow: none;">AJUSTAR IMAGEM</h2>
     <p style="color:#aaa; font-size:0.8em; margin-bottom:15px;">Arraste para posicionar. Use a barra para dar zoom.</p>
     <div class="crop-canvas-wrapper">
@@ -1274,7 +1270,6 @@
     }
 </script>
 
-<!-- MÓDULO FIREBASE / PERSISTÊNCIA -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
