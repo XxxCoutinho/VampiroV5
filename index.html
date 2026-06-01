@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>// Vampiro V5.1 //</title>
+    <title>// Vampiro V5.2 //</title>
     <style>
         :root {
             --bg-color: #050505;
@@ -14,6 +14,7 @@
             --highlight: #ff3333;
             --font-main: 'Courier New', Courier, monospace;
             --input-bg: #1a1a1a;
+            --sidebar-w: 300px;
             --header-h: 48px;
             --tabs-h: 42px;
         }
@@ -60,17 +61,15 @@
             top: var(--header-h);
             left: 0; right: 0; bottom: 0;
             display: flex;
-            justify-content: center;
         }
 
         /* ── MAIN AREA (tabs + content) ── */
         .main-area {
             flex: 1;
-            max-width: 960px;
-            width: 100%;
             display: flex;
             flex-direction: column;
             min-width: 0;
+            border-right: 2px solid var(--border-color);
         }
 
         /* ── TAB BAR ── */
@@ -123,101 +122,16 @@
         .tab-pane { display: none; padding: 14px; }
         .tab-pane.active { display: block; }
 
-        /* ── MAIN AREA now full width ── */
-        .main-area { border-right: none; }
-
-        /* ── FLOATING ACTION BUTTONS ── */
-        #fab-container {
-            position: fixed;
-            bottom: 20px;
-<<<<<<< HEAD
-            right: calc(50% - 480px - 64px);
-=======
-            right: 20px;
->>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
+        /* ── SIDEBAR ── */
+        .dice-sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            background: var(--panel-bg);
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            z-index: 500;
-        }
-<<<<<<< HEAD
-        @media (max-width: 1088px) {
-            #fab-container { right: 20px; }
-        }
-=======
->>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
-        .fab-btn {
-            width: 52px; height: 52px;
-            border-radius: 50%;
-            background: #0f0f0f;
-            border: 2px solid var(--border-color);
-            color: var(--text-color);
-            font-size: 1.4em;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
-            box-shadow: 0 0 14px rgba(139,0,0,0.5);
-            transition: all 0.2s;
-        }
-        .fab-btn:hover {
-            background: #1a1a1a;
-            border-color: var(--highlight);
-            box-shadow: 0 0 20px rgba(255,51,51,0.5);
-            transform: scale(1.08);
-        }
-        .fab-btn .unsaved-indicator {
-            position: absolute; top: 4px; right: 4px;
+            overflow-y: auto;
         }
 
-        /* ── SIDE POPUPS ── */
-        .side-popup {
-            position: fixed;
-            bottom: 84px;
-<<<<<<< HEAD
-            right: calc(50% - 480px - 64px);
-=======
-            right: 20px;
->>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
-            width: 310px;
-            max-height: calc(100vh - 110px);
-            background: var(--panel-bg);
-            border: 2px solid var(--border-color);
-            box-shadow: -4px 0 24px rgba(139,0,0,0.4);
-            display: none;
-            flex-direction: column;
-            z-index: 490;
-            overflow: hidden;
-        }
-<<<<<<< HEAD
-        @media (max-width: 1088px) {
-            .side-popup { right: 20px; }
-        }
-=======
->>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
-        .side-popup.open { display: flex; }
-        .popup-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 14px;
-            background: #080808;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--highlight);
-            font-size: 0.78em;
-            letter-spacing: 2px;
-            font-weight: bold;
-            text-transform: uppercase;
-            flex-shrink: 0;
-        }
-        .popup-close {
-            background: none; border: none; color: #666;
-            cursor: pointer; font-size: 1em; padding: 0 4px;
-            transition: color 0.2s;
-        }
-        .popup-close:hover { color: var(--highlight); }
-        .popup-body {
-            padding: 14px;
-            overflow-y: auto;
-            flex: 1;
-        }
         .sidebar-section {
             padding: 14px;
             border-bottom: 1px solid #222;
@@ -468,54 +382,9 @@
             color: #555; font-size: 0.9em; pointer-events: none;
         }
         .lib-empty-msg { color: #555; font-size: 0.8em; padding: 8px 0; font-style: italic; }
-
-        /* ── ITEM DESCRIPTION BOX (inventory) ── */
-        .inv-desc-box {
-            display: none;
-            background: #0d0d0d;
-            border: 1px dashed #333;
-            border-top: none;
-            padding: 7px 12px;
-            font-size: 0.78em;
-            color: #888;
-            line-height: 1.5;
-        }
-        .inv-desc-box.open { display: block; }
-
-        /* ── LIBRARY ITEM DESCRIPTION ── */
-        .lib-item-desc {
-            font-size: 0.75em;
-            color: #666;
-            margin-top: 4px;
-            line-height: 1.4;
-            font-style: italic;
-        }
     </style>
 </head>
 <body>
-<script>
-// Stubs definidos cedo para evitar "not defined" em onclicks inline
-// As implementações reais são definidas no bloco <script> mais abaixo e sobrescrevem estes stubs.
-window.switchTab = window.switchTab || function(id) {
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    var pane = document.getElementById('tab-' + id);
-    if (pane) pane.classList.add('active');
-    var idx = ['personagem','poder','inventario','biografia'].indexOf(id);
-    if (idx !== -1) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
-};
-window.togglePopup = window.togglePopup || function(id) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    var isOpen = el.classList.contains('open');
-    document.querySelectorAll('.side-popup').forEach(function(p) { p.classList.remove('open'); });
-    if (!isOpen) el.classList.add('open');
-};
-window.closePopup = window.closePopup || function(id) {
-    var el = document.getElementById(id);
-    if (el) el.classList.remove('open');
-};
-</script>
 
 <div class="app-header">// VAMPIRO A MÁSCARA V5.1 // </div>
 
@@ -774,10 +643,6 @@ window.closePopup = window.closePopup || function(id) {
                     </div>
                     <button type="button" class="btn-add" onclick="window.addInventoryItem()">Adicionar</button>
                 </div>
-                <div class="input-group" style="margin-bottom: 4px;">
-                    <label>Descrição do Item (opcional)</label>
-                    <textarea id="inv-desc" rows="2" placeholder="Efeitos, história, propriedades especiais..."></textarea>
-                </div>
 
                 <div style="margin-top: 20px;">
                     <h3>ITENS ATUAIS</h3>
@@ -850,63 +715,49 @@ window.closePopup = window.closePopup || function(id) {
         </div><!-- end tab-content-area -->
     </div><!-- end main-area -->
 
+    <!-- ══ SIDEBAR ══ -->
+    <aside class="dice-sidebar">
+
+        <!-- Sistema de Arquivos -->
+        <div class="sidebar-section">
+            <div class="section-label">SISTEMA DE ARQUIVOS</div>
+            <div class="dice-controls">
+                <label for="player-name">Nome do Jogador:</label>
+                <input type="text" id="player-name" data-field="player-name" placeholder="Quem controla o monstro?" style="font-size: 0.9em; padding: 6px;">
+
+                <button class="btn-roll" onclick="window.novaFicha()" style="border-color:#aaa; color:#aaa; padding:8px; font-size:0.8em;">[ NOVA FICHA / LIMPAR ]</button>
+                <button class="btn-roll" onclick="window.salvarFicha()" style="border-color:#33ff33; color:#33ff33; padding:8px; font-size:0.8em;">
+                    [ SALVAR FICHA ]<span class="unsaved-indicator" id="unsaved-dot"></span>
+                </button>
+                <button class="btn-roll" onclick="window.excluirFicha()" style="border-color:#ff4444; color:#ff4444; padding:8px; font-size:0.8em;">[ EXCLUIR FICHA ]</button>
+                <button onclick="window.carregarTodasAsFichas()" style="background:#4a0000; color:white; padding:8px; border:1px solid #ff1a1a; cursor:pointer; font-family:var(--font-main); font-size:0.8em; width:100%;">[ PAINEL DO NARRADOR ]</button>
+
+                <div id="offline-toast">⚠ OFFLINE — dados salvos localmente</div>
+                <div id="save-status" style="color:var(--highlight); text-align:center; font-size:0.75em; min-height:14px;"></div>
+
+                <select id="char-select" onchange="window.confirmarCarregamento(this.value)" style="width:100%; padding:6px; background:#000; color:var(--text-color); border:1px solid var(--border-color); font-family:var(--font-main); cursor:pointer; font-size:0.82em;">
+                    <option value="">-- CARREGAR FICHA --</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Módulo de Rolagem -->
+        <div class="sidebar-section" style="flex:1; display:flex; flex-direction:column; gap:10px;">
+            <div class="section-label" style="margin-bottom:0;">MÓDULO DE ROLAGEM</div>
+
+            <div class="dice-controls">
+                <label for="dice-pool">Parada de Dados (Total):</label>
+                <input type="number" id="dice-pool" min="1" max="20" value="5">
+                <button class="btn-roll" onclick="window.rollV5()">▶ INICIAR ROLAGEM</button>
+            </div>
+
+            <div class="roll-result-text" id="roll-result-text">AGUARDANDO INPUT...</div>
+            <div class="dice-display" id="dice-display"></div>
+        </div>
+
+    </aside>
+
 </div><!-- end app-body -->
-
-<!-- ══ FLOATING ACTION BUTTONS ══ -->
-<div id="fab-container">
-    <button class="fab-btn" id="fab-files" onclick="window.togglePopup('popup-files')" title="Sistema de Arquivos">
-        <span>🗂</span>
-        <span class="unsaved-indicator" id="unsaved-dot"></span>
-    </button>
-    <button class="fab-btn" id="fab-dice" onclick="window.togglePopup('popup-dice')" title="Módulo de Rolagem">🎲</button>
-</div>
-
-<!-- ══ POPUP: SISTEMA DE ARQUIVOS ══ -->
-<div class="side-popup" id="popup-files">
-    <div class="popup-header">
-        <span>◈ SISTEMA DE ARQUIVOS</span>
-        <button class="popup-close" onclick="window.closePopup('popup-files')">✕</button>
-    </div>
-    <div class="popup-body">
-        <div class="dice-controls">
-            <label for="player-name">Nome do Jogador:</label>
-            <input type="text" id="player-name" data-field="player-name" placeholder="Quem controla o monstro?" style="font-size: 0.9em; padding: 6px;">
-
-            <button class="btn-roll" onclick="window.novaFicha()" style="border-color:#aaa; color:#aaa; padding:8px; font-size:0.8em;">[ NOVA FICHA / LIMPAR ]</button>
-<<<<<<< HEAD
-            <button class="btn-roll" id="btn-salvar-ficha" onclick="window.salvarFicha()" style="border-color:#33ff33; color:#33ff33; padding:8px; font-size:0.8em;">[ SALVAR FICHA ]</button>
-=======
-            <button class="btn-roll" onclick="window.salvarFicha()" style="border-color:#33ff33; color:#33ff33; padding:8px; font-size:0.8em;">[ SALVAR FICHA ]</button>
->>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
-            <button class="btn-roll" onclick="window.excluirFicha()" style="border-color:#ff4444; color:#ff4444; padding:8px; font-size:0.8em;">[ EXCLUIR FICHA ]</button>
-            <button onclick="window.carregarTodasAsFichas()" style="background:#4a0000; color:white; padding:8px; border:1px solid #ff1a1a; cursor:pointer; font-family:var(--font-main); font-size:0.8em; width:100%;">[ PAINEL DO NARRADOR ]</button>
-
-            <div id="offline-toast">⚠ OFFLINE — dados salvos localmente</div>
-            <div id="save-status" style="color:var(--highlight); text-align:center; font-size:0.75em; min-height:14px;"></div>
-
-            <select id="char-select" onchange="window.confirmarCarregamento(this.value)" style="width:100%; padding:6px; background:#000; color:var(--text-color); border:1px solid var(--border-color); font-family:var(--font-main); cursor:pointer; font-size:0.82em;">
-                <option value="">-- CARREGAR FICHA --</option>
-            </select>
-        </div>
-    </div>
-</div>
-
-<!-- ══ POPUP: MÓDULO DE ROLAGEM ══ -->
-<div class="side-popup" id="popup-dice">
-    <div class="popup-header">
-        <span>◈ MÓDULO DE ROLAGEM</span>
-        <button class="popup-close" onclick="window.closePopup('popup-dice')">✕</button>
-    </div>
-    <div class="popup-body">
-        <div class="dice-controls">
-            <label for="dice-pool">Parada de Dados (Total):</label>
-            <input type="number" id="dice-pool" min="1" max="20" value="5">
-            <button class="btn-roll" onclick="window.rollV5()">▶ INICIAR ROLAGEM</button>
-        </div>
-        <div class="roll-result-text" id="roll-result-text">AGUARDANDO INPUT...</div>
-        <div class="dice-display" id="dice-display"></div>
-    </div>
-</div>
 
 <!-- Crop Modal -->
 <div id="crop-modal" class="crop-modal">
@@ -983,52 +834,13 @@ window.closePopup = window.closePopup || function(id) {
         box.appendChild(msg); box.appendChild(btnOk); overlay.appendChild(box); document.body.appendChild(overlay);
     };
 
-    // ── POPUP TOGGLE ──
-    window.togglePopup = function(id) {
-        const el = document.getElementById(id);
-        const isOpen = el.classList.contains('open');
-        // Close all popups first
-        document.querySelectorAll('.side-popup').forEach(p => p.classList.remove('open'));
-        if (!isOpen) el.classList.add('open');
-    };
-
-    window.closePopup = function(id) {
-        document.getElementById(id).classList.remove('open');
-    };
-
-    // Close popups when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.side-popup') && !e.target.closest('.fab-btn')) {
-            document.querySelectorAll('.side-popup').forEach(p => p.classList.remove('open'));
-        }
-    });
-
     // ── TAB SWITCHING ──
-    window.switchTab = function(id) {
+    function switchTab(id) {
         document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('tab-' + id).classList.add('active');
         const idx = ['personagem','poder','inventario','biografia'].indexOf(id);
         if(idx !== -1) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
-    }
-
-    window.calcularSaude = function() {
-        const vigorEl = document.getElementById('vigor');
-        let vigor = vigorEl ? (parseInt(vigorEl.value) || 1) : 1;
-        if (vigor < 1) vigor = 1;
-        const el = document.getElementById('tracker-saude');
-        if (el) el.innerText = vigor + 3;
-    }
-
-    window.calcularFdV = function() {
-        const autoEl = document.getElementById('autocontrole');
-        const detEl = document.getElementById('determinacao');
-        let autocontrole = autoEl ? (parseInt(autoEl.value) || 1) : 1;
-        let determinacao = detEl ? (parseInt(detEl.value) || 1) : 1;
-        if (autocontrole < 1) autocontrole = 1;
-        if (determinacao < 1) determinacao = 1;
-        const el = document.getElementById('tracker-fdv');
-        if (el) el.innerText = autocontrole + determinacao;
     }
 
     // ── CÁLCULOS AUTOMÁTICOS ──
@@ -1102,23 +914,17 @@ window.closePopup = window.closePopup || function(id) {
                 cImg = new Image();
                 cImg.onload = function() {
                     cScale = Math.max(cvs.width / cImg.width, cvs.height / cImg.height);
-                    if (isNaN(cScale) || cScale <= 0) cScale = 1;
                     document.getElementById('crop-zoom').value = cScale;
-                    document.getElementById('crop-zoom').min = Math.min(0.1, cScale * 0.5);
-                    document.getElementById('crop-zoom').max = Math.max(3, cScale * 4);
                     cX = (cvs.width - cImg.width * cScale) / 2;
                     cY = (cvs.height - cImg.height * cScale) / 2;
+                    
                     document.getElementById('crop-modal').style.display = 'flex';
                     drawCrop();
-                };
-                cImg.onerror = function() {
-                    window.customAlert('Erro ao carregar a imagem. Tente outro arquivo.');
-                };
+                }
                 cImg.src = event.target.result;
-            };
+                e.target.value = '';
+            }
             reader.readAsDataURL(file);
-            // Reset input AFTER reading so same file can be re-uploaded
-            e.target.value = '';
         });
 
         window.confirmCrop = function() {
@@ -1157,7 +963,6 @@ window.closePopup = window.closePopup || function(id) {
         const name = document.getElementById('inv-name').value;
         if(!name.trim()) return;
         const type = document.getElementById('inv-type').value;
-        const desc = document.getElementById('inv-desc').value.trim();
         let displayVal = "";
         
         if (type === 'arma') {
@@ -1167,13 +972,12 @@ window.closePopup = window.closePopup || function(id) {
             if(match) displayVal = match[1];
         } else if (type === 'sobrenatural') {
             const modVal = document.getElementById('inv-manual-mod').value;
-            displayVal = '+' + modVal;
+            displayVal = `+${modVal}`;
         }
         
-        const newItem = { id: Date.now(), name: name.trim(), type, displayVal, desc };
+        const newItem = { id: Date.now(), name: name.trim(), type, displayVal };
         window.inventory.push(newItem);
         document.getElementById('inv-name').value = '';
-        document.getElementById('inv-desc').value = '';
         window.renderInventory();
         window.marcarNaoSalvo();
 
@@ -1183,7 +987,7 @@ window.closePopup = window.closePopup || function(id) {
     window.addFromLibrary = function(libId) {
         const item = window.libraryItems.find(i => i.id === libId);
         if(!item) return;
-        window.inventory.push({ id: Date.now(), name: item.name, type: item.type, displayVal: item.displayVal, desc: item.desc || '' });
+        window.inventory.push({ id: Date.now(), name: item.name, type: item.type, displayVal: item.displayVal });
         window.renderInventory();
         window.marcarNaoSalvo();
     }
@@ -1198,74 +1002,14 @@ window.closePopup = window.closePopup || function(id) {
         const list = document.getElementById('inventory-list');
         list.innerHTML = '';
         window.inventory.forEach(item => {
-            const wrapper = document.createElement('div');
-            wrapper.style.cssText = 'margin-bottom:6px;';
-<<<<<<< HEAD
-            wrapper.classList.add('inv-wrapper');
-=======
->>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
-
             const li = document.createElement('div');
             li.className = 'inv-item';
-            li.style.marginBottom = '0';
-<<<<<<< HEAD
-
-            let nameHtml = document.createElement('span');
-            let nameText = item.name;
-            if (item.displayVal) {
-                if (item.type === 'sobrenatural') {
-                    nameText += ' ';
-                    nameHtml.innerHTML = item.name + ' <span style="color:#aa66ff;font-weight:bold;margin-left:8px;">' + item.displayVal + '</span>';
-                } else {
-                    nameHtml.innerHTML = item.name + ' <span class="weapon-val">' + item.displayVal + '</span>';
-                }
-            } else {
-                nameHtml.textContent = item.name;
+            let text = item.name;
+            if(item.type === 'arma' && item.displayVal) {
+                text += ` <span class="weapon-val">${item.displayVal}</span>`;
             }
-
-            if (item.desc) {
-                const infoBtn = document.createElement('button');
-                infoBtn.type = 'button';
-                infoBtn.style.cssText = 'background:none;border:none;color:#666;cursor:pointer;font-size:0.8em;padding:0 4px;';
-                infoBtn.title = 'Ver descrição';
-                infoBtn.textContent = 'ℹ';
-                infoBtn.addEventListener('click', function() {
-                    wrapper.querySelector('.inv-desc-box').classList.toggle('open');
-                });
-                nameHtml.appendChild(infoBtn);
-            }
-
-            const delBtn = document.createElement('button');
-            delBtn.type = 'button';
-            delBtn.className = 'btn-del';
-            delBtn.textContent = 'X';
-            delBtn.addEventListener('click', function() { window.removeInventoryItem(item.id); });
-
-            li.appendChild(nameHtml);
-            li.appendChild(delBtn);
-=======
-            let nameHtml = item.name;
-            if (item.displayVal) {
-                if (item.type === 'sobrenatural') {
-                    nameHtml += ' <span style="color:#aa66ff;font-weight:bold;margin-left:8px;">' + item.displayVal + '</span>';
-                } else {
-                    nameHtml += ' <span class="weapon-val">' + item.displayVal + '</span>';
-                }
-            }
-            const descBtn = item.desc ? ' <button type="button" style="background:none;border:none;color:#666;cursor:pointer;font-size:0.8em;padding:0 4px;" title="Ver descrição" onclick="this.closest('.inv-wrapper').querySelector('.inv-desc-box').classList.toggle('open')">ℹ</button>' : '';
-            li.innerHTML = '<span>' + nameHtml + descBtn + '</span><button type="button" class="btn-del" onclick="window.removeInventoryItem(' + item.id + ')">X</button>';
-            wrapper.classList.add('inv-wrapper');
->>>>>>> 0a69eea357005c46b27b02a712788647e5337b5e
-            wrapper.appendChild(li);
-
-            if (item.desc) {
-                const descBox = document.createElement('div');
-                descBox.className = 'inv-desc-box';
-                descBox.textContent = item.desc;
-                wrapper.appendChild(descBox);
-            }
-
-            list.appendChild(wrapper);
+            li.innerHTML = `<span>${text}</span> <button type="button" class="btn-del" onclick="window.removeInventoryItem(${item.id})">X</button>`;
+            list.appendChild(li);
         });
         document.getElementById('inventory-data').value = JSON.stringify(window.inventory);
     }
@@ -1275,33 +1019,29 @@ window.closePopup = window.closePopup || function(id) {
 
     window.marcarNaoSalvo = function() {
         window._temAlteracoes = true;
-        const saveBtn = document.getElementById('btn-salvar-ficha');
-        if (saveBtn) saveBtn.classList.add('has-unsaved');
-        const dot = document.getElementById('unsaved-dot');
-        if (dot) dot.style.display = 'inline-block';
+        document.querySelector('.btn-roll[onclick*="salvarFicha"]').classList.add('has-unsaved');
     }
 
     window.marcarSalvo = function() {
         window._temAlteracoes = false;
-        const saveBtn = document.getElementById('btn-salvar-ficha');
-        if (saveBtn) saveBtn.classList.remove('has-unsaved');
-        const dot = document.getElementById('unsaved-dot');
-        if (dot) dot.style.display = 'none';
+        document.querySelector('.btn-roll[onclick*="salvarFicha"]').classList.remove('has-unsaved');
+    }
+
+    window.calcularSaude = function() {
+        let vigor = parseInt(document.getElementById('vigor').value) || 1;
+        if (vigor < 1) vigor = 1;
+        document.getElementById('tracker-saude').innerText = vigor + 3;
+    }
+
+    window.calcularFdV = function() {
+        let autocontrole = parseInt(document.getElementById('autocontrole').value) || 1;
+        let determinacao = parseInt(document.getElementById('determinacao').value) || 1;
+        if (autocontrole < 1) autocontrole = 1;
+        if (determinacao < 1) determinacao = 1;
+        document.getElementById('tracker-fdv').innerText = autocontrole + determinacao;
     }
 
     // ── SISTEMA DE ROLAGEM V5 ──
-    // Randomizador de qualidade usando Web Crypto API
-    function rollD10() {
-        // Rejection sampling para garantir distribuição uniforme
-        const arr = new Uint32Array(1);
-        let val;
-        do {
-            crypto.getRandomValues(arr);
-            val = arr[0] % 10;
-        } while (arr[0] >= 4294967290); // evita viés nos últimos valores
-        return val + 1; // retorna 1–10
-    }
-
     window.rollV5 = function() {
         const pool = parseInt(document.getElementById('dice-pool').value) || 1;
         const hungerField = document.getElementById('input-fome');
@@ -1316,7 +1056,7 @@ window.closePopup = window.closePopup || function(id) {
         display.innerHTML = '';
 
         for (let i = 0; i < normalDice; i++) {
-            let roll = rollD10();
+            let roll = Math.floor(Math.random() * 10) + 1;
             let dieClass = 'die die-normal';
             if (roll === 10) { normalTens++; successes++; dieClass += ' die-crit'; }
             else if (roll >= 6) { successes++; dieClass += ' die-success'; }
@@ -1325,7 +1065,7 @@ window.closePopup = window.closePopup || function(id) {
         }
 
         for (let i = 0; i < hungerDice; i++) {
-            let roll = rollD10();
+            let roll = Math.floor(Math.random() * 10) + 1;
             let dieClass = 'die die-hunger';
             if (roll === 10) { hungerTens++; successes++; dieClass += ' die-crit'; }
             else if (roll >= 6) { successes++; dieClass += ' die-success'; }
@@ -1475,7 +1215,7 @@ window.closePopup = window.closePopup || function(id) {
             
             // Botão invisível no canto para ajudar jogadores a descobrirem seu próprio UID para colar no Narradores
             const uiIDEl = document.createElement('div');
-            uiIDEl.style.cssText = "position:fixed; bottom:5px; left:5px; font-size:10px; color:#333; cursor:pointer; z-index:9999;";
+            uiIDEl.style.cssText = "position:fixed; bottom:5px; right:5px; font-size:10px; color:#333; cursor:pointer; z-index:9999;";
             uiIDEl.innerText = `UID: ${userId.substring(0,5)}...`;
             uiIDEl.onclick = () => window.customAlert(`Seu UID atual para Narrador é:\n\n${userId}`);
             document.body.appendChild(uiIDEl);
@@ -1484,8 +1224,7 @@ window.closePopup = window.closePopup || function(id) {
             window.startLibraryListener();
         } catch (error) {
             console.error("Erro de conexão com Autenticação:", error);
-            const statusEl = document.getElementById('save-status');
-            if (statusEl) { statusEl.innerText = 'Offline — modo local ativo.'; statusEl.style.color = '#ffaa00'; }
+            document.getElementById('save-status').innerText = 'Offline — modo local ativo.';
             carregarListaLocal();
         }
     }
@@ -1544,8 +1283,7 @@ window.closePopup = window.closePopup || function(id) {
                 btnHtml += `<button type="button" class="btn-del" style="margin-left:5px;padding:4px 8px;font-size:0.8em;" onclick="window.deleteFromLibrary('${item.id}')">X</button>`;
             }
 
-            const descHtml = item.desc ? `<div class="lib-item-desc">${item.desc}</div>` : '';
-            div.innerHTML = `<div style="width:100%"><div style="display:flex;justify-content:space-between;align-items:center;"><span>${text}</span><div style="display:flex;gap:4px;flex-shrink:0;">${btnHtml}</div></div>${descHtml}</div>`;
+            div.innerHTML = `<span>${text}</span><div style="display:flex;gap:4px;flex-shrink:0;">${btnHtml}</div>`;
             targetPanel.appendChild(div);
         });
 
@@ -1589,7 +1327,6 @@ window.closePopup = window.closePopup || function(id) {
                 name: item.name,
                 type: item.type,
                 displayVal: item.displayVal || "",
-                desc: item.desc || "",
                 addedBy: userId,
                 timestamp: Date.now()
             });
@@ -1635,9 +1372,6 @@ window.closePopup = window.closePopup || function(id) {
             ? window.characterCache[charId]._ownerUserId
             : userId;
 
-        const isNarrador = IDs_NARRADORES.includes(userId);
-        const isFichaAjena = targetUserId && targetUserId !== userId;
-
         salvarLocal(charId, charName, data);
 
         if (!userId) {
@@ -1648,30 +1382,14 @@ window.closePopup = window.closePopup || function(id) {
             return;
         }
 
-        // Narrador editando ficha de jogador: usa a chave especial de narrador
-        if (isNarrador && isFichaAjena) {
-            try {
-                await setDoc(getCharacterDoc(charId), { name: charName, data, timestamp: Date.now(), _ownerUserId: targetUserId, _lastEditedByNarrador: userId });
-                statusEl.innerText = 'Ficha do jogador atualizada pelo Narrador!';
-                statusEl.style.color = '#ff9900';
-                setTimeout(() => { statusEl.innerText = ''; statusEl.style.color = 'var(--highlight)'; }, 3000);
-                window.marcarSalvo();
-            } catch (e) {
-                console.error("Erro ao salvar como narrador:", e);
-                statusEl.innerText = 'Erro — verifique as regras do Firestore.';
-                statusEl.style.color = '#ff4444';
-                setTimeout(() => { statusEl.innerText = ''; }, 5000);
-            }
-            return;
-        }
-
         try {
             await setDoc(getCharacterDoc(charId), { name: charName, data, timestamp: Date.now(), _ownerUserId: targetUserId });
-            statusEl.innerText = 'Ficha Atualizada!';
+            statusEl.innerText = targetUserId !== userId ? 'Ficha do jogador atualizada!' : 'Ficha Atualizada!';
             statusEl.style.color = '#33ff33';
             setTimeout(() => { statusEl.innerText = ''; statusEl.style.color = 'var(--highlight)'; }, 3000);
             
-            window.loadCharacterList();
+            // Só recarrega a lista se for sua ficha
+            if (targetUserId === userId) window.loadCharacterList();
             window.marcarSalvo();
         } catch (e) {
             console.error("Erro ao salvar:", e);
