@@ -363,15 +363,30 @@
         .panel { padding: 0 10px; background-color: #0a0a0a; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; border-left: 1px solid #333; border-right: 1px solid #333; }
         .lib-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #222; }
         .lib-item:last-child { border-bottom: none; }
+        .lib-item.hidden { display: none; }
+
+        /* ── BIBLIOTECA SEARCH ── */
+        .lib-search-wrap {
+            position: relative; margin-bottom: 12px;
+        }
+        .lib-search-wrap input {
+            width: 100%; padding: 8px 32px 8px 10px;
+            background: #0a0a0a; border: 1px solid #8b0000;
+            color: var(--text-color); font-family: var(--font-main); font-size: 0.85em;
+            letter-spacing: 1px;
+        }
+        .lib-search-wrap input:focus { outline: none; border-color: var(--highlight); box-shadow: 0 0 6px rgba(255,51,51,0.25); }
+        .lib-search-wrap input::placeholder { color: #555; }
+        .lib-search-icon {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            color: #555; font-size: 0.9em; pointer-events: none;
+        }
+        .lib-empty-msg { color: #555; font-size: 0.8em; padding: 8px 0; font-style: italic; }
     </style>
 </head>
 <body>
 
-<<<<<<< HEAD
 <div class="app-header">// VAMPIRO A MÁSCARA V5.1 // </div>
-=======
-<div class="app-header">// VAMPIRO A MÁSCARA V5 // </div>
->>>>>>> c04cb69c59edb08e84d716e909f6d09ad71b9b20
 
 <div class="app-body">
 
@@ -641,15 +656,20 @@
 
                 <div style="margin-top: 30px;">
                     <h2>BIBLIOTECA DE ITENS</h2>
-                    <p style="font-size: 0.8em; color: #888; margin-bottom: 10px;">Itens conhecidos no sistema. Adicione novos itens acima para compartilhar aqui.</p>
+                    <p style="font-size: 0.8em; color: #888; margin-bottom: 10px;">Itens adicionados ao inventário são compartilhados aqui automaticamente. Apenas o Narrador pode excluir.</p>
                     
-                    <button class="accordion">◈ COMUM</button>
+                    <div class="lib-search-wrap">
+                        <input type="text" id="lib-search" placeholder="Pesquisar na biblioteca..." oninput="window.filterLibrary(this.value)">
+                        <span class="lib-search-icon">⌕</span>
+                    </div>
+
+                    <button class="accordion" id="acc-comum">◈ COMUM</button>
                     <div class="panel" id="lib-panel-comum"></div>
 
-                    <button class="accordion">◈ ARMA</button>
+                    <button class="accordion" id="acc-arma">◈ ARMA</button>
                     <div class="panel" id="lib-panel-arma"></div>
 
-                    <button class="accordion">◈ SOBRENATURAL</button>
+                    <button class="accordion" id="acc-sobrenatural">◈ SOBRENATURAL</button>
                     <div class="panel" id="lib-panel-sobrenatural"></div>
                 </div>
             </div>
@@ -915,19 +935,18 @@
             window.marcarNaoSalvo();
         };
 
-        // ── ACCORDION LOGIC ──
-        const acc = document.getElementsByClassName("accordion");
-        for (let i = 0; i < acc.length; i++) {
-            acc[i].addEventListener("click", function() {
-                this.classList.toggle("active");
-                const panel = this.nextElementSibling;
+        // ── ACCORDION LOGIC ── (delegated, works after dynamic re-renders)
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('accordion')) {
+                e.target.classList.toggle('active');
+                const panel = e.target.nextElementSibling;
                 if (panel.style.maxHeight) {
                     panel.style.maxHeight = null;
                 } else {
                     panel.style.maxHeight = panel.scrollHeight + "px";
                 }
-            });
-        }
+            }
+        });
     });
 
     // ── INVENTORY LOGIC ──
@@ -1228,34 +1247,74 @@
     window.renderLibraryAccordions = function() {
         const commonPanel = document.getElementById('lib-panel-comum');
         const weaponPanel = document.getElementById('lib-panel-arma');
-        const superPanel = document.getElementById('lib-panel-sobrenatural');
-        if(!commonPanel) return;
+        const superPanel  = document.getElementById('lib-panel-sobrenatural');
+        if (!commonPanel) return;
 
-        commonPanel.innerHTML = ''; weaponPanel.innerHTML = ''; superPanel.innerHTML = '';
-        
+        commonPanel.innerHTML = '';
+        weaponPanel.innerHTML = '';
+        superPanel.innerHTML  = '';
+
+        const isNarrador = IDs_NARRADORES.includes(window.userId);
+        const query = (document.getElementById('lib-search')?.value || '').toLowerCase().trim();
+
+        const panels = { comum: commonPanel, arma: weaponPanel, sobrenatural: superPanel };
+        const counts = { comum: 0, arma: 0, sobrenatural: 0 };
+
         window.libraryItems.forEach(item => {
+            const targetPanel = panels[item.type];
+            if (!targetPanel) return;
+
             const div = document.createElement('div');
             div.className = 'lib-item';
-            
-            let text = item.name;
-            if (item.displayVal) text += ` <span class="weapon-val">${item.displayVal}</span>`;
-            
-            let btnHtml = `<button type="button" class="btn-add" style="padding: 4px 8px; font-size: 0.8em;" onclick="window.addFromLibrary('${item.id}')">Adicionar</button>`;
-            
-            if (IDs_NARRADORES.includes(window.userId) || true) { 
-                btnHtml += `<button type="button" class="btn-del" style="margin-left: 5px; padding: 4px 8px; font-size: 0.8em;" onclick="window.deleteFromLibrary('${item.id}')">X</button>`;
+            div.dataset.name = item.name.toLowerCase();
+
+            // Ocultar se não bater na pesquisa
+            if (query && !item.name.toLowerCase().includes(query)) {
+                div.classList.add('hidden');
+            } else {
+                counts[item.type] = (counts[item.type] || 0) + 1;
             }
 
-            div.innerHTML = `<span>${text}</span> <div>${btnHtml}</div>`;
-            
-            if(item.type === 'comum') commonPanel.appendChild(div);
-            else if(item.type === 'arma') weaponPanel.appendChild(div);
-            else if(item.type === 'sobrenatural') superPanel.appendChild(div);
+            let text = item.name;
+            if (item.displayVal) text += ` <span class="weapon-val">${item.displayVal}</span>`;
+
+            let btnHtml = `<button type="button" class="btn-add" style="padding:4px 8px;font-size:0.8em;" onclick="window.addFromLibrary('${item.id}')">+ Adicionar</button>`;
+            if (isNarrador) {
+                btnHtml += `<button type="button" class="btn-del" style="margin-left:5px;padding:4px 8px;font-size:0.8em;" onclick="window.deleteFromLibrary('${item.id}')">X</button>`;
+            }
+
+            div.innerHTML = `<span>${text}</span><div style="display:flex;gap:4px;flex-shrink:0;">${btnHtml}</div>`;
+            targetPanel.appendChild(div);
         });
-        
+
+        // Mensagens de lista vazia por seção
+        ['comum', 'arma', 'sobrenatural'].forEach(type => {
+            const panel = panels[type];
+            const visibleCount = Array.from(panel.querySelectorAll('.lib-item:not(.hidden)')).length;
+            if (visibleCount === 0) {
+                const msg = document.createElement('p');
+                msg.className = 'lib-empty-msg';
+                msg.innerText = query ? 'Nenhum item encontrado.' : 'Nenhum item nesta categoria ainda.';
+                panel.appendChild(msg);
+            }
+        });
+
+        // Atualizar altura dos accordions que estão abertos
         document.querySelectorAll('.accordion.active').forEach(acc => {
-            acc.nextElementSibling.style.maxHeight = acc.nextElementSibling.scrollHeight + "px";
+            const panel = acc.nextElementSibling;
+            panel.style.maxHeight = panel.scrollHeight + "px";
         });
+    }
+
+    window.filterLibrary = function(query) {
+        window.renderLibraryAccordions();
+        // Abrir automaticamente todas as seções ao pesquisar
+        if (query.trim()) {
+            document.querySelectorAll('.accordion').forEach(acc => {
+                acc.classList.add('active');
+                acc.nextElementSibling.style.maxHeight = acc.nextElementSibling.scrollHeight + "px";
+            });
+        }
     }
 
     window.syncItemToLibrary = async function(item) {
