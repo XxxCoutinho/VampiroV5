@@ -874,84 +874,147 @@ function filterCards(inputId, cardClass) {
 const CLANS = [
   {
     name: "Brujah",
-    nicknames: "Rabble · Punks · Hellenes",
+    nicknames: "Rabble · Punks · Hellenes · Prometheans",
     tagline: "O Clã Erudito",
+    sect: "Anarca (maioria) · Camarilla",
     disciplines: ["Celerity", "Potence", "Presence"],
-    bane: "O Sangue dos Brujah ferve com fúria mal contida. Subtraia dados iguais à Severidade do Bane de qualquer rolagem para resistir ao frenesi de fúria. Não pode baixar a pool abaixo de um dado.",
-    desc: "Os Brujah sempre abraçaram contracultura e revolução. De punks e ativistas a filósofos revolucionários (os Hellenes), o clã busca aliados que questionam normas e se identificam com os oprimidos. Sua paixão é seu maior dom e sua maior maldição.",
-    archetypes: ["Câncer no Sistema — opera dentro de estruturas corruptas para derrubá-las", "Voz do Povo — fomenta agitação política entre mortais", "Adorador do Sangue — acredita que seu Sangue é superior ao de outros clãs", "Monstro Disfarçado — mantém laços mortais enquanto luta contra a Besta"]
+    bane: "O Sangue dos Brujah ferve com fúria mal contida. Subtraia dados iguais à Severidade do Bane de qualquer rolagem para resistir ao frenesi de fúria. Essa penalidade não pode reduzir a pool abaixo de um dado.",
+    desc: "O sonho do clã erudito é um mundo onde toda injustiça foi eliminada. Os Brujah sempre Abraçaram das fileiras de simpatizantes da contracultura e da revolução — punks, ativistas, filósofos e qualquer um que questione normas e se identifique com os oprimidos. Sua paixão é seu maior dom e sua maior maldição.",
+    archetypes: [
+      "Câncer no Sistema — opera dentro de estruturas corruptas para derrubá-las por dentro",
+      "Voz do Povo — fomenta agitação política e fala em nome dos marginalizados",
+      "Adorador do Sangue — acredita que seu Sangue é superior ao dos outros clãs",
+      "Punk Provocador — se importa mais com a briga do que com a causa",
+      "Monstro Disfarçado — mantém laços mortais enquanto luta contra a Besta"
+    ]
   },
   {
     name: "Gangrel",
-    nicknames: "Savages · Ferals · Country Gangrel",
-    tagline: "O Clã dos Errantes",
+    nicknames: "Savages · Ferals · Animals · Barbarians · Wolves",
+    tagline: "O Clã da Besta",
+    sect: "Anarca · Autarkis",
     disciplines: ["Animalism", "Fortitude", "Protean"],
-    bane: "Ao sair de um Frenesi, o Gangrel adquire uma característica animal (garras, olhos de felino, pelo, etc.) por cada ponto de Bane Severity. Estas podem desaparecer com o tempo a critério do Narrador.",
-    desc: "Solitários e selvagens, os Gangrel se identificam mais com a Besta do que qualquer outro clã. São viajantes perpétuos, guardiões de florestas e cidades, capazes de se transformar e de se comunicar com animais. Desconfiam profundamente de instituições como a Camarilla.",
-    archetypes: ["Lobo Solitário — errante que evita sociedade Kindred", "Guardião da Natureza — protege locais selvagens", "Guerreiro Urbano — feral adaptado às selvas de concreto"]
+    bane: "Em frenesi, o Gangrel adquire uma ou mais características animais — traço físico, cheiro ou tique comportamental — que persistem por mais uma noite. Cada característica reduz um Atributo em 1 ponto. O número de características manifestadas é igual à Severidade do Bane.",
+    desc: "Fugindo da gaiola dourada das cidades, os Gangrel aceitam a Besta como parte de si e correm livres. São párias, errantes, caçadores e guardas. Sentem pouca vergonha de habitar os cantos mais miseráveis da cidade e não se curvam a nenhum príncipe. Cruzam fronteiras entre espécies, nações e domínios com a facilidade de predadores perfeitos.",
+    archetypes: [
+      "Fera Indomável — age movida por impulsos físicos e desejos imediatos, sem filtro social",
+      "Aventureiro — viajante incansável que viu e viveu o que poucos podem compreender",
+      "Favorito do Povo — guardião das histórias e tradições do clã ao redor da fogueira",
+      "Diretor de Bordo — alpha que usa presença social e autoridade, não apenas força bruta",
+      "Pássaro Livre — ex-preso que carrega uma reputação e uma fome de liberdade"
+    ]
   },
   {
     name: "Malkavian",
-    nicknames: "Lunatics · Kooks · Oracles",
-    tagline: "O Clã da Loucura",
+    nicknames: "Lunatics · Madmen · Jesters · Oracles · Dervishes",
+    tagline: "O Clã da Lua",
+    sect: "Camarilla",
     disciplines: ["Auspex", "Dominate", "Obfuscate"],
-    bane: "Todos os Malkavians carregam uma desordem mental de nascença. Adicione a Severidade do Bane como penalidade a uma categoria de rolagens sempre que a desordem for relevante. A desordem não pode ser curada permanentemente.",
-    desc: "Os Malkavians são amaldiçoados com loucura perpétua — mas para alguns, essa maldição traz visões proféticas e percepções que os sãos jamais alcançariam. São oráculos, loucos e visionários ao mesmo tempo. Alguns usam Dominate; outros, Auspex para enxergar além do véu.",
-    archetypes: ["O Oráculo — visões perturbadoras mascaram sabedoria profunda", "O Louco Funcional — mantém aparência de normalidade enquanto desmorona por dentro", "O Manipulador Perturbado — usa Dominate para controlar enquanto a mente falha"]
+    bane: "Todos os Malkavians são amaldiçoados com ao menos um tipo de desordem mental após o Abraço. Quando sofrem uma Falha Bestial ou uma Compulsão, a maldição se manifesta: sofra uma penalidade igual à Severidade do Bane em uma categoria de pools (Física, Social ou Mental) pela cena inteira.",
+    desc: "Psicólogos diagnosticariam os filhos de Malkav com esquizofrenia, depressão, TOC ou PTSD — às vezes tudo ao mesmo tempo. Na realidade, eles têm tudo isso e nada disso. Como os 'sábios loucos' da poesia, seu distúrbio vem de enxergar demais o mundo de uma vez, de sentir emoções fortes demais para suportar. Sua maldição pode ser uma prisão ou um dom profético.",
+    archetypes: [
+      "Presença Influente — viciado no prazer de se reinventar, manipula pela narrativa e pelo espetáculo",
+      "Medium — usa suas percepções sobrenaturais para ajudar (ou explorar) os enlutados",
+      "Analista Sombrio — desarticula e remonta mentes alheias com precisão assustadora",
+      "Fanático — consumido por uma única obsessão que define toda a sua existência",
+      "Viciado em Sangue Puro — acredita que certos sangues acalmam seus sintomas e caça-os compulsivamente"
+    ]
   },
   {
     name: "Nosferatu",
-    nicknames: "Sewer Rats · Haunts · Cleopatras",
-    tagline: "O Clã Amaldiçoado",
+    nicknames: "Sewer Rats · Haunts · Lepers · Orloks · Kapos",
+    tagline: "O Clã dos Horrores",
+    sect: "Camarilla · Anarca",
     disciplines: ["Animalism", "Obfuscate", "Potence"],
-    bane: "A aparência do Nosferatu é monstrosa e inevitável — qualquer ilusão ou disfarce social sofre penalidade igual à Severidade do Bane. Mortais reagem com horror instintivo.",
-    desc: "Deformados pelo Abraço, os Nosferatu vivem nas sombras e nas entranhas das cidades. Mestres da informação e da furtividade, compensam sua aparência horrenda com redes de espionagem invejáveis. O que lhes falta em charme, sobra em conhecimento.",
-    archetypes: ["Rato do Esgoto — habitante das profundezas urbanas, coletor de segredos", "O Informante — vende e compra informações como moeda de poder", "O Guardião Silencioso — protege seu domínio das sombras"]
+    bane: "O Abraço deforma completamente o corpo do Nosferatu. Todos contam como portadores do Defeito 'Repulsivo' (–2) e jamais podem aumentar sua classificação no Mérito de Aparência. Além disso, qualquer tentativa de se disfarçar como humano (incluindo os poderes de Obfuscate Máscara dos Mil Rostos e Impostor) sofre penalidade em dados igual à Severidade do Bane.",
+    desc: "Para os Nosferatu, o Abraço é uma jornada de abjeto horror: semanas de dor resultam em deformidades semelhantes a defeitos congênitos, tumores e feridas de lepra. Aqueles que sobrevivem encontram-se como ecos monstruosos da visão de Murnau nas telas de prata. Em compensação, tornaram-se os mais humanos dos Kindred — e os mais temidos informantes das noites.",
+    archetypes: [
+      "Hub de Informação — arquivista mestre que sabe o preço de cada segredo",
+      "Detetive de Domínio — investigador sombrio que prefere a mente às armas",
+      "Mais Animal que Homem — identifica-se mais com as criaturas da noite do que com qualquer Kindred",
+      "Caçador de Monstros — usa sua brutalidade para proteger seu nicho nas sombras",
+      "Rato — sobrevivente pragmático que trocará qualquer lealdade pela própria pele"
+    ]
   },
   {
     name: "Toreador",
-    nicknames: "Degenerates · Artistes · Roses",
-    tagline: "O Clã dos Artistas",
+    nicknames: "Degenerates · Artistes · Roses · Divas · Arikelites",
+    tagline: "O Clã da Rosa",
+    sect: "Camarilla",
     disciplines: ["Auspex", "Celerity", "Presence"],
-    bane: "Quando um Toreador presencia algo de beleza extraordinária, deve passar em um teste ou ficar paralisado em êxtase por um turno (ou mais, com falhas críticas). A Severidade do Bane afeta a Dificuldade do teste.",
-    desc: "Patrocinadores das artes, sedutores e frequentadores da alta sociedade, os Toreador usam seu refinamento como arma tanto quanto sua Presence. Amam beleza — e isso pode paralisá-los literalmente. São o coração social da Camarilla.",
-    archetypes: ["O Patrono — financia artistas mortais para se alimentar deles", "A Socialite — navega cortes Kindred com charme letal", "O Artista Maldito — cria obras perturbadoras inspiradas pela Besta"]
+    bane: "Os Toreador exemplificam o ditado de que a arte no sangue assume formas estranhas. Eles desejam beleza com tal intensidade que sofrem em sua ausência. Enquanto em ambientes de pouca beleza, perdem dados iguais à Severidade do Bane em todas as pools para usar Disciplinas. Falhas Bestiais frequentemente resultam em um transe extático de contemplação.",
+    desc: "Amaldiçoados por sua sensualidade desfreada, as divas são obcecadas pela perfeição estética. Mas ignorar os Toreador como pervertidos ou artistas rasos é o último erro que um Kindred comete. Beleza é poder — e amor pode fazer qualquer um fazer qualquer coisa. São a voz, a inspiração e a alma que une a Camarilla.",
+    archetypes: [
+      "L'Artiste — indulge em todas as formas de arte e luta para ser ele próprio um criador",
+      "Gerente de Palco — tem o dedo no pulso de cada clube, bar e evento da cidade",
+      "Bon-Vivant — mestre da manipulação, atração e empatia; o mundo é seu para conquistar",
+      "Patrono das Artes — molda talentos mortais como outros moldam barro, em troca de sangue",
+      "Espião Teatral — extrai informações valiosas enquanto se diverte exageradamente no processo"
+    ]
   },
   {
     name: "Tremere",
-    nicknames: "Warlocks · Usurpers · Telyavs",
-    tagline: "O Clã da Magia",
+    nicknames: "Warlocks · Usurpers · Hermetics · Blood Witches",
+    tagline: "O Clã Partido",
+    sect: "Camarilla",
     disciplines: ["Auspex", "Blood Sorcery", "Dominate"],
-    bane: "O primeiro Blood Bond formado por um Tremere sempre é com seu clã ou com seu sire. O Tremere sofre penalidade de Bane Severity em qualquer resistência contra o detentor do Bond.",
-    desc: "Outrora uma ordem de magos mortais que roubou o poder vampírico, os Tremere construíram um império baseado em segredos e lealdade forçada. Sua feitiçaria de sangue é inigualável — mas sua hierarquia interna e seus juramentos de sangue os tornam os mais controlados de todos os clãs.",
-    archetypes: ["O Aprendiz Leal — segue a hierarquia enquanto aprende a manipulá-la", "O Rebelde da Pirâmide — busca quebrar o Blood Bond que o prende", "O Arquimago — devotado ao domínio absoluto da Blood Sorcery"]
+    bane: "Após a queda da Pirâmide em Viena, o vitae Tremere sofreu mutação: não pode mais criar Blood Bonds em outros Kindred, embora eles próprios ainda possam ser vinculados. Para vincular mortais ou ghouls, a poção corrompida precisa ser bebida um número adicional de vezes igual à Severidade do Bane do vampiro.",
+    desc: "Um mago hermético do século VIII, Tremere liderava um grupo de usuários de magia temidos por sua obsessão com conhecimento e poder. Incapaz de aceitar sua mortalidade, o mago conduziu os mais aterrorizantes experimentos mágicos já realizados — e descobriu a maldição de Caim. Após a destruição da Prima Chantry em Viena em 2008, o clã caiu de eminências cinzas a persona non grata em muitas regiões.",
+    archetypes: [
+      "Leal da Pirâmide — conservador que adere às ordens originais do clã por vontade, se não por sangue",
+      "Erudito Eterno — pesquisador obsessivo que a morte não consegue deter em sua busca pelo conhecimento",
+      "Pagão Não-Conformista — segue a Carna e rejeita as tradições moldadas pelos homens",
+      "Outsider Ambicioso — Abraçado fora das fileiras tradicionais, com muito a provar",
+      "Chefe de Segurança — usa os dons do clã para identificar ameaças e neutralizar agressores"
+    ]
   },
   {
     name: "Ventrue",
-    nicknames: "Blue Bloods · Patricians · Tyrants",
-    tagline: "O Clã dos Líderes",
+    nicknames: "Blue Bloods · Patricians · Tyrants · Warlords · Borgias",
+    tagline: "O Clã dos Reis",
+    sect: "Camarilla",
     disciplines: ["Dominate", "Fortitude", "Presence"],
-    bane: "Cada Ventrue só pode se alimentar de um tipo específico de mortal (por traço emocional, físico ou demográfico). Alimentar-se de outros causa enjoo e conta apenas metade da Fome saciada.",
-    desc: "A espinha dorsal da Camarilla, os Ventrue se veem como a aristocracia natural dos Kindred. Ricos, influentes e calculistas, eles constroem impérios políticos e corporativos com a mesma facilidade com que manipulam mortais. Sua fraqueza alimentar os torna surpreendentemente vulneráveis.",
-    archetypes: ["O Príncipe — governa com mão de ferro e autoridade inquestionável", "O Corporativista — controla impérios empresariais da sombra", "O Nobre Decadente — mantém aparência de grandeza enquanto enfrenta declínio"]
+    bane: "Os Ventrue possuem paladares refinados ao extremo. Cada Ventrue só consegue se alimentar de um tipo específico de mortal (definido por traço emocional, físico ou demográfico). Para se alimentar de qualquer outro, gaste Pontos de Força de Vontade iguais à Severidade do Bane — caso contrário, o sangue sobe como vômito escarlate.",
+    desc: "Em seus próprios olhos, apenas o Clã dos Reis tem a contenção, a sabedoria, o controle e a estirpe necessários para guiar os Kindred na noite. Desde reis-deuses da Babilônia até acionistas majoritários e financiadores de campanhas políticas, eles foram obcecados pelo impulso de governar. São a espinha dorsal da Camarilla — sem eles, a Máscara teria caído há muito.",
+    archetypes: [
+      "Diretor Corporativo de Sangue Frio — controla uma corporação como CEO excêntrico ou sócio silencioso influente",
+      "Membro da Ordem — navega sociedades secretas como maçons e rosacruzes com maestria",
+      "Político Conservador — spin doctor que suprime brechas na Máscara com facilidade",
+      "Padrinho — exerce seu poder pelo crime organizado e pelos caminhos do dinheiro sujo",
+      "Sumo Sacerdote — venera ancestrais Kindred míticos e lidera cultos em nome deles"
+    ]
   },
   {
     name: "Caitiff",
-    nicknames: "Trash · Forsaken · Orphans",
-    tagline: "Sem Clã, Sem Proteção",
-    disciplines: ["Quaisquer 3 à escolha"],
-    bane: "Os Caitiff começam com o Defeito 'Suspeito' e não podem comprar Status positivo durante a criação. São vistos com desconfiança por todos os clãs estabelecidos.",
-    desc: "Vampiros sem linhagem reconhecida — seja porque seu sire era Caitiff, seja porque o sangue degenerou ao longo de gerações. Sem clã para protegê-los, são frequentemente vistos como refugo. Porém, sua falta de Bane clânico pode ser uma vantagem inesperada.",
-    archetypes: ["O Órfão — sobrevive sem estrutura clânica, aprendendo sozinho", "O Renegado — abraça sua falta de afiliação como liberdade"]
+    nicknames: "Panders · Orphans · Trash · Scum · Freestylers",
+    tagline: "Os Sem Clã",
+    sect: "Anarca · Independente",
+    disciplines: ["Qualquer 3 Disciplinas à escolha"],
+    bane: "Sem toque dos Antediluvianos, os Caitiff não compartilham nenhum Bane comum. Em vez disso, personagens Caitiff começam com o Defeito 'Suspeito' (•) e não podem comprar Status positivo durante a criação. O Narrador pode sempre impor uma penalidade de um ou dois dados em testes Sociais contra Kindred que saibam que são Caitiff. Além disso, melhorar Disciplinas custa seis vezes o nível comprado em pontos de experiência.",
+    desc: "Nem todos os Kindred herdam a maldição de um dos 13 clãs. Os Caitiff são vampiros puros, compensando o que perdem em respeito e pedigree com sangue flexível e ausência de um Bane paralisante. Orgulhosos ou envergonhados de sua natureza sem linhagem, essas criaturas não têm família e representam o vampirismo em seu estado mais puro e individualista.",
+    archetypes: [
+      "Criado nas Ruas — sobrevivente da pior parte da cidade, acostumado com privações extremas",
+      "Sobrevivente de Abuso — Abraçado como recompensa por sua resistência, agora finalmente luta de volta",
+      "Desesperançosamente Superestimado — escolhido pelos motivos errados, agora perdido e sobrecarregado",
+      "Caitiff Secreto — esconde sua natureza de seu clã ancestral, obedecendo rituais em troca de proteção",
+      "Childe Indesejado — foi Abraçado por acidente ou culpa, e nunca se ligou ao Sangue de seu sire"
+    ]
   },
   {
     name: "Thin-Blooded",
-    nicknames: "Duskborn · Thin-Bloods · Qlippoth",
+    nicknames: "Duskborn · Mercurians · Run-Off · Weaklings · Chameleons",
     tagline: "A 14ª e 15ª Geração",
-    disciplines: ["Thin-Blood Alchemy (única)"],
-    bane: "O Abraço Thin-Blood é instável — alguns podem até andar na luz do dia. Mas sofrem penalidades severas em quase tudo que outros vampiros fazem facilmente: alimentar-se, resistir ao sol, etc.",
-    desc: "A geração mais distante de Caim, os Thin-Bloods mal partilham da maldição vampírica. Não experimentam a Fome da mesma forma, podem às vezes comer comida mortal, e alguns sobrevivem à luz solar. São vistos como presságio do Gehenna por muitos Kindred mais velhos.",
-    archetypes: ["O Proscrito — vive às margens da sociedade Kindred", "O Alquimista — domina Thin-Blood Alchemy para compensar fraquezas", "O Mortal Fantasma — mantém laços humanos mais facilmente que qualquer outro"]
+    sect: "Independente · Párias",
+    disciplines: ["Thin-Blood Alchemy (exclusiva) + temporárias via alimentação"],
+    bane: "Os Thin-Bloods são sempre considerados sem clã e jamais sofrem o Bane ou a Compulsão específica de um clã. Têm Potência de Sangue 0 permanentemente. No entanto, sofrem dano Agravado não apenas do fogo, mas também de armas cortantes e perfurantes. Empalamento com estaca não os paralisa — causa trauma físico massivo. Tomam apenas 1 nível de dano Superficial por turno em luz solar direta.",
+    desc: "Uma raça deteriorada, um presságio dos tempos finais — ou um vampiro para um mundo novo? Equilibrando-se no ponto médio entre vida e morte, a natureza sempre cambiante dos Duskborn evoca piedade, ciúme e medo em igual medida. Sua alquimia improvisada e sua capacidade de passar como humanos os tornam únicos para prosperar fora da sociedade Kindred.",
+    archetypes: [
+      "Vivo-Um — ainda profundamente conectado ao mundo mortal, mantém família e emprego",
+      "Arma de Conveniência — Abraçado em desespero para servir a um propósito, mas agora é livre",
+      "Abraço Culposo — resultado de um vampiro que bebeu demais e tentou consertar o erro",
+      "Vampiro Natural — estudou os Kindred como mortal e os encontrou antes de se tornar um",
+      "Buscador de Redenção — recusa-se a aceitar seu lugar neste mundo e busca obsessivamente uma cura"
+    ]
   }
 ];
 
@@ -1347,6 +1410,7 @@ function renderClans() {
       <div class="pills">
         ${c.disciplines.map(d => `<span class="pill pill-red">${d}</span>`).join('')}
       </div>
+      ${c.sect ? `<div class="pills" style="margin-top:6px"><span class="pill" style="background:rgba(241,196,15,0.10);border-color:rgba(241,196,15,0.3);color:var(--yellow);font-size:9px">${c.sect}</span></div>` : ''}
     </div>
   `).join('');
 }
@@ -1358,6 +1422,7 @@ function showClan(name) {
     <h2>${c.name}</h2>
     <div class="subtitle">${c.tagline} · ${c.nicknames}</div>
     <hr>
+    ${c.sect ? `<h4>Seita</h4><p>${c.sect}</p>` : ''}
     <h4>Descrição</h4>
     <p>${c.desc}</p>
     <h4>Disciplinas</h4>
@@ -1771,6 +1836,7 @@ function renderCharCreation() {
 
 renderCharCreation();
 
+renderClans();
 renderDisciplines();
 renderPredators();
 renderRules();
