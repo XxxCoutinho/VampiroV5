@@ -450,6 +450,29 @@
   .search-bar input::placeholder { color: var(--text-dim); }
   .search-bar input:focus { border-color: var(--red); box-shadow: 0 0 10px var(--red-glow); }
 
+  /* ── VANTAGENS FILTER BUTTONS ── */
+  .vant-filter {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text-dim); font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 5px 14px; cursor: pointer; border-radius: 2px;
+    transition: all 0.2s;
+  }
+  .vant-filter:hover { color: var(--text); border-color: var(--red); }
+  .vant-filter.on { color: var(--red-hi); border-color: var(--red); background: rgba(192,57,43,0.1); }
+
+  /* vantagem card tipo badge */
+  .vant-type-badge {
+    display: inline-block; font-size: 9px; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 2px 8px; border-radius: 2px;
+    margin-bottom: 6px; font-family: var(--mono);
+  }
+  .badge-merit   { background: rgba(39,174,96,0.12);  border: 1px solid rgba(39,174,96,0.3);  color: #27ae60; }
+  .badge-bg      { background: rgba(52,152,219,0.12); border: 1px solid rgba(52,152,219,0.3); color: #3498db; }
+  .badge-flaw    { background: rgba(192,57,43,0.12);  border: 1px solid rgba(192,57,43,0.3);  color: var(--red-hi); }
+  .badge-thin    { background: rgba(241,196,15,0.10); border: 1px solid rgba(241,196,15,0.3); color: var(--yellow); }
+  .vant-dots { font-size: 12px; color: var(--yellow); letter-spacing: 2px; margin-top: 4px; }
+
   /* ── CHARACTER CREATION STEPPER ── */
   .step-block {
     display: flex;
@@ -679,6 +702,7 @@
     <button onclick="showSection('rules', this)">Regras Essenciais</button>
     <button onclick="showSection('humanity', this)">Humanidade</button>
     <button onclick="showSection('charcreation', this)">Criar Personagem</button>
+    <button onclick="showSection('vantagens', this)">Vantagens & Defeitos</button>
     <button onclick="showSection('lore', this)">Glossário</button>
   </nav>
 </header>
@@ -717,6 +741,10 @@
           <div class="icon">❤️</div>
           <div class="label">Humanidade</div>
         </div>
+        <div class="hero-card" onclick="showSection('vantagens', document.querySelector('[onclick*=vantagens]'))">
+          <div class="icon">⚖️</div>
+          <div class="label">Vantagens & Defeitos</div>
+        </div>
         <div class="hero-card" onclick="showSection('lore', document.querySelector('[onclick*=lore]'))">
           <div class="icon">📖</div>
           <div class="label">Glossário</div>
@@ -746,7 +774,7 @@
     <div class="page-header">
       <div class="tag">// Capítulo VI</div>
       <h1>Disciplinas</h1>
-      <p>Os poderes sobrenaturais do sangue vampírico. Divididos de 1 a 5 dots, cada disciplina confere habilidades únicas — e pode revelar a natureza da Besta.</p>
+      <p>Os poderes sobrenaturais do sangue vampírico. Divididos de 1 a 5 pontos, cada disciplina confere habilidades únicas — e pode revelar a natureza da Besta.</p>
     </div>
 
     <div class="grid" id="disc-grid">
@@ -813,6 +841,30 @@
 
     <!-- STEPPER -->
     <div id="steps-container"></div>
+  </section>
+
+  <!-- ═══════════════════════════════ VANTAGENS & DEFEITOS ═══════════════════════════════ -->
+  <section id="vantagens">
+    <div class="page-header">
+      <div class="tag">// Capítulo IV — Advantages & Flaws</div>
+      <h1>Vantagens & Defeitos</h1>
+      <p>Vantagens são divididas em <strong>Méritos</strong> (traços pessoais), <strong>Antecedentes</strong> (recursos externos) e <strong>Folhas de Lore</strong>. Defeitos causam problemas contínuos em troca de pontos extras na criação. Durante a criação, gaste 7 pontos em Vantagens e tome ao menos 2 pontos de Defeitos.</p>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="vant-search" placeholder="Buscar vantagem ou defeito..." oninput="filterVantagens(this.value)">
+    </div>
+
+    <!-- Filtro por categoria -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;" id="vant-filters">
+      <button class="vant-filter on" onclick="setVantFilter('all',this)">Todos</button>
+      <button class="vant-filter" onclick="setVantFilter('merit',this)">Méritos</button>
+      <button class="vant-filter" onclick="setVantFilter('background',this)">Antecedentes</button>
+      <button class="vant-filter" onclick="setVantFilter('flaw',this)">Defeitos</button>
+      <button class="vant-filter" onclick="setVantFilter('thinblood',this)">Thin-Blood</button>
+    </div>
+
+    <div class="grid" id="vant-grid"></div>
   </section>
 
   <!-- ═══════════════════════════════ GLOSSÁRIO ═══════════════════════════════ -->
@@ -1179,61 +1231,61 @@ const PREDATORS = [
   {
     name: "Alleycat",
     desc: "Predador combativo direto. Você espreita, subjuga e bebe de quem puder, quando puder.",
-    gains: ["Especialidade: Intimidação (Assaltos) ou Briga (Agarramentos)", "1 dot de Celerity ou Potence", "3 dots de Contatos criminais"],
+    gains: ["Especialidade: Intimidação (Assaltos) ou Briga (Agarramentos)", "1 ponto de Celeridade ou Potência", "3 dots de Contatos criminais"],
     loses: ["1 dot de Humanidade"]
   },
   {
     name: "Bagger",
     desc: "Você rouba, compra ou obtém sangue frio em vez de caçar — mercado negro, hospitais, bancos de sangue.",
-    gains: ["Especialidade: Larceny (Arrombar) ou Streetwise (Mercado Negro)", "1 dot de Blood Sorcery (só Tremere) ou Obfuscate", "Mérito: Iron Gullet (•••)"],
+    gains: ["Especialidade: Larceny (Arrombar) ou Streetwise (Mercado Negro)", "1 ponto de Feitiçaria de Sangue (só Tremere) ou Ofuscação", "Mérito: Estômago de Ferro (•••)"],
     loses: ["Inimigo (••) — alguém quer algo de volta"]
   },
   {
     name: "Blood Leech",
     desc: "Você se alimenta de outros vampiros — por caça, coerção ou como pagamento. Proibido na maioria das sociedades Kindred.",
-    gains: ["Especialidade: Briga (Kindred) ou Stealth (contra Kindred)", "1 dot de Celerity ou Protean", "Blood Potency +1"],
+    gains: ["Especialidade: Briga (Kindred) ou Stealth (contra Kindred)", "1 ponto de Celeridade ou Proteano", "Potência de Sangue +1"],
     loses: ["1 dot de Humanidade", "Defeito: Segredo Obscuro (••) Diablista ou Proscrito (••)", "Defeito: Exclusão de Presa (••) — mortais"]
   },
   {
-    name: "Cleaver",
+    name: "Familiar",
     desc: "Você se alimenta secretamente de sua própria família e amigos mortais, mantendo laços com eles.",
-    gains: ["Especialidade: Persuasão (Gaslighting) ou Subterfúgio (Encobrimentos)", "1 dot de Dominate ou Animalism", "Vantagem: Herd (••)"],
-    loses: ["Defeito: Segredo Obscuro (•) Cleaver"]
+    gains: ["Especialidade: Persuasão (Gaslighting) ou Subterfúgio (Encobrimentos)", "1 ponto de Dominação ou Animalism", "Vantagem: Rebanho (••)"],
+    loses: ["Defeito: Segredo Obscuro (•) Familiar"]
   },
   {
     name: "Consensualist",
     desc: "Você só se alimenta com o consentimento da vítima — como doação voluntária, kink ou confessando ser vampiro.",
-    gains: ["Especialidade: Medicine (Flebotomia) ou Persuasão (Sedução)", "1 dot de Auspex ou Fortitude", "1 dot de Humanidade"],
+    gains: ["Especialidade: Medicine (Flebotomia) ou Persuasão (Sedução)", "1 ponto de Auspício ou Fortitude", "1 dot de Humanidade"],
     loses: ["Defeito: Segredo Obscuro (•) Consensualist"]
   },
   {
     name: "Farmer",
     desc: "Você se recusa a se alimentar de humanos — apenas animais. Respeitado como nobre, ridicularizado como vegano.",
-    gains: ["Especialidade: Animal Ken (Animal Específico) ou Survival (Caça)", "1 dot de Animalism ou Protean", "1 dot de Humanidade"],
-    loses: ["Defeito: Exclusão de Presa (••) Vegan", "Indisponível se Blood Potency ≥ 3"]
+    gains: ["Especialidade: Animal Ken (Animal Específico) ou Survival (Caça)", "1 ponto de Animalism ou Proteano", "1 dot de Humanidade"],
+    loses: ["Defeito: Exclusão de Presa (••) Vegano", "Indisponível se Potência de Sangue ≥ 3"]
   },
   {
     name: "Osiris",
     desc: "Você é celebridade ou lidera um culto/seita. Seus fãs ou seguidores te adoram — e te alimentam.",
-    gains: ["Especialidade: Ocultismo (Seitas) ou Performance (área escolhida)", "1 dot de Blood Sorcery ou Presence", "3 dots de Fama", "2 dots de Herd"],
+    gains: ["Especialidade: Ocultismo (Seitas) ou Performance (área escolhida)", "1 ponto de Feitiçaria de Sangue ou Presença", "3 dots de Fama", "2 dots de Herd"],
     loses: ["2 dots de recursos (na criação)", "Defeito: Inimigo (••) — inquisição, autoridades ou Camarilla"]
   },
   {
     name: "Sandman",
     desc: "Você entra em casas e se alimenta de vítimas enquanto dormem, tomando apenas um pouco para não acordá-las.",
-    gains: ["Especialidade: Stealth (Invadir Propriedades) ou Medicine (Anestesia)", "1 dot de Auspex ou Protean", "1 dot de Obfuscate"],
+    gains: ["Especialidade: Stealth (Invadir Propriedades) ou Medicine (Anestesia)", "1 ponto de Auspício ou Proteano", "1 ponto de Ofuscação"],
     loses: ["Defeito: Exclusão de Presa (•) — vítimas acordadas"]
   },
   {
     name: "Scene Queen",
     desc: "Você domina uma subcultura específica (punk, goth, rave, etc.) e se alimenta dentro dela.",
-    gains: ["Especialidade: Etiquette (Subcultura específica) ou Leadership (Subcultura)", "1 dot de Dominate ou Presence", "2 dots de Status (Anarca ou Camarilla)"],
+    gains: ["Especialidade: Etiquette (Subcultura específica) ou Leadership (Subcultura)", "1 ponto de Dominação ou Presença", "2 dots de Status (Anarca ou Camarilla)"],
     loses: ["Defeito: Quirk (•) — ligado à identidade da subcultura"]
   },
   {
     name: "Siren",
     desc: "Você seduz mortais, se alimenta de forma controlada e os manda embora apaixonados e sem memória clara.",
-    gains: ["Especialidade: Persuasão (Sedução) ou Subterfúgio (Insinuação)", "1 dot de Celerity ou Presence", "2 dots de Contatos (em bares, clubes)"],
+    gains: ["Especialidade: Persuasão (Sedução) ou Subterfúgio (Insinuação)", "1 ponto de Celeridade ou Presença", "2 dots de Contatos (em bares, clubes)"],
     loses: ["Defeito: Predisposição à Excitação (•) — a morte de presas traz riscos maiores"]
   }
 ];
@@ -1271,7 +1323,7 @@ const RULES = [
       "Frenesi de Fúria: provocado por raiva, ataque ou humilhação",
       "Frenesi de Terror: provocado por fogo, luz solar ou situações de terror extremo",
       "Frenesi de Fome: quando Fome 5 e provocado por sangue acessível",
-      "Para resistir: role Composure + Resolução (modificado por Humanidade)",
+      "Para resistir: role Autocontrole + Determinação (modificado por Humanidade)",
       "Durante o Frenesi: o Narrador pode controlar as ações do personagem"
     ]
   },
@@ -1291,11 +1343,11 @@ const RULES = [
     icon: "💧",
     desc: "Uma medida do quanto o Sangue de Caim corre potente nas veias do vampiro — aumenta com a idade e com o Diablerie.",
     details: [
-      "Blood Potency 0: Thin-Bloods",
-      "Blood Potency 1-2: Neônatos recentes",
-      "Blood Potency 3-4: Ancillae e vampiros experientes",
-      "Blood Potency 5+: Elders com poder significativo",
-      "Alta Blood Potency: mais dados em Disciplinas, mas maior dificuldade para saciar Fome com humanos normais"
+      "Potência de Sangue 0: Thin-Bloods",
+      "Potência de Sangue 1-2: Neônatos recentes",
+      "Potência de Sangue 3-4: Ancillae e vampiros experientes",
+      "Potência de Sangue 5+: Elders com poder significativo",
+      "Alta Potência de Sangue: mais dados em Disciplinas, mas maior dificuldade para saciar Fome com humanos normais"
     ]
   },
   {
@@ -1373,7 +1425,7 @@ const LORE = [
   { term: "Cainita", def: "Forma poética de se referir a vampiros — descendentes de Caim, o primeiro vampiro." },
   { term: "Childer", def: "Vampiro criado por outro (o sire). Plural: childer." },
   { term: "Diablerie", def: "Devorar a alma de outro vampiro para absorver sua geração — crime capital entre Kindred." },
-  { term: "Elder", def: "Vampiro com mais de dois séculos de existência. Geralmente possui Blood Potency 3 ou mais." },
+  { term: "Elder", def: "Vampiro com mais de dois séculos de existência. Geralmente possui Potência de Sangue 3 ou mais." },
   { term: "Elysium", def: "Local neutro onde violência entre Kindred é proibida — geralmente museus, teatros, galerias." },
   { term: "Frenesi", def: "Estado em que a Besta assume o controle — o vampiro age por instinto predatório puro." },
   { term: "Gehenna", def: "Profecias vampíricas do apocalipse — quando os Antediluvianos acordarão para devorar seus descendentes." },
@@ -1396,6 +1448,353 @@ const LORE = [
   { term: "Wassail", def: "O Frenesi final quando Humanidade cai a 0 — o vampiro torna-se um Wight irreversível." },
   { term: "Wight", def: "Vampiro completamente dominado pela Besta, sem consciência ou controle — controlado pelo Narrador." }
 ];
+
+// ─────────────────────────── VANTAGENS & DEFEITOS DATA ───────────────────────────
+
+const VANTAGENS = [
+  // ══ MÉRITOS ══
+  {
+    cat: "merit", name: "Linguística", dots: "• por idioma",
+    badge: "badge-merit", label: "Mérito",
+    desc: "Cada ponto permite ao personagem falar, escrever e ler um idioma adicional com fluência. Todos já falam o idioma nativo e o idioma local da crônica."
+  },
+  {
+    cat: "merit", name: "Aparência", dots: "•• a ••••",
+    badge: "badge-merit", label: "Mérito",
+    desc: "Modifica a aparência física do personagem para fins de testes Sociais.",
+    details: [
+      "Defeito (••) Repulsivo — perde 2 dados em todas as pools Sociais relevantes",
+      "Defeito (•) Feio — perde 1 dado em todas as pools Sociais relevantes",
+      "(••) Bonito — adiciona 1 dado extra a pools Sociais apropriadas",
+      "(••••) Deslumbrante — adiciona 2 dados extras a pools Sociais apropriadas"
+    ]
+  },
+  {
+    cat: "merit", name: "Uso de Substâncias", dots: "• a ••",
+    badge: "badge-merit", label: "Mérito / Defeito",
+    desc: "Você tem um vício em alguma substância além do sangue. Kindred com este Mérito ou Defeito buscam sangue contendo essa substância.",
+    details: [
+      "Defeito (••) Vício Sem Esperança — perde 2 dados em todas as pools quando a última vítima não estava sob efeito da droga",
+      "Defeito (•) Vício — perde 1 dado nas mesmas condições",
+      "(•) Viciado Funcional — adiciona 1 dado a uma categoria de pool quando a última vítima estava sob efeito da droga"
+    ]
+  },
+  {
+    cat: "merit", name: "Arcaico", dots: "• a ••",
+    badge: "badge-merit", label: "Defeito",
+    desc: "Apenas para Ancillae ou vampiros mais velhos. Você não conseguiu se adaptar ao presente ou passou longo tempo em torpor.",
+    details: [
+      "Defeito (••) Arcaico — não consegue usar computadores ou celulares; Tecnologia permanentemente 0",
+      "Defeito (•) Vivendo no Passado — possui Convicções desatualizadas; perde 1 dado em pools Sociais ao agir com base nelas"
+    ]
+  },
+  {
+    cat: "merit", name: "Laço de Sangue", dots: "• a •••••",
+    badge: "badge-merit", label: "Mérito / Defeito",
+    desc: "Descreve como o personagem responde ao Laço de Sangue — alguns se vinculam com facilidade, outros resistem com cada fibra do ser.",
+    details: [
+      "Defeito (••) Escravo do Laço — vincula-se com apenas uma bebida de sangue (não três)",
+      "Defeito (•) Viciado no Laço — subtrai 1 dado de pools para agir contra um Laço de Sangue",
+      "Defeito (•) Laço Longo — o Laço perde força mais devagar (1 a cada 3 meses sem reforço)",
+      "(•) Resistência ao Laço — adiciona 1 dado por nível (máximo 3) para resistir a um Laço",
+      "(••) Laço Curto — o Laço perde força mais rapidamente (duas vezes por mês)",
+      "(•••••) Invínculável — não pode ser Ligado por Laço de Sangue"
+    ]
+  },
+  {
+    cat: "merit", name: "Alimentação", dots: "• a ••",
+    badge: "badge-merit", label: "Mérito / Defeito",
+    desc: "Vários Méritos e Defeitos relacionados à forma como o vampiro se alimenta.",
+    details: [
+      "Defeito (••) Vegano — só se alimenta de sangue animal; gasta 2 pontos de Força de Vontade para beber sangue humano",
+      "Defeito (••) Orgânivoro — só sacia a Fome comendo carne e órgãos humanos",
+      "Defeito (•) Sede de Metusalém — a Fome só é totalmente saciada com sangue de criaturas sobrenaturais",
+      "Defeito (•) Exclusão de Presa — recusa-se a caçar certa classe de mortais; violar isso gera Manchas",
+      "(•) Farejador de Sangue — detecta a Ressonância do sangue pelo olfato sem precisar provar",
+      "(•••) Estômago de Ferro — pode se alimentar de sangue frio, rançoso ou fracionado"
+    ]
+  },
+  {
+    cat: "merit", name: "Místico", dots: "• a ••",
+    badge: "badge-merit", label: "Mérito / Defeito",
+    desc: "Peculiaridades, maldições e cicatrizes da alma que emergem do Sangue ancestral.",
+    details: [
+      "Defeito (••) Isca para Estaca — sofre Morte Final ao ser empalado pelo coração (não entra em torpor)",
+      "Defeito (•) Fraqueza Folclórica — sofre dano Agravado de uma fraqueza folclórica (luz ultravioleta, prata, água benta, etc.)",
+      "Defeito (•) Bloqueio Folclórico — deve recuar ou gastar Força de Vontade ao enfrentar um bloqueio folclórico",
+      "Defeito (•) Estigmas — começa a sangrar pelas mãos, pés e testa ao atingir Fome 4"
+    ]
+  },
+
+  // ══ ANTECEDENTES ══
+  {
+    cat: "background", name: "Aliados", dots: "• a •••••",
+    badge: "badge-bg", label: "Antecedente",
+    desc: "Mortais que apoiam e ajudam o vampiro — família, amigos ou organizações. Geralmente aparecem cerca de uma vez por história. Inimigos são o Defeito oposto.",
+    details: [
+      "(•) Mortal Fraco — provavelmente inútil em situações violentas",
+      "(••) Mortal Médio ou grupo coeso de Mortais Fracos",
+      "(•••) Mortal Dotado ou grupo perigoso de Mortais Médios",
+      "(••••) Mortal Letal, Mortal Dotado com poderes sobrenaturais, ou grupo bem armado de Mortais Dotados",
+    ]
+  },
+  {
+    cat: "background", name: "Contatos", dots: "• a •••",
+    badge: "badge-bg", label: "Antecedente",
+    desc: "Você conhece pessoas de várias esferas da vida mortal. Contatos fornecem informações e podem querer favores em troca.",
+    details: [
+      "(•) Um Contato que pode conseguir algo barato ou comum (equivale a Recursos 1)",
+      "(••) Um Contato que pode conseguir algo útil (equivale a Recursos 2)",
+      "(•••) Um Contato que pode conseguir algo caro ou difícil (equivale a Recursos 4)"
+    ]
+  },
+  {
+    cat: "background", name: "Fama", dots: "• a •••••",
+    badge: "badge-bg", label: "Antecedente",
+    desc: "Mortais conhecem seu nome e buscam notícias sobre você. Cada nível subtrai 1 da Dificuldade de testes Sociais com seus fãs e de muitas caçadas.",
+    details: [
+      "Defeito (••) Infâmia — famoso por algo horrível; a Dificuldade da maioria dos testes de reação aumenta",
+      "Defeito (•) Segredo Negro — versão mais leve da Infâmia; seu passado é desconhecido de quase todos",
+      "(•) Uma subcultural seleta te reconhece",
+      "(••) Celebridade local, reconhecido pela maioria na cidade",
+      "(•••) A maioria das pessoas no país conhece seu nome",
+      "(••••) Todos que acompanham tendências sociais sabem algo sobre você",
+      "(•••••) Fama de alcance nacional ou global"
+    ]
+  },
+  {
+    cat: "background", name: "Refúgio (Haven)", dots: "• a •••",
+    badge: "badge-bg", label: "Antecedente",
+    desc: "O local seguro onde o vampiro descansa durante o dia. Cada ponto básico adiciona +1 à Dificuldade de invadir ou vigiar o refúgio, e +1 dado em pools para notar perigo enquanto lá estiver.",
+    details: [
+      "Defeito (•) Sem Refúgio — precisa fazer esforço (pelo menos um teste básico) para encontrar lugar para dormir cada manhã",
+      "(•) Refúgio pequeno mas mais seguro que o padrão (ex: apartamento no subsolo, cripta, depósito)",
+      "(••) Bom tamanho, segurança ou privacidade (ex: casa unifamiliar, túnel de esgoto)",
+      "(•••) Muito grande, seguro ou privado (ex: complexo fora da cidade, banco desativado, estação de metrô desativada)",
+      "Méritos de Refúgio: Arsenal Secreto, Cela, Vigia, Laboratório, Biblioteca, Localização, Luxo, Passagem Secreta, Sistema de Segurança, Cirurgia, Proteção Mágica"
+    ]
+  },
+  {
+    cat: "background", name: "Rebanho (Herd)", dots: "• a •••••",
+    badge: "badge-bg", label: "Antecedente",
+    desc: "Você cultivou um grupo de vítimas das quais pode se alimentar sem preocupação. Você pode saciar pontos de Fome iguais ao seu Rebanho por semana sem testes.",
+    details: [
+      "Defeito (••) Predador Óbvio — você exala uma aura predatória; perde 2 dados em qualquer pool de caça exceto perseguição física",
+      "(•) 1 a 3 vítimas com Ressonância aleatória",
+      "(••) 4 a 7 vítimas, metade compartilhando uma Ressonância",
+      "(•••) 7 a 15 vítimas com duas Ressonâncias diferentes",
+      "(••••) 16 a 30 vítimas; escolha duas Ressonâncias por semana",
+      "(•••••) 31 a 60 vítimas; escolha três Ressonâncias por semana"
+    ]
+  },
+  {
+    cat: "background", name: "Influência", dots: "• a •••••",
+    badge: "badge-bg", label: "Antecedente",
+    desc: "Você tem poder na comunidade mortal — por riqueza, prestígio, cargo político, chantagem ou manipulação sobrenatural. Aplica-se a um grupo ou região da cidade por padrão.",
+    details: [
+      "Defeito (••) Desprezado — um grupo ou região da cidade vive para te atrapalhar; subtrai 2 dados de pools de convencimento",
+      "Defeito (•) Mal-Visto — subtrai 1 dado de testes Sociais com qualquer grupo na cidade exceto seus Aliados e Contatos",
+      "(•) Bem Conectado — garante uma audiência respeitosa",
+      "(••) Influente — pessoas querem te fazer favores",
+      "(•••) Estabelecido — figuras de poder mortal hesitam em se opor a você",
+      "(••••) Poderoso — sem motivo suficiente, funcionários obedecem",
+      "(•••••) Dominante — figuras menores tentam adivinhar o que você quer e fazem antes de serem pedidas"
+    ]
+  },
+  {
+    cat: "background", name: "Máscara (Mask)", dots: "• a ••",
+    badge: "badge-bg", label: "Antecedente",
+    desc: "Uma identidade falsa completa que permite ao vampiro parecer um ser humano funcionando normalmente na sociedade.",
+    details: [
+      "Defeito (••) Cadáver Conhecido — as pessoas sabem que você morreu recentemente; reagem com choque e horror",
+      "Defeito (•) Corpo Identificado — suas biometrias, nome e histórico aparecem em bancos de dados de inteligência como suspeito",
+      "(•) Identidade falsa sólida com cartão de crédito, conta bancária e certidão de nascimento; passa verificação estadual",
+      "(••) Sua Máscara passa verificação nacional (FBI, Scotland Yard, equivalente); se tinha histórico militar, foi classificado",
+      "Complementos de Máscara (••): Zerado, Sapateiro, Postiça"
+    ]
+  },
+  {
+    cat: "background", name: "Mawla", dots: "• a •••••",
+    badge: "badge-bg", label: "Antecedente",
+    desc: "Um ou mais Kindred que olham por você, oferecendo orientação, informação ou auxílio de vez em quando. Termo vindo do árabe medieval — 'o de confiança', 'protetor', 'mentor'.",
+    details: [
+      "Defeito — Adversário: um Kindred que deseja o mal para você ou seu sire; funciona como o inverso do Mawla",
+      "(•) Neônato como Mawla",
+      "(••) Ancilla como Mawla",
+      "(•••) Ancião como Mawla",
+      "(••••) Primogênito ou membro do Conselho Revolucionário Anarca",
+      "(•••••) Príncipe ou Barão"
+    ]
+  },
+  {
+    cat: "background", name: "Recursos", dots: "• a •••••",
+    badge: "badge-bg", label: "Antecedente",
+    desc: "Descreve sua riqueza e patrimônio. Os pontos representam uma renda que sustenta seu padrão de não-vida — mas você deve detalhar a fonte.",
+    details: [
+      "Defeito (•) Destituído — não tem dinheiro nem moradia",
+      "(•) Proletariado — vive de salário em salário: apartamento, carro, equipamento básico",
+      "(••) Classe Média — apartamento bom ou casa pequena, vários carros, equipamento de alto nível",
+      "(•••) Rico — grande apartamento ou casa confortável, itens de luxo",
+      "(••••) Abastado — mansão, helicóptero ou jato privado, equipamento muito especializado",
+      "(•••••) Ultra Rico — várias mansões, 'tudo que o dinheiro pode comprar'"
+    ]
+  },
+  {
+    cat: "background", name: "Servidores (Retainers)", dots: "• a •••",
+    badge: "badge-bg", label: "Antecedente",
+    desc: "Você possui um ou mais servos leais e steadfast — ghoul, dominados, seduzidos por Presença ou simplesmente fanáticos por você. Devem ser controlados de alguma forma: salário, doação de vitae ou mesmerismo.",
+    details: [
+      "Defeito (•) Perseguidor — você atrai pessoas obcecadas com você; um ex-servo sempre busca reconectar",
+      "(•) Servidor Fraco — uma criança, marginal ou nerd do horror que faz seu bidding sem Laço",
+      "(••) Ghoul, servo familiar, amante humano ou dominado com histórico; constrói-se como mortal médio",
+      "(•••) Servidor competente o suficiente para agir de forma independente e resolver problemas menores"
+    ]
+  },
+  {
+    cat: "background", name: "Status", dots: "• a •••••",
+    badge: "badge-bg", label: "Antecedente",
+    desc: "Sua reputação e posição (merecida ou não) dentro de uma comunidade local específica de Kindred. Status numa seita não transfere para a outra.",
+    details: [
+      "Defeito (••) Banido — completamente odiado pela seita; membros trabalharão ativamente contra você",
+      "Defeito (•) Suspeito — em má situação com a seita; sofre penalidade de 2 dados em testes Sociais com a facção ofendida",
+      "(•) Conhecido — neônato apresentado e bem-vindo, visto como promissor",
+      "(••) Respeitado — você tem responsabilidades, uma ancilla média",
+      "(•••) Influente — você detém autoridade sobre parte do grupo, um ancião médio",
+      "(••••) Poderoso — você ocupa cargo no grupo: Xerife, Arpista ou Flagelo",
+      "(•••••) Luminar — você senta à mesa do poder, membro respeitado do Primogênio"
+    ]
+  },
+
+  // ══ THIN-BLOOD ══
+  {
+    cat: "thinblood", name: "Dentes de Bebê", dots: "Defeito",
+    badge: "badge-thin", label: "Thin-Blood Defeito",
+    desc: "Você nunca desenvolveu presas, ou as que tem são inúteis para se alimentar. Precisa cortar suas vítimas ou extrair o sangue com uma seringa."
+  },
+  {
+    cat: "thinblood", name: "Temperamento Bestial", dots: "Defeito",
+    badge: "badge-thin", label: "Thin-Blood Defeito",
+    desc: "Você é afligido pela Besta como um vampiro completo. Precisa testar para Frenesi conforme as regras normais de vampiro."
+  },
+  {
+    cat: "thinblood", name: "Marcado pela Camarilla", dots: "Defeito",
+    badge: "badge-thin", label: "Thin-Blood Defeito",
+    desc: "Você foi marcado à força e dolorosamente pela Camarilla para lembrar seu lugar. A Camarilla mantém vigilância constante sobre você."
+  },
+  {
+    cat: "thinblood", name: "Maldição do Clã", dots: "Defeito",
+    badge: "badge-thin", label: "Thin-Blood Defeito",
+    desc: "Resquícios do Sangue do seu sire ainda correm em suas veias. Você deve escolher um Bane de Clã para sofrer, contando sua Severidade de Bane como 1."
+  },
+  {
+    cat: "thinblood", name: "Carne Morta", dots: "Defeito",
+    badge: "badge-thin", label: "Thin-Blood Defeito",
+    desc: "Seu Sangue não é forte o suficiente para te sustentar completamente. Sua carne está em estado constante de putrefação, com tinte esverdeado e leve cheiro de decomposição. Você recebe penalidade de 1 dado em testes Sociais com mortais."
+  },
+  {
+    cat: "thinblood", name: "Fragilidade Mortal", dots: "Defeito",
+    badge: "badge-thin", label: "Thin-Blood Defeito",
+    desc: "Você não pode Despertar o Sangue para curar; você se cura como um mortal. Não pode pegar o Mérito Resiliência Vampírica."
+  },
+  {
+    cat: "thinblood", name: "Banido pelos Anarcos", dots: "Defeito",
+    badge: "badge-thin", label: "Thin-Blood Defeito",
+    desc: "Você violou uma regra não escrita dos Anarcos. Eles te conhecem e te evitam — prefeririam te entregar à Camarilla antes de ouvir seus apelos."
+  },
+  {
+    cat: "thinblood", name: "Dependência de Vitae", dots: "Defeito",
+    badge: "badge-thin", label: "Thin-Blood Defeito",
+    desc: "Seu Sangue não consegue sustentar poderes vampíricos sozinho. A menos que beba sangue de vampiro suficiente para saciar 1 ponto de Fome por semana, você perde o acesso a todas as Disciplinas."
+  },
+  {
+    cat: "thinblood", name: "Camaradas Anarcos", dots: "Mérito",
+    badge: "badge-thin", label: "Thin-Blood Mérito",
+    desc: "Você fez amizade com membros de uma coterie Anarca que toleram sua presença. Funcionam coletivamente como um Mawla Anarca de 1 ponto, enquanto você não desvia da linha do partido."
+  },
+  {
+    cat: "thinblood", name: "Contato Camarilla", dots: "Mérito",
+    badge: "badge-thin", label: "Thin-Blood Mérito",
+    desc: "Você chamou a atenção de um recrutador da Camarilla que prometeu admissão e a chance de se tornar um vampiro de verdade — tudo que você precisa é manter os olhos abertos e reportar as atividades de sua coterie. Equivale a um Mawla Camarilla de 1 ponto que te trata mal."
+  },
+  {
+    cat: "thinblood", name: "Sangue Encadeado (Catenating Blood)", dots: "Mérito",
+    badge: "badge-thin", label: "Thin-Blood Mérito",
+    desc: "Você pode criar Laços de Sangue e realizar o Abraço como um vampiro normal. Qualquer vampiro que você criar desta forma será um Thin-Blood."
+  },
+  {
+    cat: "thinblood", name: "Bebedor do Dia (Day Drinker)", dots: "Mérito",
+    badge: "badge-thin", label: "Thin-Blood Mérito",
+    desc: "A luz solar reduz pela metade seu medidor de Vitalidade (arredondado para cima), mas simplesmente remove suas habilidades vampíricas, incluindo todas as Disciplinas e benefícios de Vitalidade — não causa outro dano."
+  },
+  {
+    cat: "thinblood", name: "Afinidade de Disciplina", dots: "Mérito",
+    badge: "badge-thin", label: "Thin-Blood Mérito",
+    desc: "Você tem afinidade por uma Disciplina específica escolhida na criação do personagem. Você ganha 1 ponto nessa Disciplina e pode aprender e reter pontos adicionais nela por meio de pontos de experiência, como se fosse um vampiro normal."
+  },
+  {
+    cat: "thinblood", name: "Parecido com Vivo (Lifelike)", dots: "Mérito",
+    badge: "badge-thin", label: "Thin-Blood Mérito",
+    desc: "Você tem batimento cardíaco, pode comer e aproveitar atividades sexuais como um mortal. Apenas os exames médicos mais avançados revelam algo fora do comum, assumindo que ocorram à noite."
+  },
+  {
+    cat: "thinblood", name: "Alquimista Thin-Blood", dots: "Mérito",
+    badge: "badge-thin", label: "Thin-Blood Mérito",
+    desc: "Os Duskborn mudam enquanto se alimentam. Você ganhou 1 ponto e 1 fórmula em Alquimia Thin-Blood. Pode comprar pontos e fórmulas adicionais por experiência normalmente."
+  },
+  {
+    cat: "thinblood", name: "Resiliência Vampírica", dots: "Mérito",
+    badge: "badge-thin", label: "Thin-Blood Mérito",
+    desc: "Você sofre dano como um vampiro normal, tratando ferimentos de perfuração e corte normais como dano Superficial."
+  }
+];
+
+let _vantFilter = 'all';
+
+function setVantFilter(cat, btn) {
+  _vantFilter = cat;
+  document.querySelectorAll('.vant-filter').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderVantagens();
+}
+
+function filterVantagens(q) {
+  renderVantagens(q.toLowerCase().trim());
+}
+
+function renderVantagens(q) {
+  const grid = document.getElementById('vant-grid');
+  if (!grid) return;
+  const query = q !== undefined ? q : (document.getElementById('vant-search')?.value || '').toLowerCase().trim();
+  const items = VANTAGENS.filter(v => {
+    const matchCat = _vantFilter === 'all' ||
+      (_vantFilter === 'flaw' && (v.cat === 'flaw' || (v.details && v.details.some(d => d.toLowerCase().includes('defeito'))))) ||
+      v.cat === _vantFilter;
+    const matchQ = !query || v.name.toLowerCase().includes(query) || v.desc.toLowerCase().includes(query);
+    return matchCat && matchQ;
+  });
+  if (!items.length) { grid.innerHTML = '<p style="color:var(--text-dim);font-style:italic;padding:20px 0;">Nenhum resultado encontrado.</p>'; return; }
+  grid.innerHTML = items.map(v => `
+    <div class="card" onclick="showVantagem('${v.name.replace(/'/g,"\\'")}')">
+      <span class="vant-type-badge ${v.badge}">${v.label}</span>
+      <h2>${v.name}</h2>
+      <div class="vant-dots">${v.dots}</div>
+      <p style="margin-top:8px">${v.desc.substring(0, 110)}…</p>
+    </div>
+  `).join('');
+}
+
+function showVantagem(name) {
+  const v = VANTAGENS.find(x => x.name === name);
+  const detailsHtml = v.details ? `<h4>Níveis & Efeitos</h4><ul>${v.details.map(d => `<li>${d}</li>`).join('')}</ul>` : '';
+  openModal(`
+    <span class="vant-type-badge ${v.badge}" style="margin-bottom:8px;display:inline-block">${v.label}</span>
+    <h2>${v.name}</h2>
+    <div class="vant-dots" style="margin-bottom:12px">${v.dots}</div>
+    <hr>
+    <p>${v.desc}</p>
+    ${detailsHtml}
+  `);
+}
 
 // ─────────────────────────── RENDER ───────────────────────────
 
@@ -1603,13 +2002,13 @@ const CHAR_STEPS = [
       "<strong>Pior Atributo:</strong> 1 dot (sua grande fraqueza)"
     ],
     cols: [
-      { label: "Físicos", items: ["Strength — força muscular bruta", "Dexterity — agilidade e coordenação", "Stamina — resistência e aguento"] },
-      { label: "Sociais", items: ["Charisma — magnetismo pessoal", "Manipulation — convencer e manipular", "Composure — autocontrole e calma"] },
-      { label: "Mentais", items: ["Intelligence — raciocínio e memória", "Wits — intuição e reações rápidas", "Resolve — foco e concentração"] }
+      { label: "Físicos", items: ["Força — força muscular bruta", "Destreza — agilidade e coordenação", "Vigor — resistência e aguento"] },
+      { label: "Sociais", items: ["Carisma — magnetismo pessoal", "Manipulação — convencer e manipular", "Autocontrole — compostura e calma"] },
+      { label: "Mentais", items: ["Inteligência — raciocínio e memória", "Raciocínio — intuição e reações rápidas", "Determinação — foco e concentração"] }
     ],
     derived: [
-      "<strong>Health</strong> = Stamina + 3",
-      "<strong>Willpower</strong> = Composure + Resolve"
+      "<strong>Vitalidade</strong> = Vigor + 3",
+      "<strong>Força de Vontade</strong> = Autocontrole + Determinação"
     ]
   },
   {
@@ -1618,17 +2017,17 @@ const CHAR_STEPS = [
     tag: "O que você aprendeu na vida",
     desc: "As Habilidades refletem a vida mortal do personagem — carreira, eventos marcantes e hobbies. Escolha uma das três distribuições abaixo ou use o método detalhado.",
     items: [
-      "<strong>Profissional:</strong> 2 Skills em 3 dots e 2 Skills em 2 dots (do que você vivia)",
-      "<strong>Evento de Vida:</strong> 1 Skill em 3 dots e 1 Skill em 2 dots (o que um evento marcante ensinou)",
-      "<strong>Lazer:</strong> 3 Skills em 1 dot (hobbies e passatempos)",
-      "<strong>Extra — Especialista:</strong> mais 1 Skill em 4 dots e 3 Skills em 3, 2 e 1",
-      "<strong>Extra — Generalista:</strong> mais 2 Skills em 2 dots e 4 Skills em 1 dot",
-      "Especialidades gratuitas em: Academics, Craft, Performance e Science + 1 extra livre"
+      "<strong>Profissional:</strong> 2 Habilidades em 3 pontos e 2 Habilidades em 2 pontos (do que você vivia)",
+      "<strong>Evento de Vida:</strong> 1 Habilidade em 3 pontos e 1 Habilidade em 2 pontos (o que um evento marcante ensinou)",
+      "<strong>Lazer:</strong> 3 Habilidades em 1 ponto (hobbies e passatempos)",
+      "<strong>Extra — Especialista:</strong> mais 1 Habilidade em 4 pontos e 3 Habilidades em 3, 2 e 1",
+      "<strong>Extra — Generalista:</strong> mais 2 Habilidades em 2 pontos e 4 Habilidades em 1 ponto",
+      "Especialidades gratuitas em: Erudição, Ofícios, Performance e Ciências + 1 extra livre"
     ],
     distros: [
-      { label: "Jack of All Trades", items: ["1 Skill em 3", "8 Skills em 2", "10 Skills em 1"] },
-      { label: "Balanceado", items: ["3 Skills em 3", "5 Skills em 2", "7 Skills em 1"] },
-      { label: "Especialista", items: ["1 Skill em 4", "3 Skills em 3", "3 Skills em 2", "3 Skills em 1"] }
+      { label: "Faz-Tudo", items: ["1 Habilidade em 3", "8 Habilidades em 2", "10 Habilidades em 1"] },
+      { label: "Balanceado", items: ["3 Habilidades em 3", "5 Habilidades em 2", "7 Habilidades em 1"] },
+      { label: "Especialista", items: ["1 Habilidade em 4", "3 Habilidades em 3", "3 Habilidades em 2", "3 Habilidades em 1"] }
     ]
   },
   {
@@ -1638,10 +2037,10 @@ const CHAR_STEPS = [
     desc: "Convicções são os valores morais centrais do personagem. Touchstones são os humanos vivos que encarnam esses valores. Juntos, formam o escudo contra a Besta.",
     items: [
       "Escolha <strong>1 a 3 Convicções</strong> — princípios morais em forma de \"nunca\" ou \"sempre\"",
-      "Cada Convicção precisa de um <strong>Touchstone correspondente</strong> — um humano vivo que a representa",
-      "Adicione todos os Touchstones ao <strong>Mapa de Relacionamentos</strong>",
-      "<strong>Humanidade inicial: 7</strong> (ou 8 em crónicas de neônatos, a critério do Narrador)",
-      "Se um Touchstone morre, a Convicção ligada a ele pode ser perdida",
+      "Cada Convicção precisa de um <strong>Marco correspondente</strong> — um humano vivo que a representa",
+      "Adicione todos os Marcos ao <strong>Mapa de Relacionamentos</strong>",
+      "<strong>Humanidade inicial: 7</strong> (ou 8 em crônicas de neônatos, a critério do Narrador)",
+      "Se um Marco morre, a Convicção ligada a ele pode ser perdida",
       "Defina também a <strong>Ambição</strong> — o objetivo de longo prazo do personagem"
     ],
     tip: { label: "Exemplos de Convicções", text: "\"Nunca matar inocentes\" · \"Proteger minha família a qualquer custo\" · \"Jamais trair um aliado\" · \"Nunca deixar arte morrer\" · \"Sempre punir os corruptos\"" }
@@ -1653,12 +2052,12 @@ const CHAR_STEPS = [
     desc: "As Disciplinas são os poderes sobrenaturais concedidos pelo Abraço. Cada clan tem 3 Disciplinas de clã — você começa com 2.",
     items: [
       "Escolha <strong>2 das 3 Disciplinas</strong> do seu clã",
-      "Coloque <strong>2 dots em uma</strong> e <strong>1 dot na outra</strong>",
-      "Escolha 1 poder para cada dot (total: 3 poderes iniciais)",
+      "Coloque <strong>2 pontos em uma</strong> e <strong>1 ponto na outra</strong>",
+      "Escolha 1 poder para cada ponto (total: 3 poderes iniciais)",
       "Caitiff: escolha quaisquer 2 Disciplinas com a mesma distribuição",
-      "Thin-Bloods: <strong>não recebem Disciplinas</strong> — começam com Thin-Blood Alchemy via Mérito"
+      "Thin-Bloods: <strong>não recebem Disciplinas</strong> — começam com Alquimia Thin-Blood via Mérito"
     ],
-    tip: { label: "Atenção", text: "O Tipo de Predador (próximo passo) adiciona 1 dot em uma Disciplina — isso pode levar a 3 dots em uma Disciplina já no início. Planeje em conjunto!" }
+    tip: { label: "Atenção", text: "O Tipo de Predador (próximo passo) adiciona 1 ponto em uma Disciplina — isso pode levar a 3 pontos em uma Disciplina já no início. Planeje em conjunto!" }
   },
   {
     num: "07",
@@ -1666,16 +2065,16 @@ const CHAR_STEPS = [
     tag: "Como você se alimenta",
     desc: "O modus predationis define como seu vampiro normalmente caça. Cada tipo concede Habilidades, Disciplinas e Vantagens — mas também impõe Defeitos.",
     items: [
-      "<strong>Alleycat</strong> — força bruta: +Celerity ou Potence, −1 Humanidade",
-      "<strong>Bagger</strong> — sangue frio do mercado negro: +Obfuscate, +Iron Gullet",
-      "<strong>Blood Leech</strong> — se alimenta de vampiros: +Blood Potency, −1 Humanidade",
-      "<strong>Cleaver</strong> — alimenta-se da família mortal: +Dominate ou Animalism",
-      "<strong>Consensualist</strong> — com consentimento: +1 Humanidade",
-      "<strong>Farmer</strong> — apenas animais: +1 Humanidade, indisponível com Blood Potency ≥ 3",
-      "<strong>Osiris</strong> — lidera um culto ou é celebridade: +Presence",
-      "<strong>Sandman</strong> — de vítimas dormindo: +Auspex ou Protean",
-      "<strong>Scene Queen</strong> — dentro de uma subcultura: +Dominate ou Presence",
-      "<strong>Siren</strong> — por sedução: +Celerity ou Presence"
+      "<strong>Beco Escuro (Alleycat)</strong> — força bruta: +Celeridade ou Potência, −1 Humanidade",
+      "<strong>Mercador de Sangue (Bagger)</strong> — sangue frio do mercado negro: +Ofuscação, +Estômago de Ferro",
+      "<strong>Sugador de Vampiro (Blood Leech)</strong> — se alimenta de vampiros: +Potência de Sangue, −1 Humanidade",
+      "<strong>Familiar (Familiar)</strong> — alimenta-se da família mortal: +Dominação ou Animalism",
+      "<strong>Consensual (Consensualist)</strong> — com consentimento: +1 Humanidade",
+      "<strong>Fazendeiro (Farmer)</strong> — apenas animais: +1 Humanidade, indisponível com Potência de Sangue ≥ 3",
+      "<strong>Osiris</strong> — lidera um culto ou é celebridade: +Presença",
+      "<strong>Sonâmbulo (Sandman)</strong> — de vítimas dormindo: +Auspício ou Proteano",
+      "<strong>Rainha da Cena (Scene Queen)</strong> — dentro de uma subcultura: +Dominação ou Presença",
+      "<strong>Sereia (Siren)</strong> — por sedução: +Celeridade ou Presença"
     ]
   },
   {
@@ -1684,17 +2083,17 @@ const CHAR_STEPS = [
     tag: "Recursos, contatos e poder social",
     desc: "7 pontos para gastar em Méritos e Antecedentes — as ferramentas práticas do dia-a-dia vampírico. Você também deve pegar pelo menos 2 pontos de Defeitos.",
     items: [
-      "<strong>Merits</strong> — traços pessoais: Línguas extras, Iron Gullet, Unbondable, etc.",
-      "<strong>Allies</strong> — aliados mortais (família, amigos)",
-      "<strong>Contacts</strong> — fontes de informação",
-      "<strong>Fame</strong> — reconhecimento entre mortais",
-      "<strong>Haven</strong> — local seguro para dormir durante o dia",
-      "<strong>Herd</strong> — mortais de acesso fácil para alimentação",
-      "<strong>Influence</strong> — poder político no mundo mortal",
-      "<strong>Mask</strong> — identidade falsa completa com documentação",
+      "<strong>Méritos</strong> — traços pessoais: Idiomas extras, Estômago de Ferro, Invínculável, etc.",
+      "<strong>Aliados</strong> — aliados mortais (família, amigos)",
+      "<strong>Contatos</strong> — fontes de informação",
+      "<strong>Fama</strong> — reconhecimento entre mortais",
+      "<strong>Refúgio</strong> — local seguro para dormir durante o dia",
+      "<strong>Rebanho</strong> — mortais de acesso fácil para alimentação",
+      "<strong>Influência</strong> — poder político no mundo mortal",
+      "<strong>Máscara</strong> — identidade falsa completa com documentação",
       "<strong>Mawla</strong> — mentor ou patrono Kindred",
-      "<strong>Resources</strong> — riqueza e patrimônio",
-      "<strong>Retainers</strong> — servos leais (mortais, ghoul ou dominados)",
+      "<strong>Recursos</strong> — riqueza e patrimônio",
+      "<strong>Servidores</strong> — servos leais (mortais, ghoul ou dominados)",
       "<strong>Status</strong> — posição na hierarquia Kindred"
     ],
     tip: { label: "Mínimo de Defeitos", text: "Você precisa pegar ao menos 2 pontos de Defeitos além dos já impostos pelo Tipo de Predador. Thin-Bloods precisam pegar 1–3 Méritos Thin-Blood e o mesmo número de Defeitos Thin-Blood." }
@@ -1712,19 +2111,19 @@ const CHAR_STEPS = [
       "Backgrounds de coterie são compartilhados — qualquer membro pode usá-los",
       "Registre todos os personagens importantes no <strong>Mapa de Relacionamentos</strong>"
     ],
-    tip: { label: "Tipos de Coterie", text: "Blood Cult · Cerberus · Champions · Commando · Day Watch · Fang Gang · Hunting Party · Maréchal · Nomads · Plumaires · Questari · Regency · Sbirri · Vehme · Watchmen" }
+    tip: { label: "Tipos de Coterie", text: "Culto de Sangue · Cérbero · Campeões · Comando · Guarda Diurna · Gangue de Presas · Caçada · Marechal · Nômades · Plumaires · Questari · Regência · Sbirri · Vehme · Vigilantes" }
   },
   {
     num: "10",
-    title: "Era do Tempo (Sea of Time)",
+    title: "Época do Abraço",
     tag: "Idade e geração do personagem",
     desc: "Junto com o grupo e o Narrador, decida quando o personagem foi abraçado. Isso determina a Geração e os pontos de experiência iniciais.",
     items: [
-      "<strong>Childer / Fledgling</strong> — Abraçado nos últimos 15 anos · Geração 12ª–13ª · Blood Potency 1 · 0 XP extra",
-      "<strong>Neônato</strong> — Abraçado entre 1940 e uma década atrás · Geração 12ª–13ª · BP 1 · +15 XP",
-      "<strong>Ancilla</strong> — Abraçado entre 1780 e 1940 · Geração 10ª–11ª · BP 2 · +2 Vantagens, +2 Defeitos, −1 Humanidade, +35 XP",
-      "<strong>Thin-Bloods</strong> — 14ª/15ª/16ª geração · Blood Potency 0",
-      "Elders (250+ anos) <strong>não são opção</strong> como personagens jogadores neste livro"
+      "<strong>Childe / Infante</strong> — Abraçado nos últimos 15 anos · Geração 12ª–13ª · Potência de Sangue 1 · 0 XP extra",
+      "<strong>Neônato</strong> — Abraçado entre 1940 e uma década atrás · Geração 12ª–13ª · PS 1 · +15 XP",
+      "<strong>Ancilla</strong> — Abraçado entre 1780 e 1940 · Geração 10ª–11ª · PS 2 · +2 Vantagens, +2 Defeitos, −1 Humanidade, +35 XP",
+      "<strong>Thin-Bloods</strong> — 14ª/15ª/16ª geração · Potência de Sangue 0",
+      "Anciões (250+ anos) <strong>não são opção</strong> como personagens jogadores neste livro"
     ],
     tip: { label: "Custo em XP", text: null },
     xpTable: true
@@ -1742,7 +2141,7 @@ const CHAR_STEPS = [
       "Cada relação tem descritor de <strong>ambos os lados</strong> (pode ser assimétrico: \"amor\" de um lado, \"dívida\" do outro)",
       "Atualize o mapa conforme alianças mudam, segredos emergem e personagens morrem"
     ],
-    tip: { label: "No início da campanha, inclua:", text: "Sire do personagem · 2 NPCs Kindred locais (1 positivo, 1 negativo) · Touchstones de cada Convicção · Prince, Baron ou figura de autoridade da cidade" }
+    tip: { label: "No início da campanha, inclua:", text: "Sire do personagem · 2 NPCs Kindred locais (1 positivo, 1 negativo) · Marcos de cada Convicção · Príncipe, Barão ou figura de autoridade da cidade" }
   },
   {
     num: "12",
@@ -1753,14 +2152,14 @@ const CHAR_STEPS = [
       "Conceito anotado (nome, profissão em vida, seita)",
       "Clã escolhido e Bane compreendido",
       "Atributos distribuídos (4/3/3/3/2/2/2/2/1)",
-      "Health e Willpower calculados",
+      "Vitalidade e Força de Vontade calculados",
       "Habilidades distribuídas com especialidades",
-      "1–3 Convicções e Touchstones correspondentes",
+      "1–3 Convicções e Marcos correspondentes",
       "Humanidade marcada em 7",
-      "2 Disciplinas escolhidas (2 dots + 1 dot) com poderes",
+      "2 Disciplinas escolhidas (2 pontos + 1 ponto) com poderes",
       "Tipo de Predador escolhido e aplicado",
       "7 pontos de Vantagens gastos + mínimo 2 Defeitos",
-      "Blood Potency anotado conforme geração",
+      "Potência de Sangue anotada conforme geração",
       "Ambição anotada",
       "Sire e NPCs no Mapa de Relacionamentos"
     ]
@@ -1811,10 +2210,10 @@ function renderCharCreation() {
         <tr><td>Disciplina de Clã</td><td>Novo nível × 5</td></tr>
         <tr><td>Outra Disciplina</td><td>Novo nível × 7</td></tr>
         <tr><td>Disciplina Caitiff</td><td>Novo nível × 6</td></tr>
-        <tr><td>Ritual Blood Sorcery</td><td>Nível do ritual × 3</td></tr>
+        <tr><td>Ritual de Feitiçaria de Sangue</td><td>Nível do ritual × 3</td></tr>
         <tr><td>Fórmula Thin-Blood</td><td>Nível da fórmula × 3</td></tr>
-        <tr><td>Vantagem (Advantage)</td><td>3 por dot</td></tr>
-        <tr><td>Blood Potency</td><td>Novo nível × 10</td></tr>
+        <tr><td>Vantagem</td><td>3 por ponto</td></tr>
+        <tr><td>Potência de Sangue</td><td>Novo nível × 10</td></tr>
       </tbody></table>`;
     }
 
@@ -1842,6 +2241,7 @@ renderPredators();
 renderRules();
 renderHumanity();
 renderLore();
+renderVantagens();
 </script>
 </body>
 </html>
