@@ -50,46 +50,32 @@
             background: var(--bg);
             border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: space-between;
-            gap: 10px;
-            padding: 0 12px;
+            padding: 0 12px; gap: 10px;
         }
         #hdr-center {
             display: flex; align-items: center; gap: 10px;
             position: absolute; left: 50%; transform: translateX(-50%);
         }
         .btn-back {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            display: flex; align-items: center; gap: 6px;
             text-decoration: none;
-            font-family: var(--mono);
-            font-size: 10px;
-            color: var(--text-dim);
-            letter-spacing: 0.18em;
+            font-family: var(--mono); font-size: 10px;
+            color: var(--text-dim); letter-spacing: 0.18em;
             text-transform: uppercase;
             padding: 5px 12px;
-            border: 1px solid var(--border);
-            border-radius: 2px;
-            white-space: nowrap;
-            flex-shrink: 0;
-            transition: all 0.2s;
-            background: transparent;
-            cursor: pointer;
+            border: 1px solid var(--border); border-radius: 2px;
+            white-space: nowrap; flex-shrink: 0;
+            transition: all 0.2s; background: transparent; cursor: pointer;
         }
         .btn-back:hover {
-            color: var(--red-hi);
-            border-color: var(--red);
+            color: var(--red-hi); border-color: var(--red);
             background: rgba(192,57,43,0.1);
             box-shadow: 0 0 10px var(--red-glow);
         }
         .btn-back svg {
-            width: 10px; height: 10px;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 1.5;
-            stroke-linecap: round;
-            flex-shrink: 0;
-            transition: transform 0.2s;
+            width: 10px; height: 10px; fill: none;
+            stroke: currentColor; stroke-width: 1.5; stroke-linecap: round;
+            flex-shrink: 0; transition: transform 0.2s;
         }
         .btn-back:hover svg { transform: translateX(-3px); }
         #hdr-title {
@@ -372,6 +358,57 @@
         }
         .has-unsaved .dot-unsaved { display: inline-block; }
 
+
+        /* ══ DISCIPLINE DYNAMIC ══ */
+        .disc-add-btn {
+            background: transparent !important;
+            border: 1px dashed #3a0000 !important;
+            color: var(--red) !important;
+            font-size: 0.78em !important;
+            letter-spacing: 2px !important;
+            text-align: center !important;
+            padding: 7px !important;
+            transition: all .2s !important;
+        }
+        .disc-add-btn:hover {
+            background: rgba(192,57,43,0.1) !important;
+            border-color: var(--red) !important;
+            box-shadow: 0 0 10px var(--red-glow) !important;
+        }
+        .disc-add-btn:disabled {
+            opacity: 0.3 !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+        .disc-remove-btn {
+            background: none;
+            border: none;
+            color: #3a1111;
+            font-size: 1.1em;
+            cursor: pointer;
+            padding: 0 4px;
+            line-height: 1;
+            transition: color 0.15s;
+            flex-shrink: 0;
+        }
+        .disc-remove-btn:hover { color: var(--red-hi); }
+        .st.disc-row { display: flex; align-items: center; gap: 4px; }
+        .st.disc-row input[type="text"]  { flex: 1; }
+        .st.disc-row input[type="number"]{ width: 56px; flex-shrink: 0; }
+        /* ══ DICE ANIMATION ══ */
+        @keyframes dieReveal {
+            from { opacity:0; transform: scale(0.4) rotate(-20deg); }
+            to   { opacity:1; transform: scale(1)   rotate(0deg); }
+        }
+        @keyframes shakeResult {
+            0%,100% { transform: translateX(0); }
+            20%     { transform: translateX(-5px); }
+            40%     { transform: translateX(5px); }
+            60%     { transform: translateX(-4px); }
+            80%     { transform: translateX(4px); }
+        }
+        .die-anim { animation: dieReveal 0.18s cubic-bezier(0.34,1.56,0.64,1) both; }
+
         /* ══ DICE ══ */
         .dice-pool-input {
             font-size: 2em !important; text-align: center;
@@ -601,9 +638,9 @@
         <div class="fg"><label>Parada de Dados</label>
             <input type="number" id="dice-pool-m" class="dice-pool-input" min="1" max="20" value="5">
         </div>
-        <button class="btn roll" onclick="window.rollV5()">▶ Rolar Dados</button>
-        <div id="roll-result" style="margin-top:8px;">AGUARDANDO...</div>
-        <div id="dice-display"></div>
+        <button class="btn roll" onclick="window.rollV5('mobile')">▶ Rolar Dados</button>
+        <div id="roll-result-m" style="font-family:var(--sans);font-weight:700;font-size:0.95em;letter-spacing:1px;text-align:center;min-height:44px;display:flex;align-items:center;justify-content:center;border-top:1px dashed #252530;border-bottom:1px dashed #252530;padding:8px 0;text-transform:uppercase;color:var(--text-dim);margin-top:8px;">AGUARDANDO...</div>
+        <div id="dice-display-m" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px;"></div>
     </div>
 </div>
 
@@ -755,13 +792,8 @@
                 <div class="section-acc">
                     <button class="section-acc-btn open" onclick="toggleAcc(this)">Disciplinas <span>▾</span></button>
                     <div class="section-acc-content open">
-                        <div class="sl">
-                            <div class="st"><input type="text" data-field="disc-1-nome" placeholder="Disciplina 1"><input type="number" data-field="disc-1-val" min="0" max="5" value="0"></div>
-                            <div class="st"><input type="text" data-field="disc-2-nome" placeholder="Disciplina 2"><input type="number" data-field="disc-2-val" min="0" max="5" value="0"></div>
-                            <div class="st"><input type="text" data-field="disc-3-nome" placeholder="Disciplina 3"><input type="number" data-field="disc-3-val" min="0" max="5" value="0"></div>
-                            <div class="st"><input type="text" data-field="disc-4-nome" placeholder="Disciplina 4"><input type="number" data-field="disc-4-val" min="0" max="5" value="0"></div>
-                            <div class="st"><input type="text" data-field="disc-5-nome" placeholder="Disciplina 5"><input type="number" data-field="disc-5-val" min="0" max="5" value="0"></div>
-                        </div>
+                        <div class="sl" id="disc-list"></div>
+                        <button class="btn disc-add-btn" id="disc-add-btn" onclick="window.addDisc()" style="margin-top:8px;">+ Adicionar Disciplina</button>
                     </div>
                 </div>
 
@@ -929,9 +961,9 @@
             <div class="fg"><label>Parada de Dados</label>
                 <input type="number" id="dice-pool" class="dice-pool-input" min="1" max="20" value="5">
             </div>
-            <button class="btn roll" onclick="window.rollV5()">▶ Iniciar Rolagem</button>
-            <div id="roll-result">AGUARDANDO INPUT...</div>
-            <div id="dice-display"></div>
+            <button class="btn roll" onclick="window.rollV5('desktop')">▶ Iniciar Rolagem</button>
+            <div id="roll-result-d" style="font-family:var(--sans);font-weight:700;font-size:0.95em;letter-spacing:1px;text-align:center;min-height:44px;display:flex;align-items:center;justify-content:center;border-top:1px dashed #252530;border-bottom:1px dashed #252530;padding:8px 0;text-transform:uppercase;color:var(--text-dim);">AGUARDANDO INPUT...</div>
+            <div id="dice-display-d" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px;"></div>
         </div>
     </aside>
 
@@ -1127,53 +1159,108 @@ window.addFromLibrary = function(libId) {
 // Valor unificado da parada — os dois inputs ficam sincronizados via DOMContentLoaded
 window._dicePool = 5;
 
-window.rollV5 = function() {
-    const pool   = window._dicePool || 5;
-    const hunger = parseInt(document.getElementById('input-fome')?.value) || 0;
+// ══ SECURE RNG ══
+// Uses crypto.getRandomValues for true OS entropy (vs Math.random's xorshift128+)
+// Falls back to Math.random if crypto unavailable
+function secureD10() {
+    try {
+        const buf = new Uint32Array(1);
+        crypto.getRandomValues(buf);
+        // Rejection sampling: discard values above highest multiple of 10
+        // within uint32 range to avoid modulo bias
+        const MAX = 4294967290; // floor(2^32 / 10) * 10
+        let v = buf[0];
+        if (v >= MAX) return secureD10(); // ~0.0000001% chance, retry
+        return (v % 10) + 1;
+    } catch(e) {
+        return Math.floor(Math.random() * 10) + 1;
+    }
+}
 
-    const normalDice = Math.max(0, pool - Math.max(0, hunger));
-    const hungerDice = Math.min(pool, Math.max(0, hunger));
+window.rollV5 = function(ctx) {
+    if (!ctx) {
+        const sb = document.getElementById('sidebar');
+        ctx = (sb && window.getComputedStyle(sb).display !== 'none') ? 'desktop' : 'mobile';
+    }
+    const isDesktop = ctx === 'desktop';
 
-    let successes=0, normalTens=0, hungerTens=0, hungerOnes=0;
-    const display  = document.getElementById('dice-display');
-    const resultEl = document.getElementById('roll-result');
-    display.innerHTML = '';
+    const poolEl    = isDesktop ? document.getElementById('dice-pool')      : document.getElementById('dice-pool-m');
+    const resultEl  = isDesktop ? document.getElementById('roll-result-d')  : document.getElementById('roll-result-m');
+    const displayEl = isDesktop ? document.getElementById('dice-display-d') : document.getElementById('dice-display-m');
 
-    for (let i=0; i<normalDice; i++) {
-        const r = Math.floor(Math.random()*10)+1;
+    const pool   = parseInt(poolEl?.value) || window._dicePool || 5;
+    // Fome sempre lida da aba Poder — fonte única da verdade
+    const hunger = Math.min(5, Math.max(0, parseInt(document.getElementById('input-fome')?.value) || 0));
+
+    const normalDice = Math.max(0, pool - hunger);
+    const hungerDice = Math.min(pool, hunger);
+
+    let successes = 0, normalTens = 0, hungerTens = 0, hungerOnes = 0;
+    displayEl.innerHTML = '';
+
+    // animate dice in with stagger
+    const allDice = [];
+
+    for (let i = 0; i < normalDice; i++) {
+        const r = secureD10();
         let cls = 'die d-n';
-        if      (r===10)  { normalTens++; successes++; cls += ' d-c'; }
-        else if (r >= 6)  { successes++;               cls += ' d-s'; }
-        else              {                             cls += ' d-f'; }
-        display.innerHTML += `<div class="${cls}">${r}</div>`;
+        if      (r === 10) { normalTens++; successes++; cls += ' d-c'; }
+        else if (r >= 6)   { successes++;               cls += ' d-s'; }
+        else               {                             cls += ' d-f'; }
+        allDice.push({ cls, r });
     }
-    for (let i=0; i<hungerDice; i++) {
-        const r = Math.floor(Math.random()*10)+1;
+    for (let i = 0; i < hungerDice; i++) {
+        const r = secureD10();
         let cls = 'die d-h';
-        if      (r===10) { hungerTens++;  successes++; cls += ' d-c'; }
-        else if (r >= 6) {                successes++; cls += ' d-s'; }
-        else if (r === 1){ hungerOnes++;               cls += ' d-b'; }
-        else             {                             cls += ' d-f'; }
-        display.innerHTML += `<div class="${cls}">${r}</div>`;
+        if      (r === 10) { hungerTens++;  successes++; cls += ' d-c'; }
+        else if (r >= 6)   {                successes++; cls += ' d-s'; }
+        else if (r === 1)  { hungerOnes++;               cls += ' d-b'; }
+        else               {                             cls += ' d-f'; }
+        allDice.push({ cls, r });
     }
 
-    const totalTens  = normalTens + hungerTens;
-    const critPairs  = Math.floor(totalTens / 2);
+    const totalTens = normalTens + hungerTens;
+    const critPairs = Math.floor(totalTens / 2);
     successes += critPairs * 2;
 
     const isCritical = critPairs > 0;
-    const isMessy    = isCritical && hungerTens > 0 && (normalTens + hungerTens >= 2);
+    const isMessy    = isCritical && hungerTens > 0 && totalTens >= 2;
     const isBestial  = successes === 0 && hungerOnes > 0;
 
     let txt = `${successes} SUCESSO(S)`, color = 'var(--text)';
-    if      (isMessy)       { txt = `CRÍTICO BAGUNÇADO! (${successes})`; color = '#e74c3c'; }
-    else if (isCritical)    { txt = `ACERTO CRÍTICO! (${successes})`;    color = '#f1c40f'; }
-    else if (isBestial)     { txt = 'FALHA BESTIAL! (0)';                color = '#e74c3c'; }
-    else if (successes===0) { txt = 'FALHA TOTAL.';                      color = '#555';    }
-    else { color = '#27ae60'; if (hungerOnes > 0) txt += ' ⚠ Bestial'; }
+    if      (isMessy)        { txt = `\u2620 CRÍTICO BAGUNÇADO! (${successes})`; color = '#e74c3c'; }
+    else if (isCritical)     { txt = `\u2605 ACERTO CRÍTICO! (${successes})`;    color = '#f1c40f'; }
+    else if (isBestial)      { txt = '\u2666 FALHA BESTIAL! (0)';                color = '#e74c3c'; }
+    else if (successes === 0){ txt = '\u2022 FALHA TOTAL.';                      color = '#555';    }
+    else { color = '#27ae60'; if (hungerOnes > 0) txt += ' \u26a0 Bestial'; }
 
-    resultEl.innerText   = txt;
-    resultEl.style.color = color;
+    // staggered reveal animation
+    resultEl.innerText = '...';
+    resultEl.style.color = 'var(--text-dim)';
+    displayEl.innerHTML = '';
+
+    allDice.forEach((d, i) => {
+        setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = d.cls + ' die-anim';
+            el.textContent = d.r;
+            el.style.animationDelay = '0ms';
+            displayEl.appendChild(el);
+            if (i === allDice.length - 1) {
+                setTimeout(() => {
+                    resultEl.innerText   = txt;
+                    resultEl.style.color = color;
+                    // shake result on critical/bestial
+                    if (isMessy || isBestial) {
+                        resultEl.style.animation = 'shakeResult 0.4s ease';
+                        setTimeout(() => resultEl.style.animation = '', 400);
+                    }
+                }, 80);
+            }
+        }, i * 60);
+    });
+
+    window._dicePool = pool;
 };
 
 // ══ IMAGE CROP ══
@@ -1187,7 +1274,89 @@ document.addEventListener('DOMContentLoaded', () => {
         el.addEventListener('input', window.marcarNaoSalvo);
     });
 
-    window.addEventListener('offline', () => {
+    // ══ DYNAMIC DISCIPLINES ══
+    window._discCount = 0;
+    const MAX_DISC = 10;
+
+    function makeDiscRow(idx, nome, val) {
+        const row = document.createElement('div');
+        row.className = 'st disc-row';
+        row.dataset.discIdx = idx;
+        row.innerHTML = `
+            <input type="text"   data-field="disc-${idx}-nome" placeholder="Disciplina ${idx}" value="${nome || ''}">
+            <input type="number" data-field="disc-${idx}-val"  min="0" max="5" value="${val || 0}" style="width:56px;">
+            <button class="disc-remove-btn" onclick="window.removeDisc(${idx})" title="Remover">✕</button>`;
+        // mark unsaved on change
+        row.querySelectorAll('input').forEach(el => el.addEventListener('input', window.marcarNaoSalvo));
+        return row;
+    }
+
+    window.renderDiscs = function(data) {
+        const list = document.getElementById('disc-list');
+        const btn  = document.getElementById('disc-add-btn');
+        if (!list) return;
+        list.innerHTML = '';
+        window._discCount = 0;
+
+        // Load from data or default to 3 empty rows
+        const saved = [];
+        if (data) {
+            for (let i = 1; i <= MAX_DISC; i++) {
+                const nome = data[`disc-${i}-nome`];
+                const val  = data[`disc-${i}-val`];
+                if (nome !== undefined || val !== undefined) saved.push({ i, nome, val });
+            }
+        }
+        const rows = saved.length > 0 ? saved : [
+            {i:1,nome:'',val:0},{i:2,nome:'',val:0},{i:3,nome:'',val:0}
+        ];
+
+        rows.forEach(({ i, nome, val }) => {
+            list.appendChild(makeDiscRow(i, nome, val));
+            window._discCount = Math.max(window._discCount, i);
+        });
+
+        updateAddBtn();
+    };
+
+    function updateAddBtn() {
+        const btn = document.getElementById('disc-add-btn');
+        if (!btn) return;
+        const current = document.getElementById('disc-list')?.children.length || 0;
+        btn.disabled   = current >= MAX_DISC;
+        btn.textContent = current >= MAX_DISC
+            ? `✕ Máximo de ${MAX_DISC} disciplinas atingido`
+            : `+ Adicionar Disciplina (${current}/${MAX_DISC})`;
+    }
+
+    window.addDisc = function() {
+        const list = document.getElementById('disc-list');
+        if (!list) return;
+        if (list.children.length >= MAX_DISC) return;
+        window._discCount++;
+        list.appendChild(makeDiscRow(window._discCount, '', 0));
+        updateAddBtn();
+        window.marcarNaoSalvo();
+    };
+
+    window.removeDisc = function(idx) {
+        const list = document.getElementById('disc-list');
+        if (!list) return;
+        if (list.children.length <= 1) return; // keep at least 1
+        const row = list.querySelector(`[data-disc-idx="${idx}"]`);
+        if (row) {
+            row.style.transition = 'opacity 0.15s, transform 0.15s';
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(8px)';
+            setTimeout(() => { row.remove(); updateAddBtn(); }, 150);
+        }
+        window.marcarNaoSalvo();
+    };
+
+    // Initial render
+    window.renderDiscs();
+
+        window.addEventListener('offline', () => {
         document.getElementById('offline-toast').style.display='block';
         const m=document.getElementById('offline-toast-m');if(m)m.style.display='block';
     });
@@ -1196,7 +1365,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const m=document.getElementById('offline-toast-m');if(m)m.style.display='none';
     });
 
-    // sync mobile/desktop dice-pool via shared variable
+        // sync mobile/desktop dice-pool via shared variable
     const dp  = document.getElementById('dice-pool');
     const dpm = document.getElementById('dice-pool-m');
     function syncPool(val) {
@@ -1295,6 +1464,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function distribuirDados(data) {
+        // Render dynamic disciplines first so their data-field inputs exist
+        if (window.renderDiscs) window.renderDiscs(data);
         document.querySelectorAll('[data-field]').forEach(el => {
             const k = el.dataset.field;
             if (data[k] !== undefined) el.value = data[k];
