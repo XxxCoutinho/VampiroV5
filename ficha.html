@@ -49,9 +49,49 @@
             height: var(--hdr-h);
             background: var(--bg);
             border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: space-between;
             gap: 10px;
+            padding: 0 12px;
         }
+        #hdr-center {
+            display: flex; align-items: center; gap: 10px;
+            position: absolute; left: 50%; transform: translateX(-50%);
+        }
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--text-dim);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            padding: 5px 12px;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            background: transparent;
+            cursor: pointer;
+        }
+        .btn-back:hover {
+            color: var(--red-hi);
+            border-color: var(--red);
+            background: rgba(192,57,43,0.1);
+            box-shadow: 0 0 10px var(--red-glow);
+        }
+        .btn-back svg {
+            width: 10px; height: 10px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+        .btn-back:hover svg { transform: translateX(-3px); }
         #hdr-title {
             font-family: var(--sans);
             font-weight: 700;
@@ -510,9 +550,16 @@
 
 <!-- HEADER -->
 <div id="hdr">
-    <div id="hdr-dot"></div>
-    <div id="hdr-title">Vampiro · Máscara V5</div>
-    <div id="hdr-dot"></div>
+    <a href="index.html" class="btn-back">
+        <svg viewBox="0 0 10 10"><polyline points="6.5,1 2,5 6.5,9"/></svg>
+        Início
+    </a>
+    <div id="hdr-center">
+        <div id="hdr-dot"></div>
+        <div id="hdr-title">Vampiro · Máscara V5</div>
+        <div id="hdr-dot"></div>
+    </div>
+    <div style="width:80px"></div>
 </div>
 
 <!-- MOBILE NAV (bottom) -->
