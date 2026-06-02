@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vampire: The Masquerade — Compêndio do Jogador</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060608;
+    --surface: #0d0d11;
+    --surface2: #13131a;
+    --border: #3a0000;
+    --red: #c0392b;
+    --red-hi: #e74c3c;
+    --red-glow: rgba(192,57,43,0.35);
+    --text: #ccc8c0;
+    --text-dim: #666;
+    --green: #27ae60;
+    --yellow: #f1c40f;
+    --mono: 'Share Tech Mono', monospace;
+    --sans: 'Rajdhani', sans-serif;
+    --nav-h: 56px;
+    --hdr-h: 40px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.35;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--nav-h);
+    background: rgba(6,6,8,0.96);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    backdrop-filter: blur(8px);
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .logo span { color: var(--text-dim); }
+
+  nav {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex: 1;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  nav button {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+  nav button:hover { color: var(--text); border-color: var(--border); }
+  nav button.active {
+    color: var(--red-hi);
+    border-color: var(--red);
+    background: rgba(192,57,43,0.08);
+    box-shadow: 0 0 12px var(--red-glow);
+  }
+
+  /* ── LAYOUT ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  section { display: none; }
+  section.active { display: block; }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    position: relative;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 120px;
+    height: 1px;
+    background: var(--red);
+    box-shadow: 0 0 12px var(--red-glow);
+  }
+  .page-header .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .page-header h1 {
+    font-family: var(--sans);
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+  }
+  .page-header p {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-top: 8px;
+    max-width: 600px;
+  }
+
+  /* ── GRID CARDS ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .grid-sm {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .card:hover {
+    border-color: var(--red);
+    box-shadow: 0 0 24px var(--red-glow), inset 0 0 40px rgba(192,57,43,0.04);
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--red);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .card:hover::before { opacity: 1; }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--red);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .card h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .card h3 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dim);
+    font-family: var(--mono);
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .card p {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 1px;
+    border: 1px solid;
+    margin: 4px 4px 0 0;
+    letter-spacing: 0.1em;
+  }
+  .pill-red { border-color: var(--red); color: var(--red); background: rgba(192,57,43,0.1); }
+  .pill-yellow { border-color: var(--yellow); color: var(--yellow); background: rgba(241,196,15,0.08); }
+  .pill-green { border-color: var(--green); color: var(--green); background: rgba(39,174,96,0.08); }
+  .pill-dim { border-color: #333; color: var(--text-dim); }
+
+  .pills { margin-top: 14px; }
+
+  /* ── MODAL / DETAIL OVERLAY ── */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+  }
+  .overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface2);
+    border: 1px solid var(--red);
+    border-radius: 2px;
+    max-width: 680px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 36px;
+    position: relative;
+    box-shadow: 0 0 60px var(--red-glow);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .modal::-webkit-scrollbar { width: 4px; }
+  .modal::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 1px;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { border-color: var(--red); color: var(--red-hi); }
+
+  .modal .tag { font-family: var(--mono); font-size: 10px; color: var(--red); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+  .modal h2 { font-size: 32px; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .modal .subtitle { font-family: var(--mono); font-size: 12px; color: var(--text-dim); letter-spacing: 0.1em; margin-bottom: 20px; }
+  .modal hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  .modal h4 { font-family: var(--mono); font-size: 11px; color: var(--red); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; margin-top: 20px; }
+  .modal p { font-size: 15px; color: var(--text-dim); line-height: 1.75; margin-bottom: 10px; }
+  .modal ul { padding-left: 0; list-style: none; }
+  .modal ul li { font-size: 14px; color: var(--text-dim); padding: 4px 0 4px 14px; position: relative; line-height: 1.6; }
+  .modal ul li::before { content: '▸'; position: absolute; left: 0; color: var(--red); font-size: 10px; top: 7px; }
+
+  /* ── DISCIPLINE POWERS ── */
+  .power-level {
+    margin-top: 16px;
+  }
+  .power-level-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--yellow);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(241,196,15,0.2);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+  .power-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-radius: 1px;
+  }
+  .power-item h5 { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .power-item p { font-size: 13px; color: var(--text-dim); line-height: 1.6; margin: 0; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 32px 0 24px;
+  }
+  .divider span {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── HUMANITY TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 12px;
+    margin-top: 12px;
+  }
+  th {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    color: var(--red);
+    letter-spacing: 0.1em;
+    background: var(--surface);
+    font-weight: normal;
+  }
+  td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    color: var(--text-dim);
+  }
+  tr:hover td { background: rgba(192,57,43,0.04); color: var(--text); }
+
+  /* ── HOME HERO ── */
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    position: relative;
+  }
+  .hero-symbol {
+    font-size: 60px;
+    line-height: 1;
+    margin-bottom: 24px;
+    filter: drop-shadow(0 0 24px var(--red-glow));
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { filter: drop-shadow(0 0 12px var(--red-glow)); }
+    50% { filter: drop-shadow(0 0 32px rgba(192,57,43,0.6)); }
+  }
+  .hero h1 {
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+  .hero .subtitle {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--red);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .hero .desc {
+    color: var(--text-dim);
+    font-size: 15px;
+    max-width: 520px;
+    margin: 0 auto 40px;
+    line-height: 1.75;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .hero-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 1px;
+  }
+  .hero-card:hover {
+    border-color: var(--red);
+    box-shadow: 0 0 20px var(--red-glow);
+    transform: translateY(-2px);
+  }
+  .hero-card .icon { font-size: 24px; margin-bottom: 8px; }
+  .hero-card .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .hero-card:hover .label { color: var(--red-hi); }
+
+  /* ── SEARCH ── */
+  .search-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .search-bar input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: 1px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-bar input::placeholder { color: var(--text-dim); }
+  .search-bar input:focus { border-color: var(--red); box-shadow: 0 0 10px var(--red-glow); }
+
+  /* ── CHARACTER CREATION STEPPER ── */
+  .step-block {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    position: relative;
+  }
+  .step-block::before {
+    content: '';
+    position: absolute;
+    left: 27px;
+    top: 56px;
+    bottom: -32px;
+    width: 1px;
+    background: var(--border);
+  }
+  .step-block:last-child::before { display: none; }
+
+  .step-num {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--red);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--red);
+    background: rgba(192,57,43,0.08);
+    box-shadow: 0 0 16px var(--red-glow);
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-body {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 24px;
+    transition: border-color 0.2s;
+  }
+  .step-body:hover { border-color: rgba(192,57,43,0.5); }
+
+  .step-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .step-subtitle {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .step-desc {
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.75;
+    margin-bottom: 14px;
+  }
+  .step-items {
+    list-style: none;
+    padding: 0;
+  }
+  .step-items li {
+    font-size: 14px;
+    color: var(--text-dim);
+    padding: 5px 0 5px 16px;
+    position: relative;
+    line-height: 1.65;
+    border-bottom: 1px solid rgba(58,0,0,0.5);
+  }
+  .step-items li:last-child { border-bottom: none; }
+  .step-items li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--red);
+    font-size: 10px;
+    top: 8px;
+  }
+  .step-items li strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .step-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--yellow);
+    padding: 14px 18px;
+    margin-top: 14px;
+    border-radius: 1px;
+  }
+  .step-box .box-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--yellow);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .step-box p, .step-box li {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.65;
+  }
+
+  .step-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  @media (max-width: 600px) {
+    .step-cols { grid-template-columns: 1fr; }
+    .step-block { gap: 14px; }
+  }
+
+  .col-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 14px;
+    border-radius: 1px;
+  }
+  .col-box .col-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .col-box ul { list-style: none; padding: 0; }
+  .col-box ul li {
+    font-size: 13px;
+    color: var(--text-dim);
+    padding: 3px 0 3px 12px;
+    position: relative;
+    line-height: 1.6;
+  }
+  .col-box ul li::before { content: '·'; position: absolute; left: 0; color: var(--red); }
+
+  .xp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 12px;
+    margin-top: 12px;
+  }
+  .xp-table th {
+    border: 1px solid var(--border);
+    padding: 7px 12px;
+    text-align: left;
+    color: var(--yellow);
+    background: var(--surface2);
+    font-weight: normal;
+    letter-spacing: 0.1em;
+  }
+  .xp-table td {
+    border: 1px solid var(--border);
+    padding: 7px 12px;
+    color: var(--text-dim);
+  }
+  .xp-table tr:hover td { background: rgba(192,57,43,0.04); color: var(--text); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">V:TM <span>//</span> COMPÊNDIO</div>
+  <nav id="nav">
+    <button class="active" onclick="showSection('home', this)">Início</button>
+    <button onclick="showSection('clans', this)">Clãs</button>
+    <button onclick="showSection('disciplines', this)">Disciplinas</button>
+    <button onclick="showSection('predators', this)">Tipos de Predador</button>
+    <button onclick="showSection('rules', this)">Regras Essenciais</button>
+    <button onclick="showSection('humanity', this)">Humanidade</button>
+    <button onclick="showSection('charcreation', this)">Criar Personagem</button>
+    <button onclick="showSection('lore', this)">Glossário</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ═══════════════════════════════ HOME ═══════════════════════════════ -->
+  <section id="home" class="active">
+    <div class="hero">
+      <div class="hero-symbol">🩸</div>
+      <div class="subtitle">Vampire: The Masquerade • V5</div>
+      <h1>Compêndio do Jogador</h1>
+      <p class="desc">Referência rápida para sessões de jogo. Consulte clãs, disciplinas, tipos de predador e regras essenciais — tudo em um só lugar.</p>
+      <div class="hero-grid">
+        <div class="hero-card" onclick="showSection('clans', document.querySelector('[onclick*=clans]'))">
+          <div class="icon">🧛</div>
+          <div class="label">Clãs</div>
+        </div>
+        <div class="hero-card" onclick="showSection('disciplines', document.querySelector('[onclick*=disciplines]'))">
+          <div class="icon">⚡</div>
+          <div class="label">Disciplinas</div>
+        </div>
+        <div class="hero-card" onclick="showSection('predators', document.querySelector('[onclick*=predators]'))">
+          <div class="icon">🎯</div>
+          <div class="label">Predadores</div>
+        </div>
+        <div class="hero-card" onclick="showSection('rules', document.querySelector('[onclick*=rules]'))">
+          <div class="icon">📜</div>
+          <div class="label">Regras</div>
+        </div>
+        <div class="hero-card" onclick="showSection('charcreation', document.querySelector('[onclick*=charcreation]'))">
+          <div class="icon">📋</div>
+          <div class="label">Criar Personagem</div>
+        </div>
+        <div class="hero-card" onclick="showSection('humanity', document.querySelector('[onclick*=humanity]'))">
+          <div class="icon">❤️</div>
+          <div class="label">Humanidade</div>
+        </div>
+        <div class="hero-card" onclick="showSection('lore', document.querySelector('[onclick*=lore]'))">
+          <div class="icon">📖</div>
+          <div class="label">Glossário</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ CLÃS ═══════════════════════════════ -->
+  <section id="clans">
+    <div class="page-header">
+      <div class="tag">// Capítulo II</div>
+      <h1>Clãs Kindred</h1>
+      <p>As 13 linhagens de vampiros, mais os Caitiff e os Thin-Bloods. Cada clã compartilha poderes, fraquezas e comportamentos do seu Antediluviano progenitor.</p>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="clan-search" placeholder="Buscar clã..." oninput="filterCards('clan-search','clan-card')">
+    </div>
+
+    <div class="grid" id="clan-grid">
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ DISCIPLINAS ═══════════════════════════════ -->
+  <section id="disciplines">
+    <div class="page-header">
+      <div class="tag">// Capítulo VI</div>
+      <h1>Disciplinas</h1>
+      <p>Os poderes sobrenaturais do sangue vampírico. Divididos de 1 a 5 dots, cada disciplina confere habilidades únicas — e pode revelar a natureza da Besta.</p>
+    </div>
+
+    <div class="grid" id="disc-grid">
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ PREDADORES ═══════════════════════════════ -->
+  <section id="predators">
+    <div class="page-header">
+      <div class="tag">// Criação de Personagem</div>
+      <h1>Tipos de Predador</h1>
+      <p>Como o seu vampiro normalmente se alimenta define suas habilidades e até seu sangue. Cada tipo concede vantagens, disciplinas e defeitos específicos.</p>
+    </div>
+    <div class="grid grid-sm" id="pred-grid">
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ REGRAS ═══════════════════════════════ -->
+  <section id="rules">
+    <div class="page-header">
+      <div class="tag">// Sistema de Jogo</div>
+      <h1>Regras Essenciais</h1>
+      <p>Os pilares mecânicos do V5 — desde testes simples até Frenesi e a Fome.</p>
+    </div>
+    <div class="grid" id="rules-grid">
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ HUMANIDADE ═══════════════════════════════ -->
+  <section id="humanity">
+    <div class="page-header">
+      <div class="tag">// Mecânica Central</div>
+      <h1>Humanidade</h1>
+      <p>A humanidade mede o quanto o vampiro ainda mantém sua ligação com a vida mortal. Quando cai, a Besta cresce.</p>
+    </div>
+    <div class="grid" id="hum-grid">
+    </div>
+    <div class="divider"><span>Tabela de Referência</span></div>
+    <table>
+      <thead>
+        <tr><th>Humanidade</th><th>Dados extras vs Frenesi</th><th>Duração do Torpor</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>9</td><td>+3 dados</td><td>Três dias</td></tr>
+        <tr><td>8</td><td>+2 dados</td><td>Uma semana</td></tr>
+        <tr><td>7</td><td>+2 dados</td><td>Duas semanas</td></tr>
+        <tr><td>6</td><td>+2 dados</td><td>Um mês</td></tr>
+        <tr><td>5</td><td>+1 dado</td><td>Um ano</td></tr>
+        <tr><td>4</td><td>+1 dado</td><td>Uma década</td></tr>
+        <tr><td>3</td><td>+1 dado</td><td>Cinco décadas</td></tr>
+        <tr><td>2</td><td>0 dados</td><td>Um século</td></tr>
+        <tr><td>1</td><td>0 dados</td><td>Cinco séculos</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ═══════════════════════════════ CRIAR PERSONAGEM ═══════════════════════════════ -->
+  <section id="charcreation">
+    <div class="page-header">
+      <div class="tag">// Criação de Personagem</div>
+      <h1>Como Criar sua Ficha</h1>
+      <p>Um guia passo a passo completo para criar um personagem vampiro do zero — do conceito mortal ao Kindred nas ruas da cidade.</p>
+    </div>
+
+    <!-- STEPPER -->
+    <div id="steps-container"></div>
+  </section>
+
+  <!-- ═══════════════════════════════ GLOSSÁRIO ═══════════════════════════════ -->
+  <section id="lore">
+    <div class="page-header">
+      <div class="tag">// Vocabulário Kindred</div>
+      <h1>Glossário Kindred</h1>
+      <p>Termos usados pelos vampiros para descrever seu mundo, política e condição. Conhecê-los é essencial para navegar a Camarilla e o Movimento Anarca.</p>
+    </div>
+    <div class="grid grid-sm" id="lore-grid">
+    </div>
+  </section>
+
+</main>
+
+<!-- MODAL OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeOverlay()">✕ fechar</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────── NAV ───────────────────────────
+function showSection(id, btn) {
+  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ─────────────────────────── MODAL ───────────────────────────
+function openModal(html) {
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeModal(e) {
+  if (e.target === document.getElementById('overlay')) closeOverlay();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeOverlay(); });
+
+// ─────────────────────────── FILTER ───────────────────────────
+function filterCards(inputId, cardClass) {
+  const q = document.getElementById(inputId).value.toLowerCase();
+  document.querySelectorAll('.' + cardClass).forEach(c => {
+    c.style.display = c.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+// ─────────────────────────── DATA ───────────────────────────
+
+const CLANS = [
+  {
+    name: "Brujah",
+    nicknames: "Rabble · Punks · Hellenes",
+    tagline: "O Clã Erudito",
+    disciplines: ["Celerity", "Potence", "Presence"],
+    bane: "O Sangue dos Brujah ferve com fúria mal contida. Subtraia dados iguais à Severidade do Bane de qualquer rolagem para resistir ao frenesi de fúria. Não pode baixar a pool abaixo de um dado.",
+    desc: "Os Brujah sempre abraçaram contracultura e revolução. De punks e ativistas a filósofos revolucionários (os Hellenes), o clã busca aliados que questionam normas e se identificam com os oprimidos. Sua paixão é seu maior dom e sua maior maldição.",
+    archetypes: ["Câncer no Sistema — opera dentro de estruturas corruptas para derrubá-las", "Voz do Povo — fomenta agitação política entre mortais", "Adorador do Sangue — acredita que seu Sangue é superior ao de outros clãs", "Monstro Disfarçado — mantém laços mortais enquanto luta contra a Besta"]
+  },
+  {
+    name: "Gangrel",
+    nicknames: "Savages · Ferals · Country Gangrel",
+    tagline: "O Clã dos Errantes",
+    disciplines: ["Animalism", "Fortitude", "Protean"],
+    bane: "Ao sair de um Frenesi, o Gangrel adquire uma característica animal (garras, olhos de felino, pelo, etc.) por cada ponto de Bane Severity. Estas podem desaparecer com o tempo a critério do Narrador.",
+    desc: "Solitários e selvagens, os Gangrel se identificam mais com a Besta do que qualquer outro clã. São viajantes perpétuos, guardiões de florestas e cidades, capazes de se transformar e de se comunicar com animais. Desconfiam profundamente de instituições como a Camarilla.",
+    archetypes: ["Lobo Solitário — errante que evita sociedade Kindred", "Guardião da Natureza — protege locais selvagens", "Guerreiro Urbano — feral adaptado às selvas de concreto"]
+  },
+  {
+    name: "Malkavian",
+    nicknames: "Lunatics · Kooks · Oracles",
+    tagline: "O Clã da Loucura",
+    disciplines: ["Auspex", "Dominate", "Obfuscate"],
+    bane: "Todos os Malkavians carregam uma desordem mental de nascença. Adicione a Severidade do Bane como penalidade a uma categoria de rolagens sempre que a desordem for relevante. A desordem não pode ser curada permanentemente.",
+    desc: "Os Malkavians são amaldiçoados com loucura perpétua — mas para alguns, essa maldição traz visões proféticas e percepções que os sãos jamais alcançariam. São oráculos, loucos e visionários ao mesmo tempo. Alguns usam Dominate; outros, Auspex para enxergar além do véu.",
+    archetypes: ["O Oráculo — visões perturbadoras mascaram sabedoria profunda", "O Louco Funcional — mantém aparência de normalidade enquanto desmorona por dentro", "O Manipulador Perturbado — usa Dominate para controlar enquanto a mente falha"]
+  },
+  {
+    name: "Nosferatu",
+    nicknames: "Sewer Rats · Haunts · Cleopatras",
+    tagline: "O Clã Amaldiçoado",
+    disciplines: ["Animalism", "Obfuscate", "Potence"],
+    bane: "A aparência do Nosferatu é monstrosa e inevitável — qualquer ilusão ou disfarce social sofre penalidade igual à Severidade do Bane. Mortais reagem com horror instintivo.",
+    desc: "Deformados pelo Abraço, os Nosferatu vivem nas sombras e nas entranhas das cidades. Mestres da informação e da furtividade, compensam sua aparência horrenda com redes de espionagem invejáveis. O que lhes falta em charme, sobra em conhecimento.",
+    archetypes: ["Rato do Esgoto — habitante das profundezas urbanas, coletor de segredos", "O Informante — vende e compra informações como moeda de poder", "O Guardião Silencioso — protege seu domínio das sombras"]
+  },
+  {
+    name: "Toreador",
+    nicknames: "Degenerates · Artistes · Roses",
+    tagline: "O Clã dos Artistas",
+    disciplines: ["Auspex", "Celerity", "Presence"],
+    bane: "Quando um Toreador presencia algo de beleza extraordinária, deve passar em um teste ou ficar paralisado em êxtase por um turno (ou mais, com falhas críticas). A Severidade do Bane afeta a Dificuldade do teste.",
+    desc: "Patrocinadores das artes, sedutores e frequentadores da alta sociedade, os Toreador usam seu refinamento como arma tanto quanto sua Presence. Amam beleza — e isso pode paralisá-los literalmente. São o coração social da Camarilla.",
+    archetypes: ["O Patrono — financia artistas mortais para se alimentar deles", "A Socialite — navega cortes Kindred com charme letal", "O Artista Maldito — cria obras perturbadoras inspiradas pela Besta"]
+  },
+  {
+    name: "Tremere",
+    nicknames: "Warlocks · Usurpers · Telyavs",
+    tagline: "O Clã da Magia",
+    disciplines: ["Auspex", "Blood Sorcery", "Dominate"],
+    bane: "O primeiro Blood Bond formado por um Tremere sempre é com seu clã ou com seu sire. O Tremere sofre penalidade de Bane Severity em qualquer resistência contra o detentor do Bond.",
+    desc: "Outrora uma ordem de magos mortais que roubou o poder vampírico, os Tremere construíram um império baseado em segredos e lealdade forçada. Sua feitiçaria de sangue é inigualável — mas sua hierarquia interna e seus juramentos de sangue os tornam os mais controlados de todos os clãs.",
+    archetypes: ["O Aprendiz Leal — segue a hierarquia enquanto aprende a manipulá-la", "O Rebelde da Pirâmide — busca quebrar o Blood Bond que o prende", "O Arquimago — devotado ao domínio absoluto da Blood Sorcery"]
+  },
+  {
+    name: "Ventrue",
+    nicknames: "Blue Bloods · Patricians · Tyrants",
+    tagline: "O Clã dos Líderes",
+    disciplines: ["Dominate", "Fortitude", "Presence"],
+    bane: "Cada Ventrue só pode se alimentar de um tipo específico de mortal (por traço emocional, físico ou demográfico). Alimentar-se de outros causa enjoo e conta apenas metade da Fome saciada.",
+    desc: "A espinha dorsal da Camarilla, os Ventrue se veem como a aristocracia natural dos Kindred. Ricos, influentes e calculistas, eles constroem impérios políticos e corporativos com a mesma facilidade com que manipulam mortais. Sua fraqueza alimentar os torna surpreendentemente vulneráveis.",
+    archetypes: ["O Príncipe — governa com mão de ferro e autoridade inquestionável", "O Corporativista — controla impérios empresariais da sombra", "O Nobre Decadente — mantém aparência de grandeza enquanto enfrenta declínio"]
+  },
+  {
+    name: "Caitiff",
+    nicknames: "Trash · Forsaken · Orphans",
+    tagline: "Sem Clã, Sem Proteção",
+    disciplines: ["Quaisquer 3 à escolha"],
+    bane: "Os Caitiff começam com o Defeito 'Suspeito' e não podem comprar Status positivo durante a criação. São vistos com desconfiança por todos os clãs estabelecidos.",
+    desc: "Vampiros sem linhagem reconhecida — seja porque seu sire era Caitiff, seja porque o sangue degenerou ao longo de gerações. Sem clã para protegê-los, são frequentemente vistos como refugo. Porém, sua falta de Bane clânico pode ser uma vantagem inesperada.",
+    archetypes: ["O Órfão — sobrevive sem estrutura clânica, aprendendo sozinho", "O Renegado — abraça sua falta de afiliação como liberdade"]
+  },
+  {
+    name: "Thin-Blooded",
+    nicknames: "Duskborn · Thin-Bloods · Qlippoth",
+    tagline: "A 14ª e 15ª Geração",
+    disciplines: ["Thin-Blood Alchemy (única)"],
+    bane: "O Abraço Thin-Blood é instável — alguns podem até andar na luz do dia. Mas sofrem penalidades severas em quase tudo que outros vampiros fazem facilmente: alimentar-se, resistir ao sol, etc.",
+    desc: "A geração mais distante de Caim, os Thin-Bloods mal partilham da maldição vampírica. Não experimentam a Fome da mesma forma, podem às vezes comer comida mortal, e alguns sobrevivem à luz solar. São vistos como presságio do Gehenna por muitos Kindred mais velhos.",
+    archetypes: ["O Proscrito — vive às margens da sociedade Kindred", "O Alquimista — domina Thin-Blood Alchemy para compensar fraquezas", "O Mortal Fantasma — mantém laços humanos mais facilmente que qualquer outro"]
+  }
+];
+
+const DISCIPLINES = [
+  {
+    name: "Animalism",
+    type: "Mental",
+    resonance: "Sangue Animal (feral)",
+    clans: ["Gangrel", "Nosferatu"],
+    desc: "O vampiro se conecta com a natureza animal — tanto dos animais ao redor quanto com a própria Besta interior. Permite controlar animais, habitar seus corpos e até suprimir a Besta alheia.",
+    powers: {
+      "Nível 1": ["Bond Famulus — cria vínculo mental com um animal familiar", "Sense the Beast — detecta a Besta em mortais e Kindred próximos"],
+      "Nível 2": ["Feral Whispers — comunicação bidirecional com animais"],
+      "Nível 3": ["Animal Succulence — sacia mais Fome ao se alimentar de animais", "Quell the Beast — suprime temporariamente a Besta de um alvo", "Unliving Hive (Amalgama: Obfuscate 2) — controla enxames de insetos"],
+      "Nível 4": ["Subsume the Spirit — habita o corpo de um animal"],
+      "Nível 5": ["Animal Dominion — ordena todos os animais de uma área", "Drawing Out the Beast — projeta a própria Besta em outro ser"]
+    }
+  },
+  {
+    name: "Auspex",
+    type: "Mental",
+    resonance: "Sanguíneo (Choleric / Phlegmatic)",
+    clans: ["Malkavian", "Toreador", "Tremere"],
+    desc: "Percepção sobrenatural que vai além dos sentidos físicos — leitura de auras, visões proféticas e projeção astral. Auspex pode detectar poderes de Obfuscate.",
+    powers: {
+      "Nível 1": ["Heightened Senses — aguça todos os sentidos a níveis sobrenaturais", "Sense the Unseen — detecta o oculto, invisível e sobrenatural"],
+      "Nível 2": ["Premonition — flashes de visões e intuições proféticas"],
+      "Nível 3": ["Scry the Soul — lê a aura e emoções de um alvo", "Share the Senses (Amalgama: Animalism 1) — compartilha sentidos com famulus"],
+      "Nível 4": ["Spirit's Touch — obtém impressões de objetos tocados", "Telepathy — lê ou projeta pensamentos"],
+      "Nível 5": ["Clairvoyance — visão remota de locais conhecidos", "Possession — habita e controla um corpo mortal"]
+    }
+  },
+  {
+    name: "Celerity",
+    type: "Physical",
+    resonance: "Sanguíneo (Choleric)",
+    clans: ["Brujah", "Toreador"],
+    desc: "Velocidade e graça sobrenaturais. O vampiro se move tão rápido que parece teleportar, ataca múltiplas vezes e escapa de situações impossíveis.",
+    powers: {
+      "Nível 1": ["Cat's Grace — agilidade e equilíbrio perfeitos"],
+      "Nível 2": ["Fleetness — adiciona Celerity a pools de Destreza e Iniciativa", "Blink — teleporte curto em linha de visão"],
+      "Nível 3": ["Traversal — velocidade de escalar e mover-se igualmente em todas superfícies", "Unerring Aim (Amalgama: Auspex 1) — mira impossível"],
+      "Nível 4": ["Draught of Elegance — transfere Celerity para quem beber do sangue"],
+      "Nível 5": ["Lightning Strike — ataque instantâneo antes de qualquer reação", "Split Second — processa informação a velocidade sobre-humana"]
+    }
+  },
+  {
+    name: "Dominate",
+    type: "Mental",
+    resonance: "Fleumático (Phlegmatic)",
+    clans: ["Malkavian", "Tremere", "Ventrue"],
+    desc: "Controle mental direto. Através do contato visual, o vampiro implanta comandos, apaga memórias e reescreve a realidade de uma pessoa. Requer olho no olho.",
+    powers: {
+      "Nível 1": ["Cloud Memory — apaga memórias recentes de um alvo", "Compel — implanta um comando de uma palavra que o alvo obedece"],
+      "Nível 2": ["Mesmerize — implanta instruções complexas enquanto mantém contato visual"],
+      "Nível 3": ["The Forgetful Mind — reescreve memórias completas", "Submerged Directive — implanta sugestão que ativa por gatilho futuro"],
+      "Nível 4": ["Rationalize — o alvo acredita que suas ações foram por vontade própria", "Dominate at Distance (Amalgama: Auspex 3) — sem contato visual"],
+      "Nível 5": ["Mass Manipulation — Dominate em um grupo inteiro", "Terminal Decree — comando permanente que não pode ser apagado"]
+    }
+  },
+  {
+    name: "Fortitude",
+    type: "Physical",
+    resonance: "Melancólico (Melancholic)",
+    clans: ["Gangrel", "Ventrue"],
+    desc: "Resiliência vampírica elevada ao extremo. O vampiro suporta dano que mataria qualquer outro ser — incluindo fogo e luz solar.",
+    powers: {
+      "Nível 1": ["Resilience — converte dano Agravado em Superficial", "Unswayable Mind — resiste a poderes mentais e emocionais"],
+      "Nível 2": ["Toughness — reduz dano físico recebido"],
+      "Nível 3": ["Defy Bane — ignora temporariamente a própria fraqueza de clã", "Fortify the Inner Façade — resiste à leitura de Auspex"],
+      "Nível 4": ["Draught of Endurance — transfere Fortitude para quem beber do sangue", "Flesh of Marble — absorve impactos catastróficos sem dano"],
+      "Nível 5": ["Aegis — imunidade temporária a dano Agravado", "Unkillable — sobrevive a destruição que normalmente geraria Morte Final"]
+    }
+  },
+  {
+    name: "Obfuscate",
+    type: "Mental",
+    resonance: "Fleumático (Phlegmatic)",
+    clans: ["Malkavian", "Nosferatu"],
+    desc: "A mente não registra a presença do vampiro. Não é invisibilidade física — é um comando mental que faz as pessoas simplesmente não notarem. Auspex pode detectar.",
+    powers: {
+      "Nível 1": ["Cloak of Shadows — permanece imóvel e imperceptível nas sombras", "Silence of Death — elimina completamente os próprios sons"],
+      "Nível 2": ["Unseen Passage — move-se sem ser percebido"],
+      "Nível 3": ["Chimerstry (Amalgama: Presence 2) — cria ilusões", "Ghost in the Machine — obfusca-se em gravações e câmeras"],
+      "Nível 4": ["Conceal — torna um objeto ou pessoa indetectável", "Vanish — desaparece mesmo enquanto observado"],
+      "Nível 5": ["Cloak the Gathering — obfusca um grupo inteiro", "Soul Mask — esconde a aura, geração e natureza vampírica de Auspex"]
+    }
+  },
+  {
+    name: "Potence",
+    type: "Physical",
+    resonance: "Melancólico (Melancholic)",
+    clans: ["Brujah", "Nosferatu"],
+    desc: "Força física sobre-humana. O vampiro pode levantar carros, estilhaçar paredes e golpear com força devastadora. Os dados de Potence são adicionados diretamente a pools de Força.",
+    powers: {
+      "Nível 1": ["Lethal Body — os ataques desarmados causam dano Agravado em mortais"],
+      "Nível 2": ["Soaring Leap — saltos impossíveis em distância e altura", "Brutal Feed — alimenta-se com força bruta, causando dano ao beber"],
+      "Nível 3": ["Uncanny Strength — força de pool de Força aumentada"],
+      "Nível 4": ["Draught of Might — transfere Potence para quem beber do sangue", "Spark of Rage (Amalgama: Presence 2) — fúria contagiante"],
+      "Nível 5": ["Earthshock — golpeia o chão criando onda de choque devastadora", "Fist of Caine — golpe único com força catastrófica"]
+    }
+  },
+  {
+    name: "Presence",
+    type: "Mental",
+    resonance: "Sanguíneo (Choleric)",
+    clans: ["Brujah", "Toreador", "Ventrue"],
+    desc: "Carisma e magnetismo sobrenaturais. O vampiro comanda atenção, desperta amor ou terror com meros olhares. Diferente de Dominate, Presence afeta emoções — não razão.",
+    powers: {
+      "Nível 1": ["Awe — todos na presença do vampiro ficam fascinados e receptivos"],
+      "Nível 2": ["Daunt — projeta terror que faz inimigos recuarem", "Lingering Kiss — a mordida do vampiro torna-se prazer viciante"],
+      "Nível 3": ["Dread Gaze — terror focado em um único alvo", "Entrancement — fascínio que dura até o pôr do sol"],
+      "Nível 4": ["Summon — chama uma pessoa específica irresistivelmente", "Muse — inspira obsessão criativa em mortais"],
+      "Nível 5": ["Majesty — presença avassaladora que para qualquer hostilidade", "Star Magnetism — influencia multidões através de gravações e transmissões"]
+    }
+  },
+  {
+    name: "Protean",
+    type: "Physical",
+    resonance: "Animal (Bestial)",
+    clans: ["Gangrel"],
+    desc: "A capacidade de alterar a forma física — de garras retráteis a transformação completa em lobo ou névoa. Os Gangrel são os mestres incontestados deste poder.",
+    powers: {
+      "Nível 1": ["Eyes of the Beast — visão na escuridão absoluta"],
+      "Nível 2": ["Weight of the Feather — levita ou se move sem deixar rastros", "Feral Weapons — manifesta garras ou presas que causam dano Agravado"],
+      "Nível 3": ["Earth Meld — funde-se com a terra para descanso seguro"],
+      "Nível 4": ["Shape Change — transforma-se em qualquer animal de tamanho similar"],
+      "Nível 5": ["Metamorphosis — transforma-se em criaturas maiores ou menores", "One with the Land — expande consciência para cobrir uma área geográfica"]
+    }
+  },
+  {
+    name: "Blood Sorcery",
+    type: "Sorcery",
+    resonance: "Varia (Tremere)",
+    clans: ["Tremere", "Banu Haqim"],
+    desc: "A feitiçaria do sangue vampírico — rituais e poderes que manipulam o vitae. Exclusiva dos Tremere e Banu Haqim. Inclui poderes básicos e uma lista extensa de Rituais.",
+    powers: {
+      "Nível 1": ["Corrosive Vitae — o sangue dissolve materiais", "A Taste for Blood — analisa o sangue para revelar geração e Fome"],
+      "Nível 2": ["Extinguish Vitae — suprime poderes baseados em sangue", "Purge (Amalgama: Auspex 2) — expele substâncias nocivas do próprio corpo"],
+      "Nível 3": ["Blood of Potency — aumenta temporariamente a própria Potência de Sangue", "Scorpion's Touch — o toque paralisa ou envenena"],
+      "Nível 4": ["Theft of Vitae — rouba sangue de um alvo à distância"],
+      "Nível 5": ["Baal's Caress — o sangue torna qualquer arma devastadoramente letal", "Cauldron of Blood — ferve o sangue dentro do alvo"]
+    }
+  },
+  {
+    name: "Thin-Blood Alchemy",
+    type: "Sorcery",
+    resonance: "Exclusivo Thin-Bloods",
+    clans: ["Thin-Blooded"],
+    desc: "A única disciplina nativa dos Thin-Bloods. Combina o próprio sangue fraco com ingredientes físicos para criar elixires com efeitos variados — cada receita é criada pelo alquimista.",
+    powers: {
+      "Nível 1": ["Athanor Corporis — cria elixires que imitam outros poderes vampíricos"],
+      "Nível 2": ["Airbag — elixir de proteção", "Farseeing — elixir que aguça a percepção"],
+      "Nível 3": ["Defractionate — separa e purifica sangue"],
+      "Nível 4": ["Hemoalchemy — cria elixires de efeitos mais poderosos"],
+      "Nível 5": ["Sunblock — elixir que concede resistência temporária à luz solar"]
+    }
+  }
+];
+
+const PREDATORS = [
+  {
+    name: "Alleycat",
+    desc: "Predador combativo direto. Você espreita, subjuga e bebe de quem puder, quando puder.",
+    gains: ["Especialidade: Intimidação (Assaltos) ou Briga (Agarramentos)", "1 dot de Celerity ou Potence", "3 dots de Contatos criminais"],
+    loses: ["1 dot de Humanidade"]
+  },
+  {
+    name: "Bagger",
+    desc: "Você rouba, compra ou obtém sangue frio em vez de caçar — mercado negro, hospitais, bancos de sangue.",
+    gains: ["Especialidade: Larceny (Arrombar) ou Streetwise (Mercado Negro)", "1 dot de Blood Sorcery (só Tremere) ou Obfuscate", "Mérito: Iron Gullet (•••)"],
+    loses: ["Inimigo (••) — alguém quer algo de volta"]
+  },
+  {
+    name: "Blood Leech",
+    desc: "Você se alimenta de outros vampiros — por caça, coerção ou como pagamento. Proibido na maioria das sociedades Kindred.",
+    gains: ["Especialidade: Briga (Kindred) ou Stealth (contra Kindred)", "1 dot de Celerity ou Protean", "Blood Potency +1"],
+    loses: ["1 dot de Humanidade", "Defeito: Segredo Obscuro (••) Diablista ou Proscrito (••)", "Defeito: Exclusão de Presa (••) — mortais"]
+  },
+  {
+    name: "Cleaver",
+    desc: "Você se alimenta secretamente de sua própria família e amigos mortais, mantendo laços com eles.",
+    gains: ["Especialidade: Persuasão (Gaslighting) ou Subterfúgio (Encobrimentos)", "1 dot de Dominate ou Animalism", "Vantagem: Herd (••)"],
+    loses: ["Defeito: Segredo Obscuro (•) Cleaver"]
+  },
+  {
+    name: "Consensualist",
+    desc: "Você só se alimenta com o consentimento da vítima — como doação voluntária, kink ou confessando ser vampiro.",
+    gains: ["Especialidade: Medicine (Flebotomia) ou Persuasão (Sedução)", "1 dot de Auspex ou Fortitude", "1 dot de Humanidade"],
+    loses: ["Defeito: Segredo Obscuro (•) Consensualist"]
+  },
+  {
+    name: "Farmer",
+    desc: "Você se recusa a se alimentar de humanos — apenas animais. Respeitado como nobre, ridicularizado como vegano.",
+    gains: ["Especialidade: Animal Ken (Animal Específico) ou Survival (Caça)", "1 dot de Animalism ou Protean", "1 dot de Humanidade"],
+    loses: ["Defeito: Exclusão de Presa (••) Vegan", "Indisponível se Blood Potency ≥ 3"]
+  },
+  {
+    name: "Osiris",
+    desc: "Você é celebridade ou lidera um culto/seita. Seus fãs ou seguidores te adoram — e te alimentam.",
+    gains: ["Especialidade: Ocultismo (Seitas) ou Performance (área escolhida)", "1 dot de Blood Sorcery ou Presence", "3 dots de Fama", "2 dots de Herd"],
+    loses: ["2 dots de recursos (na criação)", "Defeito: Inimigo (••) — inquisição, autoridades ou Camarilla"]
+  },
+  {
+    name: "Sandman",
+    desc: "Você entra em casas e se alimenta de vítimas enquanto dormem, tomando apenas um pouco para não acordá-las.",
+    gains: ["Especialidade: Stealth (Invadir Propriedades) ou Medicine (Anestesia)", "1 dot de Auspex ou Protean", "1 dot de Obfuscate"],
+    loses: ["Defeito: Exclusão de Presa (•) — vítimas acordadas"]
+  },
+  {
+    name: "Scene Queen",
+    desc: "Você domina uma subcultura específica (punk, goth, rave, etc.) e se alimenta dentro dela.",
+    gains: ["Especialidade: Etiquette (Subcultura específica) ou Leadership (Subcultura)", "1 dot de Dominate ou Presence", "2 dots de Status (Anarca ou Camarilla)"],
+    loses: ["Defeito: Quirk (•) — ligado à identidade da subcultura"]
+  },
+  {
+    name: "Siren",
+    desc: "Você seduz mortais, se alimenta de forma controlada e os manda embora apaixonados e sem memória clara.",
+    gains: ["Especialidade: Persuasão (Sedução) ou Subterfúgio (Insinuação)", "1 dot de Celerity ou Presence", "2 dots de Contatos (em bares, clubes)"],
+    loses: ["Defeito: Predisposição à Excitação (•) — a morte de presas traz riscos maiores"]
+  }
+];
+
+const RULES = [
+  {
+    name: "Sistema de Dados",
+    icon: "🎲",
+    desc: "V5 usa d10s. Forme um pool de dados de Atributo + Habilidade. Cada resultado ≥6 é um sucesso. A maioria dos testes requer apenas 1 sucesso.",
+    details: [
+      "Pool = Atributo + Habilidade (normalmente)",
+      "Sucesso: resultado ≥ 6",
+      "Sucesso Crítico: dois ou mais 10s no mesmo teste — dobra os sucessos contados",
+      "Falha Crítica (Bestial Failure): mais dados de Fome do que dados normais mostram 1s — algo terrível acontece",
+      "Messily Critical: dados de Fome mostram 10s — sucesso, mas de forma brutal e descontrolada"
+    ]
+  },
+  {
+    name: "A Fome",
+    icon: "🩸",
+    desc: "O estado de Fome (1-5) substitui os pontos de sangue do V20. Fome 5 é o limite — ir além pode levar ao Frenesi.",
+    details: [
+      "Fome 0: Totalmente alimentado, sem dados especiais",
+      "Fome 1-4: Substitua dados normais por dados de Fome (dados vermelhos) — mesma mecânica, riscos especiais em 1s e 10s",
+      "Fome 5: O vampiro deve se alimentar imediatamente ou arrisca Frenesi a qualquer provocação",
+      "Rouse Check: role 1d10; se ≥6, Fome não aumenta; se <6, Fome +1",
+      "Saciar Fome: alimentar-se de mortais (reduz 1-3), animais (reduz 1, com penalidades), vampiros (varia)"
+    ]
+  },
+  {
+    name: "Frenesi",
+    icon: "😡",
+    desc: "Quando a Besta assume o controle, o vampiro entra em Frenesi — perdendo o controle de suas ações.",
+    details: [
+      "Frenesi de Fúria: provocado por raiva, ataque ou humilhação",
+      "Frenesi de Terror: provocado por fogo, luz solar ou situações de terror extremo",
+      "Frenesi de Fome: quando Fome 5 e provocado por sangue acessível",
+      "Para resistir: role Composure + Resolução (modificado por Humanidade)",
+      "Durante o Frenesi: o Narrador pode controlar as ações do personagem"
+    ]
+  },
+  {
+    name: "Modos de Jogo",
+    icon: "🎭",
+    desc: "V5 divide o jogo em três modos distintos que definem o ritmo e o tipo de rolagem.",
+    details: [
+      "Roleplay Mode: sem testes, apenas interpretação pura — para diálogos e drama",
+      "Influence Mode: testes sociais para manipular NPCs, navegar política Kindred",
+      "Conflict Mode: sequências de ação — combate, perseguição, confronto sobrenatural",
+      "A transição entre modos é fluida e decidida pelo Narrador conforme a cena"
+    ]
+  },
+  {
+    name: "Potência de Sangue",
+    icon: "💧",
+    desc: "Uma medida do quanto o Sangue de Caim corre potente nas veias do vampiro — aumenta com a idade e com o Diablerie.",
+    details: [
+      "Blood Potency 0: Thin-Bloods",
+      "Blood Potency 1-2: Neônatos recentes",
+      "Blood Potency 3-4: Ancillae e vampiros experientes",
+      "Blood Potency 5+: Elders com poder significativo",
+      "Alta Blood Potency: mais dados em Disciplinas, mas maior dificuldade para saciar Fome com humanos normais"
+    ]
+  },
+  {
+    name: "Dano e Saúde",
+    icon: "⚔️",
+    desc: "Dois tipos de dano coexistem no corpo do vampiro. A saúde total varia por personagem.",
+    details: [
+      "Dano Superficial: socos, balas — se cura facilmente com Rouse Checks",
+      "Dano Agravado: fogo, luz solar, prata (para garous), garras/presas sobrenaturais",
+      "Cura Superficial: um Rouse Check por nível de dano curado",
+      "Cura Agravado: requer torpor ou condições especiais — muito mais difícil",
+      "Torpor: vampiro com Agravado preenchendo toda a saúde entra em torpor em vez de morrer"
+    ]
+  }
+];
+
+const HUMANITY_INFO = [
+  {
+    name: "O que é Humanidade",
+    icon: "❤️",
+    desc: "Humanidade mede o quanto o vampiro ainda mantém sua conexão com a vida mortal — empatia, emoção, capacidade de agir como pessoa e não como predador.",
+    details: [
+      "Escala de 0 a 10 (mortais normais ficam entre 7-8)",
+      "Vampiros recém-abraçados geralmente começam em 7 ou 8",
+      "Cai ao cometer Manchas — atos que violam as Convicções do personagem",
+      "Alto nível: mais dados para resistir ao Frenesi, torpores mais curtos",
+      "Baixo nível: a Besta assume mais facilmente, o vampiro parece monstruoso"
+    ]
+  },
+  {
+    name: "Perdendo Humanidade",
+    icon: "⚠️",
+    desc: "Manchas são ganhas ao agir contra as próprias Convicções. Cada Mancha pode levar a uma rolagem de degradação.",
+    details: [
+      "Ganhar Manchas: mate inocentes, torture, domine alguém contra sua vontade — qualquer coisa que viole suas Convicções",
+      "Rolagem de Remorse: ao final da sessão, role uma pool (varia). Falha = Humanidade cai 1",
+      "Perdendo Convicções: ao cair abaixo de certas Humanidades, Convicções começam a se esvaziar",
+      "Humanidade 0: o vampiro entra em Wassail — Frenesi final apocalíptico — e torna-se um Wight"
+    ]
+  },
+  {
+    name: "Recuperando Humanidade",
+    icon: "✨",
+    desc: "Aumentar Humanidade é raro e exige dedicação real à vida mortal — não é apenas questão de pontos de experiência.",
+    details: [
+      "Requer envolvimento ativo e altruísta na vida humana",
+      "Geralmente envolve ganhar um novo Touchstone e afastar-se do poder Kindred",
+      "Custo em XP: 10 × novo nível de Humanidade (a critério do Narrador)",
+      "Algumas práticas de Golconda também podem permitir o aumento",
+      "O Narrador pode negar o aumento se as ações do personagem não justificarem"
+    ]
+  },
+  {
+    name: "Convicções e Touchstones",
+    icon: "🔗",
+    desc: "Convicções são os valores morais do personagem. Touchstones são os humanos que encarnam esses valores.",
+    details: [
+      "Cada personagem começa com 3 Convicções — princípios pessoais que definem ética individual",
+      "Cada Convicção tem um Touchstone correspondente — um humano vivo que a representa",
+      "Se o Touchstone morre ou se afasta, a Convicção correspondente pode ser perdida",
+      "Convicções definem o que causa Manchas — o que viola a moral do personagem",
+      "Exemplos: 'Nunca matar inocentes', 'Proteger a família', 'Nunca trair um aliado'"
+    ]
+  }
+];
+
+const LORE = [
+  { term: "Abraço", def: "O ato de transformar um mortal em vampiro — drenar quase todo o sangue e substituir pelo vitae do sire." },
+  { term: "Ancilla", def: "Vampiro com alguns séculos de existência, além do estágio de neônato mas antes do estágio de elder." },
+  { term: "Anarca", def: "Vampiro que rejeita a autoridade da Camarilla e pertence (ou simpatiza com) o Movimento Anarca." },
+  { term: "Antediluviano", def: "Vampiro de terceira geração, progenitor dos clãs modernos. Dormem em torpor durante milênios." },
+  { term: "Bane", def: "A fraqueza específica de um clã, derivada do sangue do Antediluviano progenitor." },
+  { term: "Boon", def: "Dívida de favor entre Kindred — a moeda da política vampírica. Negar um boon é grave ofensa." },
+  { term: "Camarilla", def: "O mais poderoso setor vampírico, focado em manutenção da Máscara e hierarquia feudal rigorosa." },
+  { term: "Cainita", def: "Forma poética de se referir a vampiros — descendentes de Caim, o primeiro vampiro." },
+  { term: "Childer", def: "Vampiro criado por outro (o sire). Plural: childer." },
+  { term: "Diablerie", def: "Devorar a alma de outro vampiro para absorver sua geração — crime capital entre Kindred." },
+  { term: "Elder", def: "Vampiro com mais de dois séculos de existência. Geralmente possui Blood Potency 3 ou mais." },
+  { term: "Elysium", def: "Local neutro onde violência entre Kindred é proibida — geralmente museus, teatros, galerias." },
+  { term: "Frenesi", def: "Estado em que a Besta assume o controle — o vampiro age por instinto predatório puro." },
+  { term: "Gehenna", def: "Profecias vampíricas do apocalipse — quando os Antediluvianos acordarão para devorar seus descendentes." },
+  { term: "Ghoul", def: "Mortal que bebeu sangue vampírico e foi Blood Bound — ganha poderes menores mas serve o regnant." },
+  { term: "Harpy", def: "Kindred responsável pela política social e reputação na corte — um árbitro de status e fofoca." },
+  { term: "Haven", def: "A residência segura de um vampiro — seu santuário contra o sol e inimigos." },
+  { term: "Jyhad", def: "A guerra secreta entre gerações de vampiros — manipulação, poder e paranoia em escala milênios." },
+  { term: "Kindred", def: "Termo preferido pelos vampiros para se referir a si mesmos — enfatiza comunidade sobre monstruosidade." },
+  { term: "Kine", def: "Termo Kindred para mortais — gado, presas. Usado com certo desdém." },
+  { term: "Máscara", def: "A conspiração vampírica para esconder sua existência dos mortais. Violar a Máscara é crime grave." },
+  { term: "Neônato", def: "Vampiro recém-abraçado, ainda sob tutela do sire e aprendendo as regras Kindred." },
+  { term: "Príncipe", def: "O Kindred que governa uma cidade na Camarilla — autoridade máxima local." },
+  { term: "Progênie", def: "Todos os childer de um vampiro específico." },
+  { term: "Regnant", def: "Kindred que possui o Blood Bond de outro — o detentor do Bond." },
+  { term: "Sabbat", def: "Setor de vampiros que rejeita a humanidade, abraçando a natureza monstruosa. Atualmente engajado na Gehenna War." },
+  { term: "Segunda Inquisição", def: "Esforço secreto de agências de inteligência para combater vampiros como ameaça terrorista." },
+  { term: "Sire", def: "O vampiro que realizou o Abraço — o criador." },
+  { term: "Torpor", def: "Estado de sono cataléptico — voluntário ou forçado por dano extremo. Dura dias a séculos." },
+  { term: "Vitae", def: "O sangue vampírico — a substância que dá poderes, cria Blood Bonds e sustenta a existência Kindred." },
+  { term: "Wassail", def: "O Frenesi final quando Humanidade cai a 0 — o vampiro torna-se um Wight irreversível." },
+  { term: "Wight", def: "Vampiro completamente dominado pela Besta, sem consciência ou controle — controlado pelo Narrador." }
+];
+
+// ─────────────────────────── RENDER ───────────────────────────
+
+function renderClans() {
+  const grid = document.getElementById('clan-grid');
+  grid.innerHTML = CLANS.map(c => `
+    <div class="card clan-card" onclick="showClan('${c.name}')">
+      <div class="card-tag">// Clã</div>
+      <h2>${c.name}</h2>
+      <h3>${c.tagline}</h3>
+      <p>${c.desc.substring(0, 120)}…</p>
+      <div class="pills">
+        ${c.disciplines.map(d => `<span class="pill pill-red">${d}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function showClan(name) {
+  const c = CLANS.find(x => x.name === name);
+  openModal(`
+    <div class="tag">// Clã Kindred</div>
+    <h2>${c.name}</h2>
+    <div class="subtitle">${c.tagline} · ${c.nicknames}</div>
+    <hr>
+    <h4>Descrição</h4>
+    <p>${c.desc}</p>
+    <h4>Disciplinas</h4>
+    <div class="pills">${c.disciplines.map(d => `<span class="pill pill-red">${d}</span>`).join('')}</div>
+    <h4>Bane</h4>
+    <p>${c.bane}</p>
+    ${c.archetypes ? `<h4>Arquétipos do Clã</h4><ul>${c.archetypes.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
+  `);
+}
+
+function renderDisciplines() {
+  const grid = document.getElementById('disc-grid');
+  grid.innerHTML = DISCIPLINES.map(d => `
+    <div class="card" onclick="showDisc('${d.name}')">
+      <div class="card-tag">// ${d.type}</div>
+      <h2>${d.name}</h2>
+      <h3>${d.clans.join(' · ')}</h3>
+      <p>${d.desc.substring(0, 110)}…</p>
+      <div class="pills">
+        <span class="pill pill-yellow">Ressonância: ${d.resonance.split('(')[0].trim()}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showDisc(name) {
+  const d = DISCIPLINES.find(x => x.name === name);
+  const powersHtml = Object.entries(d.powers).map(([lvl, pows]) => `
+    <div class="power-level">
+      <div class="power-level-title">${lvl}</div>
+      ${pows.map(p => {
+        const [pname, ...rest] = p.split(' — ');
+        return `<div class="power-item"><h5>${pname}</h5>${rest.length ? `<p>${rest.join(' — ')}</p>` : ''}</div>`;
+      }).join('')}
+    </div>
+  `).join('');
+  openModal(`
+    <div class="tag">// Disciplina · ${d.type}</div>
+    <h2>${d.name}</h2>
+    <div class="subtitle">Clãs: ${d.clans.join(', ')} · Ressonância: ${d.resonance}</div>
+    <hr>
+    <p>${d.desc}</p>
+    <h4>Poderes por Nível</h4>
+    ${powersHtml}
+  `);
+}
+
+function renderPredators() {
+  const grid = document.getElementById('pred-grid');
+  grid.innerHTML = PREDATORS.map(p => `
+    <div class="card" onclick="showPred('${p.name}')">
+      <div class="card-tag">// Modus Predationis</div>
+      <h2>${p.name}</h2>
+      <p>${p.desc}</p>
+      <div class="pills" style="margin-top:12px">
+        <span class="pill pill-green">+${p.gains.length} vantagens</span>
+        <span class="pill pill-red">−${p.loses.length} desvantagem</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showPred(name) {
+  const p = PREDATORS.find(x => x.name === name);
+  openModal(`
+    <div class="tag">// Tipo de Predador</div>
+    <h2>${p.name}</h2>
+    <div class="subtitle">Modus Predationis</div>
+    <hr>
+    <p>${p.desc}</p>
+    <h4>Ganhos na Criação</h4>
+    <ul>${p.gains.map(g => `<li>${g}</li>`).join('')}</ul>
+    <h4>Penalidades</h4>
+    <ul>${p.loses.map(l => `<li>${l}</li>`).join('')}</ul>
+  `);
+}
+
+function renderRules() {
+  const grid = document.getElementById('rules-grid');
+  grid.innerHTML = RULES.map(r => `
+    <div class="card" onclick="showRule('${r.name}')">
+      <div class="card-tag">${r.icon} // Mecânica</div>
+      <h2>${r.name}</h2>
+      <p>${r.desc}</p>
+    </div>
+  `).join('');
+}
+
+function showRule(name) {
+  const r = RULES.find(x => x.name === name);
+  openModal(`
+    <div class="tag">// Regra de Jogo</div>
+    <h2>${r.icon} ${r.name}</h2>
+    <hr>
+    <p>${r.desc}</p>
+    <h4>Detalhes</h4>
+    <ul>${r.details.map(d => `<li>${d}</li>`).join('')}</ul>
+  `);
+}
+
+function renderHumanity() {
+  const grid = document.getElementById('hum-grid');
+  grid.innerHTML = HUMANITY_INFO.map(h => `
+    <div class="card" onclick="showHum('${h.name}')">
+      <div class="card-tag">${h.icon} // Humanidade</div>
+      <h2>${h.name}</h2>
+      <p>${h.desc.substring(0,120)}…</p>
+    </div>
+  `).join('');
+}
+
+function showHum(name) {
+  const h = HUMANITY_INFO.find(x => x.name === name);
+  openModal(`
+    <div class="tag">// Humanidade</div>
+    <h2>${h.icon} ${h.name}</h2>
+    <hr>
+    <p>${h.desc}</p>
+    <h4>Detalhes</h4>
+    <ul>${h.details.map(d => `<li>${d}</li>`).join('')}</ul>
+  `);
+}
+
+function renderLore() {
+  const grid = document.getElementById('lore-grid');
+  grid.innerHTML = LORE.map(l => `
+    <div class="card" style="cursor:default">
+      <div class="card-tag">// Vocabulário</div>
+      <h2 style="font-size:18px">${l.term}</h2>
+      <p style="margin-top:8px">${l.def}</p>
+    </div>
+  `).join('');
+}
+
+// ─────────────────────────── CHAR CREATION ───────────────────────────
+
+const CHAR_STEPS = [
+  {
+    num: "01",
+    title: "Conceito Central",
+    tag: "Quem você era?",
+    desc: "Tudo começa com uma ideia. Pense no personagem como um pitch curto: \"vampiro hit man\", \"artista punk recém-abraçado\", \"médica corporativa que descobriu demais\". O conceito guia todas as outras escolhas.",
+    items: [
+      "<strong>Nome em vida</strong> — quem era antes do Abraço? Qual a profissão, origem, personalidade?",
+      "<strong>Onde e quando foi abraçado?</strong> — a cidade, a época e as circunstâncias do Abraço moldam o personagem",
+      "<strong>Conceito de coterie</strong> — fale com os outros jogadores para criar personagens que se complementem e gerem drama",
+      "<strong>Cidade e seita</strong> — Camarilla, Anarca ou Thin-Blood chronicle? A escolha afeta tudo"
+    ],
+    tip: { label: "Dica do Narrador", text: "O Narrador muitas vezes distribui um 'flier' antes da Sessão Zero — documento com nome do crônica, inspirações visuais e temas a explorar. Se possível, peça um antes de criar seu personagem." }
+  },
+  {
+    num: "02",
+    title: "Escolha o Clã",
+    tag: "Seu sangue define quem você é",
+    desc: "O clã determina suas Disciplinas iniciais, seu Bane e muito da sua posição social entre os Kindred. É a escolha mais importante mecanicamente.",
+    items: [
+      "<strong>Brujah</strong> — Celerity, Potence, Presence · Fúria incontrolável como Bane",
+      "<strong>Gangrel</strong> — Animalism, Fortitude, Protean · Características animais pós-Frenesi",
+      "<strong>Malkavian</strong> — Auspex, Dominate, Obfuscate · Desordem mental permanente",
+      "<strong>Nosferatu</strong> — Animalism, Obfuscate, Potence · Aparência monstruosa irremediável",
+      "<strong>Toreador</strong> — Auspex, Celerity, Presence · Paralisia extática diante da beleza",
+      "<strong>Tremere</strong> — Auspex, Dominate, Blood Sorcery · Blood Bond automático com o clã",
+      "<strong>Ventrue</strong> — Dominate, Fortitude, Presence · Alimentação restrita a um tipo de mortal",
+      "<strong>Caitiff</strong> — Quaisquer 2 Disciplinas · Sem Bane, mas sem proteção clânica",
+      "<strong>Thin-Blooded</strong> — Thin-Blood Alchemy · 14ª/15ª/16ª geração, semi-vampiro"
+    ],
+    tip: { label: "Lembre-se", text: "Seu sire pertence ao mesmo clã que você — a menos que você seja Caitiff. Adicione o sire no Mapa de Relacionamentos com o descritor do Abraço (acidental, planejado, traumático...)." }
+  },
+  {
+    num: "03",
+    title: "Atributos",
+    tag: "O que você é capaz de fazer",
+    desc: "9 Atributos divididos em três categorias. Distribua os pontos para refletir as capacidades do personagem.",
+    items: [
+      "<strong>Melhor Atributo:</strong> 4 dots em um (o que você faz melhor de tudo)",
+      "<strong>3 Atributos em 3 dots</strong> — competências sólidas",
+      "<strong>4 Atributos em 2 dots</strong> — capacidades medianas",
+      "<strong>Pior Atributo:</strong> 1 dot (sua grande fraqueza)"
+    ],
+    cols: [
+      { label: "Físicos", items: ["Strength — força muscular bruta", "Dexterity — agilidade e coordenação", "Stamina — resistência e aguento"] },
+      { label: "Sociais", items: ["Charisma — magnetismo pessoal", "Manipulation — convencer e manipular", "Composure — autocontrole e calma"] },
+      { label: "Mentais", items: ["Intelligence — raciocínio e memória", "Wits — intuição e reações rápidas", "Resolve — foco e concentração"] }
+    ],
+    derived: [
+      "<strong>Health</strong> = Stamina + 3",
+      "<strong>Willpower</strong> = Composure + Resolve"
+    ]
+  },
+  {
+    num: "04",
+    title: "Habilidades (Skills)",
+    tag: "O que você aprendeu na vida",
+    desc: "As Habilidades refletem a vida mortal do personagem — carreira, eventos marcantes e hobbies. Escolha uma das três distribuições abaixo ou use o método detalhado.",
+    items: [
+      "<strong>Profissional:</strong> 2 Skills em 3 dots e 2 Skills em 2 dots (do que você vivia)",
+      "<strong>Evento de Vida:</strong> 1 Skill em 3 dots e 1 Skill em 2 dots (o que um evento marcante ensinou)",
+      "<strong>Lazer:</strong> 3 Skills em 1 dot (hobbies e passatempos)",
+      "<strong>Extra — Especialista:</strong> mais 1 Skill em 4 dots e 3 Skills em 3, 2 e 1",
+      "<strong>Extra — Generalista:</strong> mais 2 Skills em 2 dots e 4 Skills em 1 dot",
+      "Especialidades gratuitas em: Academics, Craft, Performance e Science + 1 extra livre"
+    ],
+    distros: [
+      { label: "Jack of All Trades", items: ["1 Skill em 3", "8 Skills em 2", "10 Skills em 1"] },
+      { label: "Balanceado", items: ["3 Skills em 3", "5 Skills em 2", "7 Skills em 1"] },
+      { label: "Especialista", items: ["1 Skill em 4", "3 Skills em 3", "3 Skills em 2", "3 Skills em 1"] }
+    ]
+  },
+  {
+    num: "05",
+    title: "Convicções e Touchstones",
+    tag: "O que ancora sua Humanidade",
+    desc: "Convicções são os valores morais centrais do personagem. Touchstones são os humanos vivos que encarnam esses valores. Juntos, formam o escudo contra a Besta.",
+    items: [
+      "Escolha <strong>1 a 3 Convicções</strong> — princípios morais em forma de \"nunca\" ou \"sempre\"",
+      "Cada Convicção precisa de um <strong>Touchstone correspondente</strong> — um humano vivo que a representa",
+      "Adicione todos os Touchstones ao <strong>Mapa de Relacionamentos</strong>",
+      "<strong>Humanidade inicial: 7</strong> (ou 8 em crónicas de neônatos, a critério do Narrador)",
+      "Se um Touchstone morre, a Convicção ligada a ele pode ser perdida",
+      "Defina também a <strong>Ambição</strong> — o objetivo de longo prazo do personagem"
+    ],
+    tip: { label: "Exemplos de Convicções", text: "\"Nunca matar inocentes\" · \"Proteger minha família a qualquer custo\" · \"Jamais trair um aliado\" · \"Nunca deixar arte morrer\" · \"Sempre punir os corruptos\"" }
+  },
+  {
+    num: "06",
+    title: "Disciplinas",
+    tag: "Os poderes do sangue vampírico",
+    desc: "As Disciplinas são os poderes sobrenaturais concedidos pelo Abraço. Cada clan tem 3 Disciplinas de clã — você começa com 2.",
+    items: [
+      "Escolha <strong>2 das 3 Disciplinas</strong> do seu clã",
+      "Coloque <strong>2 dots em uma</strong> e <strong>1 dot na outra</strong>",
+      "Escolha 1 poder para cada dot (total: 3 poderes iniciais)",
+      "Caitiff: escolha quaisquer 2 Disciplinas com a mesma distribuição",
+      "Thin-Bloods: <strong>não recebem Disciplinas</strong> — começam com Thin-Blood Alchemy via Mérito"
+    ],
+    tip: { label: "Atenção", text: "O Tipo de Predador (próximo passo) adiciona 1 dot em uma Disciplina — isso pode levar a 3 dots em uma Disciplina já no início. Planeje em conjunto!" }
+  },
+  {
+    num: "07",
+    title: "Tipo de Predador",
+    tag: "Como você se alimenta",
+    desc: "O modus predationis define como seu vampiro normalmente caça. Cada tipo concede Habilidades, Disciplinas e Vantagens — mas também impõe Defeitos.",
+    items: [
+      "<strong>Alleycat</strong> — força bruta: +Celerity ou Potence, −1 Humanidade",
+      "<strong>Bagger</strong> — sangue frio do mercado negro: +Obfuscate, +Iron Gullet",
+      "<strong>Blood Leech</strong> — se alimenta de vampiros: +Blood Potency, −1 Humanidade",
+      "<strong>Cleaver</strong> — alimenta-se da família mortal: +Dominate ou Animalism",
+      "<strong>Consensualist</strong> — com consentimento: +1 Humanidade",
+      "<strong>Farmer</strong> — apenas animais: +1 Humanidade, indisponível com Blood Potency ≥ 3",
+      "<strong>Osiris</strong> — lidera um culto ou é celebridade: +Presence",
+      "<strong>Sandman</strong> — de vítimas dormindo: +Auspex ou Protean",
+      "<strong>Scene Queen</strong> — dentro de uma subcultura: +Dominate ou Presence",
+      "<strong>Siren</strong> — por sedução: +Celerity ou Presence"
+    ]
+  },
+  {
+    num: "08",
+    title: "Vantagens (Advantages)",
+    tag: "Recursos, contatos e poder social",
+    desc: "7 pontos para gastar em Méritos e Antecedentes — as ferramentas práticas do dia-a-dia vampírico. Você também deve pegar pelo menos 2 pontos de Defeitos.",
+    items: [
+      "<strong>Merits</strong> — traços pessoais: Línguas extras, Iron Gullet, Unbondable, etc.",
+      "<strong>Allies</strong> — aliados mortais (família, amigos)",
+      "<strong>Contacts</strong> — fontes de informação",
+      "<strong>Fame</strong> — reconhecimento entre mortais",
+      "<strong>Haven</strong> — local seguro para dormir durante o dia",
+      "<strong>Herd</strong> — mortais de acesso fácil para alimentação",
+      "<strong>Influence</strong> — poder político no mundo mortal",
+      "<strong>Mask</strong> — identidade falsa completa com documentação",
+      "<strong>Mawla</strong> — mentor ou patrono Kindred",
+      "<strong>Resources</strong> — riqueza e patrimônio",
+      "<strong>Retainers</strong> — servos leais (mortais, ghoul ou dominados)",
+      "<strong>Status</strong> — posição na hierarquia Kindred"
+    ],
+    tip: { label: "Mínimo de Defeitos", text: "Você precisa pegar ao menos 2 pontos de Defeitos além dos já impostos pelo Tipo de Predador. Thin-Bloods precisam pegar 1–3 Méritos Thin-Blood e o mesmo número de Defeitos Thin-Blood." }
+  },
+  {
+    num: "09",
+    title: "Criação da Coterie",
+    tag: "O grupo de jogadores",
+    desc: "O grupo cria a coterie em conjunto. Cada jogador contribui com 1 dot de coterie (2 em grupos pequenos) para gastar em recursos compartilhados.",
+    items: [
+      "<strong>Domain (Domínio):</strong> a área da cidade onde a coterie pode caçar",
+      "<strong>Chasse</strong> — qualidade do domínio como zona de caça (reduz Dificuldade das caçadas)",
+      "<strong>Lien</strong> — integração da coterie com o domínio (dados extras em interações locais)",
+      "<strong>Portillon</strong> — segurança do domínio contra invasores",
+      "Backgrounds de coterie são compartilhados — qualquer membro pode usá-los",
+      "Registre todos os personagens importantes no <strong>Mapa de Relacionamentos</strong>"
+    ],
+    tip: { label: "Tipos de Coterie", text: "Blood Cult · Cerberus · Champions · Commando · Day Watch · Fang Gang · Hunting Party · Maréchal · Nomads · Plumaires · Questari · Regency · Sbirri · Vehme · Watchmen" }
+  },
+  {
+    num: "10",
+    title: "Era do Tempo (Sea of Time)",
+    tag: "Idade e geração do personagem",
+    desc: "Junto com o grupo e o Narrador, decida quando o personagem foi abraçado. Isso determina a Geração e os pontos de experiência iniciais.",
+    items: [
+      "<strong>Childer / Fledgling</strong> — Abraçado nos últimos 15 anos · Geração 12ª–13ª · Blood Potency 1 · 0 XP extra",
+      "<strong>Neônato</strong> — Abraçado entre 1940 e uma década atrás · Geração 12ª–13ª · BP 1 · +15 XP",
+      "<strong>Ancilla</strong> — Abraçado entre 1780 e 1940 · Geração 10ª–11ª · BP 2 · +2 Vantagens, +2 Defeitos, −1 Humanidade, +35 XP",
+      "<strong>Thin-Bloods</strong> — 14ª/15ª/16ª geração · Blood Potency 0",
+      "Elders (250+ anos) <strong>não são opção</strong> como personagens jogadores neste livro"
+    ],
+    tip: { label: "Custo em XP", text: null },
+    xpTable: true
+  },
+  {
+    num: "11",
+    title: "Mapa de Relacionamentos",
+    tag: "A teia de conexões do personagem",
+    desc: "O Mapa de Relacionamentos é a ferramenta visual mais importante de Vampire. Use uma folha grande, post-its, cordas coloridas — o que funcionar para o grupo.",
+    items: [
+      "Personagens jogadores em <strong>preto</strong> — nomes em destaque",
+      "Kindred NPCs em <strong>vermelho</strong> — com clã, época de Abraço e posição na seita",
+      "Mortais em <strong>azul</strong> — incluindo Touchstones e Aliados",
+      "Setas descrevem relações: quem tem poder sobre quem",
+      "Cada relação tem descritor de <strong>ambos os lados</strong> (pode ser assimétrico: \"amor\" de um lado, \"dívida\" do outro)",
+      "Atualize o mapa conforme alianças mudam, segredos emergem e personagens morrem"
+    ],
+    tip: { label: "No início da campanha, inclua:", text: "Sire do personagem · 2 NPCs Kindred locais (1 positivo, 1 negativo) · Touchstones de cada Convicção · Prince, Baron ou figura de autoridade da cidade" }
+  },
+  {
+    num: "12",
+    title: "Resumo Final",
+    tag: "Checklist antes de jogar",
+    desc: "Antes de sentar na mesa, confirme que sua ficha está completa.",
+    checklist: [
+      "Conceito anotado (nome, profissão em vida, seita)",
+      "Clã escolhido e Bane compreendido",
+      "Atributos distribuídos (4/3/3/3/2/2/2/2/1)",
+      "Health e Willpower calculados",
+      "Habilidades distribuídas com especialidades",
+      "1–3 Convicções e Touchstones correspondentes",
+      "Humanidade marcada em 7",
+      "2 Disciplinas escolhidas (2 dots + 1 dot) com poderes",
+      "Tipo de Predador escolhido e aplicado",
+      "7 pontos de Vantagens gastos + mínimo 2 Defeitos",
+      "Blood Potency anotado conforme geração",
+      "Ambição anotada",
+      "Sire e NPCs no Mapa de Relacionamentos"
+    ]
+  }
+];
+
+function renderCharCreation() {
+  const container = document.getElementById('steps-container');
+  container.innerHTML = CHAR_STEPS.map(step => {
+    let content = `<div class="step-title">${step.title}</div><div class="step-subtitle">${step.tag}</div>`;
+    if (step.desc) content += `<p class="step-desc">${step.desc}</p>`;
+
+    // Standard items list
+    if (step.items) {
+      content += `<ul class="step-items">${step.items.map(i => `<li>${i}</li>`).join('')}</ul>`;
+    }
+
+    // Checklist (step 12)
+    if (step.checklist) {
+      content += `<ul class="step-items">${step.checklist.map(i => `<li>${i}</li>`).join('')}</ul>`;
+    }
+
+    // Attribute columns (step 3)
+    if (step.cols) {
+      content += `<div class="step-cols">`;
+      step.cols.forEach(col => {
+        content += `<div class="col-box"><div class="col-label">${col.label}</div><ul>${col.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+      });
+      content += `</div>`;
+      content += `<div class="step-box" style="border-left-color:var(--red);margin-top:12px"><div class="box-label" style="color:var(--red)">Derivados</div><ul style="list-style:none;padding:0">${step.derived.map(d=>`<li style="font-size:14px;color:var(--text-dim);padding:2px 0">${d}</li>`).join('')}</ul></div>`;
+    }
+
+    // Skill distributions (step 4)
+    if (step.distros) {
+      content += `<div class="step-cols">`;
+      step.distros.forEach(d => {
+        content += `<div class="col-box"><div class="col-label">${d.label}</div><ul>${d.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+      });
+      content += `</div>`;
+    }
+
+    // XP Table (step 10)
+    if (step.xpTable) {
+      content += `<table class="xp-table"><thead><tr><th>Trait</th><th>Custo em XP</th></tr></thead><tbody>
+        <tr><td>Aumentar Atributo</td><td>Novo nível × 5</td></tr>
+        <tr><td>Aumentar Habilidade</td><td>Novo nível × 3</td></tr>
+        <tr><td>Nova Especialidade</td><td>3</td></tr>
+        <tr><td>Disciplina de Clã</td><td>Novo nível × 5</td></tr>
+        <tr><td>Outra Disciplina</td><td>Novo nível × 7</td></tr>
+        <tr><td>Disciplina Caitiff</td><td>Novo nível × 6</td></tr>
+        <tr><td>Ritual Blood Sorcery</td><td>Nível do ritual × 3</td></tr>
+        <tr><td>Fórmula Thin-Blood</td><td>Nível da fórmula × 3</td></tr>
+        <tr><td>Vantagem (Advantage)</td><td>3 por dot</td></tr>
+        <tr><td>Blood Potency</td><td>Novo nível × 10</td></tr>
+      </tbody></table>`;
+    }
+
+    // Tip box
+    if (step.tip && step.tip.text) {
+      content += `<div class="step-box"><div class="box-label">${step.tip.label}</div><p>${step.tip.text}</p></div>`;
+    } else if (step.tip && !step.tip.text) {
+      content += `<div class="step-box"><div class="box-label">${step.tip.label}</div></div>`;
+    }
+
+    return `
+      <div class="step-block">
+        <div class="step-num">${step.num}</div>
+        <div class="step-body">${content}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+renderCharCreation();
+
+renderDisciplines();
+renderPredators();
+renderRules();
+renderHumanity();
+renderLore();
+</script>
+</body>
+</html>

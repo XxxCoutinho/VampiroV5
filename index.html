@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>// Vampiro V5.2 //</title>
+    <title>Vampiro: A Máscara — Início</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
-
         :root {
             --bg:       #060608;
             --surface:  #0d0d11;
@@ -14,1522 +13,202 @@
             --border:   #3a0000;
             --red:      #c0392b;
             --red-hi:   #e74c3c;
-            --red-glow: rgba(192,57,43,0.35);
+            --red-glow: rgba(192,57,43,0.4);
             --text:     #ccc8c0;
             --text-dim: #666;
-            --green:    #27ae60;
-            --yellow:   #f1c40f;
             --mono:     'Share Tech Mono', monospace;
             --sans:     'Rajdhani', sans-serif;
-            --nav-h:    56px;
-            --hdr-h:    40px;
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-        html { height: 100%; }
         body {
-            height: 100%;
-            background: var(--bg);
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at center, #1c0606 0%, var(--bg) 80%);
             color: var(--text);
-            font-family: var(--mono);
-            font-size: 18px;
-            line-height: 1.45;
-            overflow: hidden;
-        }
-
-        /* scrollbar */
-        ::-webkit-scrollbar { width: 3px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-        /* ══ HEADER ══ */
-        #hdr {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-            height: var(--hdr-h);
-            background: var(--bg);
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            gap: 10px;
-        }
-        #hdr-title {
             font-family: var(--sans);
-            font-weight: 700;
-            font-size: 1em;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            color: var(--red-hi);
-            text-shadow: 0 0 12px var(--red-glow);
-        }
-        #hdr-dot {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: var(--red);
-            box-shadow: 0 0 6px var(--red);
-            animation: pulse 2s ease-in-out infinite;
-        }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-        /* ══ LAYOUT SHELL ══ */
-        #shell {
-            position: fixed;
-            top: var(--hdr-h); bottom: 0; left: 0; right: 0;
-            display: grid;
-            grid-template-columns: 1fr 280px;
-            grid-template-rows: 1fr;
-        }
-
-        /* ══ MAIN AREA ══ */
-        #main {
-            display: flex; flex-direction: column;
-            border-right: 1px solid var(--border);
-            min-width: 0;
-            min-height: 0; /* crucial: permite que o flex-child não estoure o grid */
-            overflow: hidden;
-        }
-
-        /* desktop tab bar */
-        #tab-bar {
+            min-height: 100vh;
             display: flex;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            flex-shrink: 0;
-        }
-        .t-btn {
-            flex: 1;
-            background: transparent;
-            border: none; border-right: 1px solid #1a1a22;
-            color: var(--text-dim);
-            font-family: var(--sans); font-weight: 600;
-            font-size: 0.75em; letter-spacing: 1.5px;
-            text-transform: uppercase;
-            cursor: pointer; padding: 10px 4px;
-            transition: color .2s, background .2s;
-            position: relative;
-        }
-        .t-btn:last-child { border-right: none; }
-        .t-btn:hover { color: var(--text); background: var(--surface2); }
-        .t-btn.on { color: var(--red-hi); background: var(--surface2); }
-        .t-btn.on::after {
-            content: '';
-            position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-            background: var(--red-hi);
-            box-shadow: 0 0 6px var(--red);
-        }
-
-        /* tab panes */
-        #tab-content {
-            flex: 1;
-            overflow-y: auto;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
             overflow-x: hidden;
-            background: var(--surface);
-            min-height: 0; /* sem isso o flex-child ignora o limite do pai */
-        }
-        .pane { display: none; padding: 14px; }
-        .pane.on { display: block; }
-
-        /* ══ SIDEBAR ══ */
-        #sidebar {
-            background: var(--bg);
-            display: flex; flex-direction: column;
-            overflow-y: auto;
-            min-height: 0; /* idem */
-        }
-        .sb-section {
-            padding: 14px;
-            border-bottom: 1px solid #1a1a22;
-        }
-        .sb-label {
-            font-family: var(--sans); font-weight: 700;
-            font-size: 0.7em; letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--red); margin-bottom: 12px;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .sb-label::after {
-            content: ''; flex: 1; height: 1px;
-            background: var(--border);
         }
 
-        /* ══ MOBILE NAV ══ */
-        #mob-nav {
-            display: none;
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-            background: var(--bg);
-            border-top: 1px solid var(--border);
-            padding: 6px;
-        }
-        .mob-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
-        }
-        .m-btn {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text-dim);
-            font-family: var(--sans); font-weight: 700;
-            font-size: 0.65em; letter-spacing: 1px;
-            text-transform: uppercase;
-            padding: 9px 2px;
-            cursor: pointer;
-            transition: all .15s;
+        .container {
+            width: 100%;
+            max-width: 900px;
             text-align: center;
-        }
-        .m-btn.on, .m-btn:active {
-            background: var(--red);
-            border-color: var(--red-hi);
-            color: #fff;
-            box-shadow: 0 0 8px var(--red-glow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* sidebar drawer (mobile) */
-        #drawer-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,.8); z-index: 300;
-        }
-        #drawer-overlay.on { display: block; }
-        #drawer {
-            position: fixed;
-            top: var(--hdr-h); bottom: 0; right: -100%;
-            width: min(90vw, 340px); z-index: 301;
-            background: var(--bg);
-            border-left: 1px solid var(--border);
-            overflow-y: auto;
-            transition: right .25s ease;
-        }
-        #drawer.on { right: 0; }
-
-        /* ══ TYPOGRAPHY ══ */
-        .sec-h {
-            font-family: var(--sans); font-weight: 700;
-            font-size: 0.78em; letter-spacing: 3px; text-transform: uppercase;
-            color: var(--red-hi);
-            padding-bottom: 5px; margin-bottom: 10px; margin-top: 16px;
-            border-bottom: 1px solid var(--border);
-        }
-        .sec-h:first-child { margin-top: 0; }
-        .sub-h {
-            font-family: var(--sans); font-weight: 600;
-            font-size: 0.7em; letter-spacing: 2px; text-transform: uppercase;
-            color: var(--text-dim); text-align: center;
-            padding: 3px 0 6px; margin-bottom: 6px;
-            border-bottom: 1px dotted #2a2a35;
+        .title-container {
+            width: 100%;
+            max-height: 55vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 50px;
+            animation: fadeIn 1.8s ease-in-out;
         }
 
-        /* ══ FORM ELEMENTS ══ */
-        .fg { display: flex; flex-direction: column; margin-bottom: 7px; }
-        .fg label {
-            font-size: 0.65em; color: var(--text-dim);
-            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;
-        }
-        input[type=text], input[type=number], input[type=date], textarea, select {
-            background: var(--surface2);
-            border: 1px solid #252530;
-            color: var(--text);
-            font-family: var(--mono); font-size: 0.88em;
-            padding: 5px 7px; width: 100%;
-            transition: border-color .15s, box-shadow .15s;
-        }
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--red);
-            box-shadow: 0 0 0 2px rgba(192,57,43,.15);
-        }
-        textarea { resize: vertical; min-height: 56px; }
-
-        /* ══ STAT LIST ══ */
-        .sl {
-            background: rgba(0,0,0,.3);
-            border: 1px solid #1a1a22;
-            padding: 6px 8px;
-        }
-        .st {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 3px 0; border-bottom: 1px dashed #1e1e28;
-        }
-        .st:last-child { border-bottom: none; padding-bottom: 0; }
-        .st label {
-            flex: 1; font-size: 0.82em; font-weight: bold;
-            font-family: var(--sans); font-weight: 600;
-        }
-        .st input[type=text] { width: 55%; border: none; border-bottom: 1px solid #333; background: transparent; padding: 2px 4px; }
-        .st input[type=number] {
-            width: 40px; text-align: center;
-            border: 1px solid var(--border);
-            background: #000; color: var(--red-hi);
-            font-weight: bold; font-size: 0.95em;
-            padding: 2px; flex-shrink: 0;
+        .title-image {
+            max-width: 100%;
+            max-height: 55vh;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px var(--red-glow));
+            transition: filter 0.5s ease, transform 0.5s ease;
         }
 
-        /* ══ VITALS ══ */
-        .vbox {
-            border: 1px solid var(--border);
-            background: #050507;
-            padding: 8px; text-align: center;
-            box-shadow: inset 0 0 16px rgba(0,0,0,.7);
+        .title-image:hover {
+            filter: drop-shadow(0 0 30px rgba(231, 76, 60, 0.6));
+            transform: scale(1.02);
         }
-        .vbox .sub-h { border-color: #1a1a22; }
-        .vnum {
-            font-family: var(--sans); font-weight: 700;
-            font-size: 2.2em; color: var(--red-hi);
-            text-shadow: 0 0 12px var(--red-glow);
-            line-height: 1;
-        }
-        .vnum-input {
-            font-family: var(--sans) !important; font-weight: 700 !important;
-            font-size: 2em !important; color: var(--red-hi) !important;
-            background: transparent !important; border: none !important;
-            text-align: center; padding: 0 !important; margin: 4px 0;
-            box-shadow: none !important;
-            text-shadow: 0 0 10px var(--red-glow);
-        }
-        .vcap { font-size: 0.62em; color: #444; margin-top: 3px; }
 
-        /* ══ GRIDS ══ */
-        .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+        .button-group {
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+            width: 100%;
+            justify-content: center;
+            animation: slideUp 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
 
-        /* ══ BUTTONS ══ */
         .btn {
-            background: var(--surface2); color: var(--text);
-            border: 1px solid var(--border);
-            padding: 7px 12px; cursor: pointer;
-            font-family: var(--mono); font-size: 0.82em;
-            text-transform: uppercase; letter-spacing: 1px;
-            transition: all .2s; width: 100%;
-            text-align: left;
-        }
-        .btn:hover { border-color: var(--red); color: var(--red-hi); }
-        .btn.green { border-color: #1a4a2a; color: var(--green); }
-        .btn.green:hover { background: var(--green); color: #000; }
-        .btn.danger { border-color: #3a1111; color: #e74c3c; }
-        .btn.danger:hover { background: #e74c3c; color: #fff; }
-        .btn.roll {
-            background: #0a0a10; color: var(--red-hi);
-            border-color: var(--red); font-size: 0.9em;
-            letter-spacing: 2px; padding: 10px;
-            text-align: center; font-family: var(--sans); font-weight: 700;
-        }
-        .btn.roll:hover { background: var(--red); color: #fff; box-shadow: 0 0 14px var(--red-glow); }
-        .btn-sm {
-            background: var(--surface2); color: var(--text);
-            border: 1px solid var(--border);
-            padding: 3px 8px; cursor: pointer;
-            font-family: var(--mono); font-size: 0.75em;
+            display: inline-block;
+            text-decoration: none;
+            font-family: var(--mono);
+            font-size: 1.4rem;
             text-transform: uppercase;
-            transition: all .15s;
-        }
-        .btn-sm:hover { background: var(--red-hi); color: #000; }
-        .btn-x { padding: 3px 7px; border-color: #3a1111; color: #c0392b; }
-        .btn-x:hover { background: #c0392b; color: #fff; }
-
-        /* unsaved dot */
-        .dot-unsaved {
-            display: none; width: 7px; height: 7px; border-radius: 50%;
-            background: var(--yellow); box-shadow: 0 0 5px var(--yellow);
-            margin-left: 6px; vertical-align: middle;
-        }
-        .has-unsaved .dot-unsaved { display: inline-block; }
-
-        /* ══ DICE ══ */
-        .dice-pool-input {
-            font-size: 2em !important; text-align: center;
-            background: #000 !important; color: var(--red-hi) !important;
-            border-color: var(--border) !important; padding: 8px !important;
-        }
-        #dice-display { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-top: 8px; }
-        .die {
-            width: 36px; height: 36px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 1.1em;
-            border: 1px solid #444; border-radius: 3px;
-        }
-        .d-n { background: #181820; color: #aaa; }
-        .d-h { background: #3a0000; color: #fff; border-color: #8b0000; }
-        .d-s { border-color: #27ae60; color: #27ae60; text-shadow: 0 0 4px #27ae60; }
-        .d-c { border-color: var(--yellow); color: var(--yellow); text-shadow: 0 0 4px var(--yellow); }
-        .d-f { opacity: .35; }
-        .d-b { border-color: var(--red-hi); color: var(--red-hi); text-shadow: 0 0 4px var(--red-hi); }
-        #roll-result {
-            font-family: var(--sans); font-weight: 700;
-            font-size: 0.95em; letter-spacing: 1px; text-align: center;
-            min-height: 44px; display: flex; align-items: center; justify-content: center;
-            border-top: 1px dashed #252530; border-bottom: 1px dashed #252530;
-            padding: 8px 0; text-transform: uppercase;
+            color: var(--text);
+            background: var(--surface);
+            border: 2px solid var(--border);
+            padding: 16px 50px;
+            min-width: 220px;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            letter-spacing: 3px;
         }
 
-        /* ══ INVENTORY ══ */
-        .inv-form { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin-bottom: 6px; align-items: end; }
-        .inv-form-extra { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
-        .inv-item {
-            display: flex; align-items: flex-start; gap: 8px;
-            background: var(--surface2); border: 1px solid #1a1a22;
-            padding: 7px 10px; margin-bottom: 5px;
-        }
-        .inv-body { flex: 1; min-width: 0; }
-        .inv-name { font-family: var(--sans); font-weight: 600; font-size: 0.92em; }
-        .inv-desc { font-size: 0.72em; color: var(--text-dim); margin-top: 2px; font-style: italic; }
-        .inv-badge {
-            font-size: 0.7em; font-family: var(--sans); font-weight: 700;
-            color: var(--red-hi); margin-left: 6px;
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(231, 76, 60, 0.25), transparent);
+            transition: all 0.5s ease;
         }
 
-        /* ══ LIBRARY ══ */
-        .acc-btn {
-            display: flex; align-items: center; justify-content: space-between;
-            background: var(--surface2); border: 1px solid #1a1a22;
-            color: var(--text); font-family: var(--sans); font-weight: 600;
-            font-size: 0.75em; letter-spacing: 2px; text-transform: uppercase;
-            padding: 8px 10px; cursor: pointer; width: 100%; margin-top: 5px;
-            transition: border-color .15s;
+        .btn:hover::before {
+            left: 100%;
         }
-        .acc-btn:hover { border-color: var(--border); }
-        .acc-btn.open { color: var(--red-hi); border-color: var(--border); }
-        .acc-btn span.arrow { transition: transform .2s; display: inline-block; }
-        .acc-btn.open span.arrow { transform: rotate(90deg); }
-        .acc-panel {
-            background: #050507; border: 1px solid #1a1a22; border-top: none;
-            max-height: 0; overflow: hidden; transition: max-height .2s ease;
-            padding: 0 8px;
-        }
-        .acc-panel.open { max-height: 600px; padding: 6px 8px; }
-        .lib-item {
-            display: flex; align-items: flex-start; justify-content: space-between; gap: 6px;
-            padding: 5px 0; border-bottom: 1px dashed #1a1a22;
-        }
-        .lib-item:last-child { border-bottom: none; }
-        .lib-item.hidden { display: none; }
-        .lib-search {
-            width: 100%; padding: 6px 10px;
-            background: #050507; border: 1px solid var(--border);
-            color: var(--text); font-family: var(--mono); font-size: 0.82em;
-            margin-bottom: 8px;
-        }
-        .lib-search::placeholder { color: #444; }
-        .lib-search:focus { outline: none; border-color: var(--red-hi); }
-        .lib-empty { color: var(--text-dim); font-size: 0.78em; font-style: italic; padding: 6px 0; }
 
-        /* ══ BIO ══ */
-        .bio-wrap { display: flex; gap: 12px; margin-bottom: 12px; }
-        .bio-photo {
-            flex-shrink: 0; width: 120px; position: relative; cursor: pointer;
-        }
-        .bio-photo img {
-            width: 120px; height: 150px; object-fit: cover;
-            border: 1px solid var(--border); background: #000; display: block;
-        }
-        .bio-photo-label {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: rgba(0,0,0,.75); font-size: 0.58em; text-align: center;
-            padding: 3px; color: #888; pointer-events: none; letter-spacing: 1px;
-        }
-        .bio-fields { flex: 1; }
-
-        /* ══ ACCORDION (bio/habilidades) ══ */
-        .section-acc {
-            border: 1px solid #1a1a22; margin-bottom: 6px; overflow: hidden;
-        }
-        .section-acc-btn {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 8px 10px; cursor: pointer;
+        .btn:hover {
+            color: #ffffff;
+            border-color: var(--red-hi);
             background: var(--surface2);
-            font-family: var(--sans); font-weight: 700;
-            font-size: 0.75em; letter-spacing: 2px; text-transform: uppercase;
-            color: var(--text); border: none; width: 100%;
-            transition: color .15s;
-        }
-        .section-acc-btn:hover { color: var(--red-hi); }
-        .section-acc-btn.open { color: var(--red-hi); background: #100a0a; }
-        .section-acc-content {
-            max-height: 0; overflow: hidden;
-            transition: max-height .25s ease;
-            padding: 0 10px;
-        }
-        .section-acc-content.open { max-height: 2000px; padding: 8px 10px 10px; }
-
-        /* ══ CROP MODAL ══ */
-        .crop-modal {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,.92); z-index: 2000;
-            flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-        }
-        .crop-modal h2 { color: var(--red-hi); font-family: var(--sans); font-size: 1em; border: none; }
-        .crop-canvas-wrap { border: 2px dashed var(--border); cursor: grab; background: #000; }
-        .crop-canvas-wrap:active { cursor: grabbing; }
-        .crop-controls { display: flex; gap: 12px; align-items: center; }
-
-        /* ══ OFFLINE TOAST ══ */
-        #offline-toast {
-            display: none; background: #2a0000; border: 1px solid var(--border);
-            color: var(--red-hi); padding: 5px 10px; font-size: 0.72em; text-align: center;
+            box-shadow: 0 0 25px var(--red-glow);
+            transform: translateY(-4px);
         }
 
-        /* ══ CHAR SELECT ══ */
-        #char-select {
-            width: 100%; padding: 6px 8px;
-            background: #000; color: var(--text);
-            border: 1px solid var(--border);
-            font-family: var(--mono); font-size: 0.78em; cursor: pointer;
+        .btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 0 12px var(--red-glow);
         }
 
-        #save-status { color: var(--red-hi); text-align: center; font-size: 0.7em; min-height: 12px; }
+        .btn-jogar {
+            border-color: var(--red);
+            box-shadow: 0 5px 15px rgba(192, 57, 43, 0.15);
+        }
+        
+        .btn-jogar:hover {
+            box-shadow: 0 0 25px rgba(192, 57, 43, 0.6);
+            border-color: var(--red-hi);
+        }
 
-        /* ══ RESPONSIVE BREAKPOINT ══ */
-        @media (max-width: 768px) {
-            body { overflow-y: auto; height: auto; font-size: 15px; }
+        .btn-compendio {
+            border-color: #4a4a5a;
+        }
 
-            #shell {
-                position: static;
-                display: block;
-                margin-top: var(--hdr-h);
-                padding-bottom: calc(var(--nav-h) + 8px);
+        .btn-compendio:hover {
+            box-shadow: 0 0 25px rgba(204, 200, 192, 0.2);
+            border-color: var(--text);
+        }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; filter: drop-shadow(0 0 0px transparent) blur(5px); }
+            to { opacity: 1; filter: drop-shadow(0 0 20px var(--red-glow)) blur(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsividade para Telas Menores e Mobile */
+        @media (max-width: 650px) {
+            body {
+                justify-content: flex-start;
+                padding-top: 8vh;
             }
 
-            #main { border-right: none; }
-            #sidebar { display: none; }
-            #tab-bar { display: none; }
-            #tab-content { overflow: visible; }
-            #mob-nav { display: block; }
+            .title-container {
+                max-height: 45vh;
+                margin-bottom: 40px;
+            }
 
-            .g3 { grid-template-columns: 1fr 1fr; }
-            .g2 { grid-template-columns: 1fr 1fr; }
+            .title-image {
+                max-height: 45vh;
+            }
 
-            .bio-wrap { flex-direction: row; }
-            .bio-photo { width: 100px; }
-            .bio-photo img { width: 100px; height: 125px; }
-        }
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+                width: 100%;
+            }
 
-        @media (max-width: 400px) {
-            .g2, .g3 { grid-template-columns: 1fr; }
-            .bio-wrap { flex-direction: column; align-items: center; }
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                padding: 18px 20px;
+                font-size: 1.25rem;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div id="hdr">
-    <div id="hdr-dot"></div>
-    <div id="hdr-title">Vampiro · Máscara V5</div>
-    <div id="hdr-dot"></div>
-</div>
+    <div class="container">
+        <!-- Contêiner da imagem de título -->
+        <div class="title-container">
+            <!-- Caso a imagem local não carregue no canvas, mostra um fallback estilizado -->
+            <img src="logo.webp" alt="Vampiro: A Máscara" class="title-image" onerror="this.onerror=null; this.src='https://placehold.co/800x400/060608/e74c3c?text=VAMPIRO:+A+MASCARA&font=Share+Tech+Mono';">
+        </div>
 
-<!-- MOBILE NAV (bottom) -->
-<nav id="mob-nav">
-    <div class="mob-grid">
-        <button class="m-btn on"  id="mn-personagem" onclick="goTab('personagem')">Personagem</button>
-        <button class="m-btn"     id="mn-poder"      onclick="goTab('poder')">Poder</button>
-        <button class="m-btn"     id="mn-inventario" onclick="goTab('inventario')">Inventário</button>
-        <button class="m-btn"     id="mn-biografia"  onclick="goTab('biografia')">Biografia</button>
-        <button class="m-btn"     id="mn-arquivos"   onclick="openDrawer('arquivos')">Arquivos</button>
-        <button class="m-btn"     id="mn-rolagem"    onclick="openDrawer('rolagem')">Rolagem</button>
+        <!-- Grupo de Botões de Redirecionamento -->
+        <div class="button-group">
+            <a href="ficha.html" class="btn btn-jogar">Jogar</a>
+            <a href="vtm_compendium.html" class="btn btn-compendio">Compêndio</a>
+        </div>
     </div>
-</nav>
 
-<!-- DRAWER OVERLAY -->
-<div id="drawer-overlay" onclick="closeDrawer()"></div>
-
-<!-- MOBILE DRAWER (sidebar content duplicated) -->
-<div id="drawer">
-    <div class="sb-section" id="drawer-arquivos">
-        <div class="sb-label">Sistema de Arquivos</div>
-        <div class="fg"><label>Nome do Jogador</label>
-            <input type="text" id="player-name-m" data-field="player-name" placeholder="Quem controla o monstro?">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">
-            <button class="btn" onclick="window.novaFicha()">[ Nova Ficha / Limpar ]</button>
-            <button class="btn green" onclick="window.salvarFicha()">[ Salvar Ficha ]<span class="dot-unsaved"></span></button>
-            <button class="btn danger" onclick="window.excluirFicha()">[ Excluir Ficha ]</button>
-            <button class="btn" onclick="window.carregarTodasAsFichas()" style="color:#c0392b;border-color:#5a0000;">[ Painel do Narrador ]</button>
-        </div>
-        <div id="offline-toast-m" style="display:none;background:#2a0000;border:1px solid var(--border);color:var(--red-hi);padding:5px 10px;font-size:0.72em;text-align:center;margin-top:6px;">⚠ OFFLINE</div>
-        <div id="save-status-m" style="color:var(--red-hi);text-align:center;font-size:0.7em;min-height:12px;margin-top:4px;"></div>
-        <select id="char-select-m" onchange="window.confirmarCarregamento(this.value)" style="width:100%;padding:6px 8px;background:#000;color:var(--text);border:1px solid var(--border);font-family:var(--mono);font-size:0.78em;cursor:pointer;margin-top:8px;">
-            <option value="">-- Carregar Ficha --</option>
-        </select>
-    </div>
-    <div class="sb-section" id="drawer-rolagem">
-        <div class="sb-label">Módulo de Rolagem</div>
-        <div class="fg"><label>Parada de Dados</label>
-            <input type="number" id="dice-pool-m" class="dice-pool-input" min="1" max="20" value="5">
-        </div>
-        <button class="btn roll" onclick="window.rollV5()">▶ Rolar Dados</button>
-        <div id="roll-result" style="margin-top:8px;">AGUARDANDO...</div>
-        <div id="dice-display"></div>
-    </div>
-</div>
-
-<!-- ══ MAIN SHELL ══ -->
-<div id="shell">
-
-    <!-- MAIN CONTENT -->
-    <div id="main">
-        <!-- DESKTOP TAB BAR -->
-        <div id="tab-bar">
-            <button class="t-btn on" onclick="goTab('personagem')">◈ Personagem</button>
-            <button class="t-btn"    onclick="goTab('poder')">◈ Poder</button>
-            <button class="t-btn"    onclick="goTab('inventario')">◈ Inventário</button>
-            <button class="t-btn"    onclick="goTab('biografia')">◈ Biografia</button>
-        </div>
-
-        <div id="tab-content">
-
-            <!-- ── ABA: PERSONAGEM ── -->
-            <div class="pane on" id="tab-personagem">
-
-                <!-- Vitals compactos no topo -->
-                <div class="g2" style="margin-bottom:10px;">
-                    <div class="vbox">
-                        <div class="sub-h">Vitalidade</div>
-                        <div class="vnum" id="tracker-saude">4</div>
-                        <div class="vcap">/ Superf. &nbsp;X Agrav.</div>
-                    </div>
-                    <div class="vbox">
-                        <div class="sub-h">Força de Vontade</div>
-                        <div class="vnum" id="tracker-fdv">2</div>
-                        <div class="vcap">/ Superf. &nbsp;X Agrav.</div>
-                    </div>
-                </div>
-
-                <!-- Dados do personagem em accordion -->
-                <div class="section-acc">
-                    <button class="section-acc-btn open" onclick="toggleAcc(this)">
-                        Identidade <span>▾</span>
-                    </button>
-                    <div class="section-acc-content open">
-                        <div class="g3" style="margin-bottom:4px;">
-                            <div class="fg"><label>Nome</label><input type="text" id="campo-nome" data-field="nome"></div>
-                            <div class="fg"><label>Conceito</label><input type="text" id="campo-conceito" data-field="conceito"></div>
-                            <div class="fg"><label>Predador</label><input type="text" id="campo-predador" data-field="predador"></div>
-                            <div class="fg"><label>Crônica</label><input type="text" id="campo-cronica" data-field="cronica"></div>
-                            <div class="fg"><label>Ambição</label><input type="text" id="campo-ambicao" data-field="ambicao"></div>
-                            <div class="fg"><label>Clã</label><input type="text" id="campo-cla" data-field="cla"></div>
-                            <div class="fg"><label>Senhor</label><input type="text" id="campo-senhor" data-field="senhor"></div>
-                            <div class="fg"><label>Desejo</label><input type="text" id="campo-desejo" data-field="desejo"></div>
-                            <div class="fg"><label>Geração</label><input type="text" id="campo-geracao" data-field="geracao"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-acc">
-                    <button class="section-acc-btn open" onclick="toggleAcc(this)">
-                        Atributos <span>▾</span>
-                    </button>
-                    <div class="section-acc-content open">
-                        <div class="g3">
-                            <div class="sl">
-                                <div class="sub-h">Físicos</div>
-                                <div class="st"><label>Força</label><input type="number" id="attr-forca" data-field="attr-forca" min="1" max="5" value="1"></div>
-                                <div class="st"><label>Destreza</label><input type="number" id="attr-destreza" data-field="attr-destreza" min="1" max="5" value="1"></div>
-                                <div class="st"><label>Vigor</label><input type="number" id="vigor" data-field="attr-vigor" min="1" max="5" value="1"></div>
-                            </div>
-                            <div class="sl">
-                                <div class="sub-h">Sociais</div>
-                                <div class="st"><label>Carisma</label><input type="number" id="attr-carisma" data-field="attr-carisma" min="1" max="5" value="1"></div>
-                                <div class="st"><label>Manipulação</label><input type="number" id="attr-manipulacao" data-field="attr-manipulacao" min="1" max="5" value="1"></div>
-                                <div class="st"><label>Autocontrole</label><input type="number" id="autocontrole" data-field="attr-autocontrole" min="1" max="5" value="1"></div>
-                            </div>
-                            <div class="sl">
-                                <div class="sub-h">Mentais</div>
-                                <div class="st"><label>Inteligência</label><input type="number" id="attr-inteligencia" data-field="attr-inteligencia" min="1" max="5" value="1"></div>
-                                <div class="st"><label>Raciocínio</label><input type="number" id="attr-raciocinio" data-field="attr-raciocinio" min="1" max="5" value="1"></div>
-                                <div class="st"><label>Determinação</label><input type="number" id="determinacao" data-field="attr-determinacao" min="1" max="5" value="1"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-acc">
-                    <button class="section-acc-btn" onclick="toggleAcc(this)">
-                        Habilidades <span>▾</span>
-                    </button>
-                    <div class="section-acc-content">
-                        <div class="g3">
-                            <div class="sl">
-                                <div class="sub-h">Físicas</div>
-                                <div class="st"><label>Armas Brancas</label><input type="number" data-field="hab-armas-brancas" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Armas de Fogo</label><input type="number" data-field="hab-armas-fogo" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Atletismo</label><input type="number" data-field="hab-atletismo" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Briga</label><input type="number" data-field="hab-briga" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Condução</label><input type="number" data-field="hab-conducao" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Furtividade</label><input type="number" data-field="hab-furtividade" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Ladroagem</label><input type="number" data-field="hab-ladroagem" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Ofícios</label><input type="number" data-field="hab-oficios" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Sobrevivência</label><input type="number" data-field="hab-sobrevivencia" min="0" max="5" value="0"></div>
-                            </div>
-                            <div class="sl">
-                                <div class="sub-h">Sociais</div>
-                                <div class="st"><label>Emp. Animais</label><input type="number" data-field="hab-empatia-animais" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Etiqueta</label><input type="number" data-field="hab-etiqueta" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Intimidação</label><input type="number" data-field="hab-intimidacao" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Liderança</label><input type="number" data-field="hab-lideranca" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Manha</label><input type="number" data-field="hab-manha" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Performance</label><input type="number" data-field="hab-performance" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Persuasão</label><input type="number" data-field="hab-persuasao" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Sagacidade</label><input type="number" data-field="hab-sagacidade" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Subterfúgio</label><input type="number" data-field="hab-subterfugio" min="0" max="5" value="0"></div>
-                            </div>
-                            <div class="sl">
-                                <div class="sub-h">Mentais</div>
-                                <div class="st"><label>Ciência</label><input type="number" data-field="hab-ciencia" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Erudição</label><input type="number" data-field="hab-erudicao" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Finanças</label><input type="number" data-field="hab-financas" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Investigação</label><input type="number" data-field="hab-investigacao" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Medicina</label><input type="number" data-field="hab-medicina" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Ocultismo</label><input type="number" data-field="hab-ocultismo" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Percepção</label><input type="number" data-field="hab-percepcao" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Política</label><input type="number" data-field="hab-politica" min="0" max="5" value="0"></div>
-                                <div class="st"><label>Tecnologia</label><input type="number" data-field="hab-tecnologia" min="0" max="5" value="0"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── ABA: PODER ── -->
-            <div class="pane" id="tab-poder">
-                <div class="g3" style="margin-bottom:10px;">
-                    <div class="vbox">
-                        <div class="sub-h">Humanidade</div>
-                        <input type="number" id="campo-humanidade" data-field="humanidade" min="0" max="10" value="7" class="vnum-input">
-                    </div>
-                    <div class="vbox">
-                        <div class="sub-h">Fome</div>
-                        <input type="number" id="input-fome" data-field="fome" min="0" max="5" value="1" class="vnum-input">
-                        <div class="fg" style="margin-top:6px;"><label>Ressonância</label><input type="text" data-field="ressonancia" placeholder="Ex: Colérico..."></div>
-                    </div>
-                    <div class="vbox">
-                        <div class="sub-h">Potência</div>
-                        <input type="number" id="campo-potencia" data-field="potencia" min="0" max="10" value="1" class="vnum-input">
-                    </div>
-                </div>
-
-                <div class="section-acc">
-                    <button class="section-acc-btn open" onclick="toggleAcc(this)">Disciplinas <span>▾</span></button>
-                    <div class="section-acc-content open">
-                        <div class="sl">
-                            <div class="st"><input type="text" data-field="disc-1-nome" placeholder="Disciplina 1"><input type="number" data-field="disc-1-val" min="0" max="5" value="0"></div>
-                            <div class="st"><input type="text" data-field="disc-2-nome" placeholder="Disciplina 2"><input type="number" data-field="disc-2-val" min="0" max="5" value="0"></div>
-                            <div class="st"><input type="text" data-field="disc-3-nome" placeholder="Disciplina 3"><input type="number" data-field="disc-3-val" min="0" max="5" value="0"></div>
-                            <div class="st"><input type="text" data-field="disc-4-nome" placeholder="Disciplina 4"><input type="number" data-field="disc-4-val" min="0" max="5" value="0"></div>
-                            <div class="st"><input type="text" data-field="disc-5-nome" placeholder="Disciplina 5"><input type="number" data-field="disc-5-val" min="0" max="5" value="0"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-acc">
-                    <button class="section-acc-btn open" onclick="toggleAcc(this)">Efeitos do Sangue <span>▾</span></button>
-                    <div class="section-acc-content open">
-                        <div class="g2">
-                            <div class="fg"><label>Surto de Sangue</label><input type="text" data-field="sangue-surto" placeholder="+1 dado"></div>
-                            <div class="fg"><label>Mend. de Dano</label><input type="text" data-field="sangue-mend" placeholder="1 Agrav."></div>
-                            <div class="fg"><label>Bônus de Poder</label><input type="text" data-field="sangue-bonus" placeholder="Nenhum"></div>
-                            <div class="fg"><label>Rerrolagem</label><input type="text" data-field="sangue-rerrolagem" placeholder="Nível 1"></div>
-                            <div class="fg"><label>Penalidade Alim.</label><input type="text" data-field="sangue-penalidade" placeholder="Nenhuma"></div>
-                            <div class="fg"><label>Grav. Perdição</label><input type="text" data-field="sangue-perdicao" placeholder="1"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-acc">
-                    <button class="section-acc-btn" onclick="toggleAcc(this)">Identidade & Credo <span>▾</span></button>
-                    <div class="section-acc-content">
-                        <div class="g3">
-                            <div class="fg"><label>Princípios da Crônica</label><textarea data-field="principios" rows="4" placeholder="Regras morais e éticas..."></textarea></div>
-                            <div class="fg"><label>Pilares & Convicções</label><textarea data-field="pilares" rows="4" placeholder="O que ancora sua Humanidade?"></textarea></div>
-                            <div class="fg"><label>Notas Gerais</label><textarea data-field="notas" rows="4" placeholder="Anotações..."></textarea></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-acc">
-                    <button class="section-acc-btn" onclick="toggleAcc(this)">Vantagens & Defeitos <span>▾</span></button>
-                    <div class="section-acc-content">
-                        <div class="g2">
-                            <div class="sl">
-                                <div class="st"><input type="text" data-field="vant-1-nome" placeholder="Vantagem / Defeito"><input type="number" data-field="vant-1-val" min="0" max="5" value="0"></div>
-                                <div class="st"><input type="text" data-field="vant-2-nome" placeholder="Vantagem / Defeito"><input type="number" data-field="vant-2-val" min="0" max="5" value="0"></div>
-                                <div class="st"><input type="text" data-field="vant-3-nome" placeholder="Vantagem / Defeito"><input type="number" data-field="vant-3-val" min="0" max="5" value="0"></div>
-                                <div class="st"><input type="text" data-field="vant-4-nome" placeholder="Vantagem / Defeito"><input type="number" data-field="vant-4-val" min="0" max="5" value="0"></div>
-                                <div class="st"><input type="text" data-field="vant-5-nome" placeholder="Vantagem / Defeito"><input type="number" data-field="vant-5-val" min="0" max="5" value="0"></div>
-                            </div>
-                            <div class="sl">
-                                <div class="st"><input type="text" data-field="vant-6-nome" placeholder="Vantagem / Defeito"><input type="number" data-field="vant-6-val" min="0" max="5" value="0"></div>
-                                <div class="st"><input type="text" data-field="vant-7-nome" placeholder="Vantagem / Defeito"><input type="number" data-field="vant-7-val" min="0" max="5" value="0"></div>
-                                <div class="st"><input type="text" data-field="vant-8-nome" placeholder="Vantagem / Defeito"><input type="number" data-field="vant-8-val" min="0" max="5" value="0"></div>
-                                <div class="st"><input type="text" data-field="vant-9-nome" placeholder="Vantagem / Defeito"><input type="number" data-field="vant-9-val" min="0" max="5" value="0"></div>
-                                <div class="st"><input type="text" data-field="vant-10-nome" placeholder="Vantagem / Defeito"><input type="number" data-field="vant-10-val" min="0" max="5" value="0"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── ABA: INVENTÁRIO ── -->
-            <div class="pane" id="tab-inventario">
-                <div class="sec-h">Adicionar Item</div>
-                <div class="inv-form">
-                    <div class="fg" style="margin:0;">
-                        <label>Nome do Item / Arma</label>
-                        <input type="text" id="inv-name" placeholder="Ex: Taco de Baseball, Corda...">
-                    </div>
-                    <button class="btn-sm" style="padding:6px 12px;align-self:flex-end;" onclick="window.addInventoryItem()">+ ADD</button>
-                </div>
-                <div class="inv-form-extra">
-                    <div class="fg" style="margin:0;">
-                        <label>Tipo</label>
-                        <select id="inv-type" onchange="window.toggleWeaponType()">
-                            <option value="comum">Comum</option>
-                            <option value="arma">Arma</option>
-                            <option value="sobrenatural">Sobrenatural</option>
-                        </select>
-                    </div>
-                    <div class="fg" style="margin:0;display:none;" id="inv-weapon-type-group">
-                        <label>Categoria (Dano)</label>
-                        <select id="inv-weapon-type">
-                            <option value="0">Improvisadas (+0)</option>
-                            <option value="1">Leves (+1)</option>
-                            <option value="2">Médias (+2)</option>
-                            <option value="3">Pesadas (+3)</option>
-                            <option value="2">Fogo Leves (+2)</option>
-                            <option value="3">Fogo Pesadas (+3)</option>
-                        </select>
-                    </div>
-                    <div class="fg" style="margin:0;display:none;" id="inv-manual-mod-group">
-                        <label>Modificador (+)</label>
-                        <input type="number" id="inv-manual-mod" value="1" min="0" max="20">
-                    </div>
-                </div>
-                <div class="fg" style="margin-bottom:12px;">
-                    <label>Descrição (opcional)</label>
-                    <input type="text" id="inv-desc" placeholder="Ex: Pertenceu ao avô, tem inscrições rúnicas...">
-                </div>
-
-                <div class="sec-h">Itens Atuais</div>
-                <input type="hidden" id="inventory-data" data-field="inventario" value="[]">
-                <div id="inventory-list"></div>
-
-                <div class="sec-h" style="margin-top:20px;">Biblioteca Compartilhada</div>
-                <p style="font-size:0.72em;color:var(--text-dim);margin-bottom:8px;">Itens adicionados são sincronizados automaticamente. Só o Narrador pode excluir.</p>
-                <input type="text" class="lib-search" id="lib-search" placeholder="⌕ Pesquisar na biblioteca..." oninput="window.filterLibrary(this.value)">
-
-                <button class="acc-btn" onclick="toggleLibAcc(this,'lib-panel-comum')">◈ Comum <span class="arrow">▶</span></button>
-                <div class="acc-panel" id="lib-panel-comum"></div>
-
-                <button class="acc-btn" onclick="toggleLibAcc(this,'lib-panel-arma')">◈ Arma <span class="arrow">▶</span></button>
-                <div class="acc-panel" id="lib-panel-arma"></div>
-
-                <button class="acc-btn" onclick="toggleLibAcc(this,'lib-panel-sobrenatural')">◈ Sobrenatural <span class="arrow">▶</span></button>
-                <div class="acc-panel" id="lib-panel-sobrenatural"></div>
-            </div>
-
-            <!-- ── ABA: BIOGRAFIA ── -->
-            <div class="pane" id="tab-biografia">
-                <div class="bio-wrap">
-                    <div class="bio-photo" title="Clique para alterar" onclick="document.getElementById('bio-image-upload').click()">
-                        <img id="bio-image-preview" src="https://placehold.co/120x150/111/555?text=FOTO" alt="Foto">
-                        <div class="bio-photo-label">CLIQUE PARA ALTERAR</div>
-                        <input type="file" id="bio-image-upload" accept="image/*" style="display:none;">
-                        <input type="hidden" id="bio-image-data" data-field="bio-image">
-                    </div>
-                    <div class="bio-fields">
-                        <div class="g2">
-                            <div class="fg"><label>Idade Real</label><input type="text" data-field="bio-idade-real"></div>
-                            <div class="fg"><label>Idade Aparente</label><input type="text" data-field="bio-idade-aparente"></div>
-                            <div class="fg"><label>Nascimento</label><input type="date" data-field="bio-nasc"></div>
-                            <div class="fg"><label>Data de Morte</label><input type="date" data-field="bio-morte"></div>
-                        </div>
-                        <div class="fg"><label>Perdição do Clã</label>
-                            <textarea data-field="bio-perdicao" rows="3" placeholder="Como a maldição do clã afeta você?"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="fg"><label>Aparência / Traços / História</label>
-                    <textarea data-field="bio-aparencia" rows="5" placeholder="Descrição física e histórico em vida e não-vida..."></textarea>
-                </div>
-                <div class="g2">
-                    <div class="fg"><label>XP Total</label><input type="number" data-field="bio-xp-total" value="0"></div>
-                    <div class="fg"><label>XP Gasto</label><input type="number" data-field="bio-xp-gasto" value="0"></div>
-                </div>
-            </div>
-
-        </div><!-- end tab-content -->
-    </div><!-- end #main -->
-
-    <!-- ══ DESKTOP SIDEBAR ══ -->
-    <aside id="sidebar">
-        <div class="sb-section">
-            <div class="sb-label">Sistema de Arquivos</div>
-            <div class="fg"><label>Nome do Jogador</label>
-                <input type="text" id="player-name" data-field="player-name" placeholder="Quem controla o monstro?">
-            </div>
-            <div style="display:flex;flex-direction:column;gap:5px;margin-top:8px;">
-                <button class="btn" onclick="window.novaFicha()">[ Nova Ficha / Limpar ]</button>
-                <button class="btn green" onclick="window.salvarFicha()">[ Salvar Ficha ]<span class="dot-unsaved"></span></button>
-                <button class="btn danger" onclick="window.excluirFicha()">[ Excluir Ficha ]</button>
-                <button class="btn" onclick="window.carregarTodasAsFichas()" style="color:#c0392b;border-color:#5a0000;">[ Painel do Narrador ]</button>
-            </div>
-            <div id="offline-toast" style="margin-top:6px;">⚠ OFFLINE — dados salvos localmente</div>
-            <div id="save-status" style="margin-top:4px;"></div>
-            <select id="char-select" onchange="window.confirmarCarregamento(this.value)" style="margin-top:8px;">
-                <option value="">-- Carregar Ficha --</option>
-            </select>
-        </div>
-
-        <div class="sb-section" style="flex:1;display:flex;flex-direction:column;gap:8px;">
-            <div class="sb-label">Módulo de Rolagem</div>
-            <div class="fg"><label>Parada de Dados</label>
-                <input type="number" id="dice-pool" class="dice-pool-input" min="1" max="20" value="5">
-            </div>
-            <button class="btn roll" onclick="window.rollV5()">▶ Iniciar Rolagem</button>
-            <div id="roll-result">AGUARDANDO INPUT...</div>
-            <div id="dice-display"></div>
-        </div>
-    </aside>
-
-</div><!-- end #shell -->
-
-<!-- CROP MODAL -->
-<div id="crop-modal" class="crop-modal">
-    <h2>Ajustar Imagem</h2>
-    <p style="color:#888;font-size:0.8em;">Arraste para posicionar. Barra = zoom.</p>
-    <div class="crop-canvas-wrap">
-        <canvas id="crop-canvas" width="120" height="150"></canvas>
-    </div>
-    <div class="crop-controls">
-        <label style="color:#888;font-size:0.8em;">Zoom:</label>
-        <input type="range" id="crop-zoom" min="0.1" max="3" step="0.05" value="1">
-        <button class="btn-sm" onclick="window.confirmCrop()" style="border-color:var(--green);color:var(--green);">Salvar</button>
-        <button class="btn-sm btn-x" onclick="document.getElementById('crop-modal').style.display='none'">Cancelar</button>
-    </div>
-</div>
-
-<script>
-// ══ ACCORDION HELPERS ══
-function toggleAcc(btn) {
-    const content = btn.nextElementSibling;
-    const isOpen = content.classList.toggle('open');
-    btn.classList.toggle('open', isOpen);
-}
-function toggleLibAcc(btn, panelId) {
-    const panel = document.getElementById(panelId);
-    const isOpen = panel.classList.toggle('open');
-    btn.classList.toggle('open', isOpen);
-}
-
-// ══ TAB NAVIGATION ══
-const TABS = ['personagem','poder','inventario','biografia'];
-function goTab(id) {
-    document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
-    document.querySelectorAll('.t-btn').forEach(b => b.classList.remove('on'));
-    document.querySelectorAll('.m-btn').forEach(b => b.classList.remove('on'));
-
-    document.getElementById('tab-' + id)?.classList.add('on');
-    const idx = TABS.indexOf(id);
-    if (idx !== -1) document.querySelectorAll('.t-btn')[idx]?.classList.add('on');
-    const mb = document.getElementById('mn-' + id);
-    if (mb) mb.classList.add('on');
-
-    closeDrawer();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ══ MOBILE DRAWER ══
-function openDrawer(section) {
-    document.querySelectorAll('.m-btn').forEach(b => b.classList.remove('on'));
-    const btn = document.getElementById('mn-' + section);
-    if (btn) btn.classList.add('on');
-    document.getElementById('drawer').classList.add('on');
-    document.getElementById('drawer-overlay').classList.add('on');
-    // scroll drawer to correct section
-    const target = document.getElementById('drawer-' + section);
-    if (target) setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
-}
-function closeDrawer() {
-    document.getElementById('drawer').classList.remove('on');
-    document.getElementById('drawer-overlay').classList.remove('on');
-}
-
-// ══ DIALOGS ══
-window.customConfirm = function(message, yes, no) {
-    const ov = document.createElement('div');
-    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;';
-    const bx = document.createElement('div');
-    bx.style.cssText = 'background:#0d0d11;border:1px solid #3a0000;padding:22px;text-align:center;color:#ccc;font-family:"Share Tech Mono",monospace;max-width:360px;box-shadow:0 0 20px rgba(192,57,43,.3);';
-    const msg = document.createElement('p'); msg.innerText = message; msg.style.marginBottom = '18px';
-    const bY = document.createElement('button'); bY.innerText = 'SIM';
-    bY.style.cssText = 'background:#1a0000;color:#fff;border:1px solid #c0392b;padding:7px 18px;margin:0 8px;cursor:pointer;font-weight:bold;font-family:inherit;';
-    bY.onclick = () => { document.body.removeChild(ov); if(yes) yes(); };
-    const bN = document.createElement('button'); bN.innerText = 'NÃO';
-    bN.style.cssText = 'background:#111;color:#aaa;border:1px solid #333;padding:7px 18px;margin:0 8px;cursor:pointer;font-family:inherit;';
-    bN.onclick = () => { document.body.removeChild(ov); if(no) no(); };
-    bx.append(msg,bY,bN); ov.appendChild(bx); document.body.appendChild(ov);
-};
-window.customPrompt = function(message, def, cb) {
-    const ov = document.createElement('div');
-    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;';
-    const bx = document.createElement('div');
-    bx.style.cssText = 'background:#0d0d11;border:1px solid #3a0000;padding:22px;text-align:center;color:#ccc;font-family:"Share Tech Mono",monospace;max-width:360px;box-shadow:0 0 20px rgba(192,57,43,.3);';
-    const msg = document.createElement('p'); msg.innerText = message; msg.style.marginBottom = '12px';
-    const inp = document.createElement('input'); inp.type='text'; inp.value=def||'';
-    inp.style.cssText = 'width:100%;padding:7px;background:#000;color:#e74c3c;border:1px solid #c0392b;margin-bottom:14px;text-align:center;outline:none;font-family:inherit;';
-    const bO = document.createElement('button'); bO.innerText = 'OK';
-    bO.style.cssText = 'background:#1a0000;color:#fff;border:1px solid #c0392b;padding:7px 18px;margin:0 8px;cursor:pointer;font-family:inherit;';
-    bO.onclick = () => { document.body.removeChild(ov); if(cb) cb(inp.value); };
-    const bC = document.createElement('button'); bC.innerText = 'CANCELAR';
-    bC.style.cssText = 'background:#111;color:#aaa;border:1px solid #333;padding:7px 18px;margin:0 8px;cursor:pointer;font-family:inherit;';
-    bC.onclick = () => { document.body.removeChild(ov); if(cb) cb(null); };
-    bx.append(msg,inp,bO,bC); ov.appendChild(bx); document.body.appendChild(ov); inp.focus();
-};
-window.customAlert = function(message) {
-    const ov = document.createElement('div');
-    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;';
-    const bx = document.createElement('div');
-    bx.style.cssText = 'background:#0d0d11;border:1px solid #3a0000;padding:22px;text-align:center;color:#ccc;font-family:"Share Tech Mono",monospace;max-width:360px;box-shadow:0 0 20px rgba(192,57,43,.3);';
-    const msg = document.createElement('p'); msg.innerText = message; msg.style.marginBottom = '18px';
-    const bO = document.createElement('button'); bO.innerText = 'OK';
-    bO.style.cssText = 'background:#1a0000;color:#fff;border:1px solid #c0392b;padding:7px 22px;cursor:pointer;font-family:inherit;';
-    bO.onclick = () => document.body.removeChild(ov);
-    bx.append(msg,bO); ov.appendChild(bx); document.body.appendChild(ov);
-};
-
-// ══ VITALS ══
-window.calcularSaude = function() {
-    const v = parseInt(document.getElementById('vigor').value)||1;
-    document.getElementById('tracker-saude').innerText = Math.max(1,v)+3;
-};
-window.calcularFdV = function() {
-    const a = parseInt(document.getElementById('autocontrole').value)||1;
-    const d = parseInt(document.getElementById('determinacao').value)||1;
-    document.getElementById('tracker-fdv').innerText = Math.max(1,a)+Math.max(1,d);
-};
-
-// ══ UNSAVED STATE ══
-window._temAlteracoes = false;
-window.marcarNaoSalvo = function() {
-    window._temAlteracoes = true;
-    document.querySelectorAll('.btn.green').forEach(b => b.classList.add('has-unsaved'));
-};
-window.marcarSalvo = function() {
-    window._temAlteracoes = false;
-    document.querySelectorAll('.btn.green').forEach(b => b.classList.remove('has-unsaved'));
-};
-
-// ══ INVENTORY ══
-window.inventory = [];
-window.libraryItems = [];
-
-window.toggleWeaponType = function() {
-    const t = document.getElementById('inv-type').value;
-    document.getElementById('inv-weapon-type-group').style.display = t==='arma' ? 'block' : 'none';
-    document.getElementById('inv-manual-mod-group').style.display = t==='sobrenatural' ? 'block' : 'none';
-};
-
-window.addInventoryItem = function() {
-    const name = document.getElementById('inv-name').value;
-    if (!name.trim()) return;
-    const type = document.getElementById('inv-type').value;
-    const desc = (document.getElementById('inv-desc').value||'').trim();
-    let displayVal = '';
-    if (type==='arma') {
-        const sel = document.getElementById('inv-weapon-type');
-        const m = sel.options[sel.selectedIndex].text.match(/(\+\d+)/);
-        if (m) displayVal = m[1];
-    } else if (type==='sobrenatural') {
-        displayVal = '+' + document.getElementById('inv-manual-mod').value;
-    }
-    const item = { id: Date.now(), name: name.trim(), type, displayVal, desc };
-    window.inventory.push(item);
-    document.getElementById('inv-name').value = '';
-    document.getElementById('inv-desc').value = '';
-    window.renderInventory();
-    window.marcarNaoSalvo();
-    if (window.syncItemToLibrary) window.syncItemToLibrary(item);
-};
-
-window.removeInventoryItem = function(id) {
-    window.inventory = window.inventory.filter(i => i.id !== id);
-    window.renderInventory();
-    window.marcarNaoSalvo();
-};
-
-window.renderInventory = function() {
-    const list = document.getElementById('inventory-list');
-    list.innerHTML = '';
-    window.inventory.forEach(item => {
-        const d = document.createElement('div');
-        d.className = 'inv-item';
-        const badge = item.displayVal ? `<span class="inv-badge">${item.displayVal}</span>` : '';
-        const desc  = item.desc ? `<div class="inv-desc">${item.desc}</div>` : '';
-        d.innerHTML = `<div class="inv-body"><div class="inv-name">${item.name}${badge}</div>${desc}</div><button class="btn-sm btn-x" onclick="window.removeInventoryItem(${item.id})">✕</button>`;
-        list.appendChild(d);
-    });
-    document.getElementById('inventory-data').value = JSON.stringify(window.inventory);
-};
-
-window.addFromLibrary = function(libId) {
-    const item = window.libraryItems.find(i => i.id === libId);
-    if (!item) return;
-    window.inventory.push({ id: Date.now(), name: item.name, type: item.type, displayVal: item.displayVal, desc: item.desc||'' });
-    window.renderInventory();
-    window.marcarNaoSalvo();
-};
-
-// ══ DICE ══
-// Valor unificado da parada — os dois inputs ficam sincronizados via DOMContentLoaded
-window._dicePool = 5;
-
-window.rollV5 = function() {
-    const pool   = window._dicePool || 5;
-    const hunger = parseInt(document.getElementById('input-fome')?.value) || 0;
-
-    const normalDice = Math.max(0, pool - Math.max(0, hunger));
-    const hungerDice = Math.min(pool, Math.max(0, hunger));
-
-    let successes=0, normalTens=0, hungerTens=0, hungerOnes=0;
-    const display  = document.getElementById('dice-display');
-    const resultEl = document.getElementById('roll-result');
-    display.innerHTML = '';
-
-    for (let i=0; i<normalDice; i++) {
-        const r = Math.floor(Math.random()*10)+1;
-        let cls = 'die d-n';
-        if      (r===10)  { normalTens++; successes++; cls += ' d-c'; }
-        else if (r >= 6)  { successes++;               cls += ' d-s'; }
-        else              {                             cls += ' d-f'; }
-        display.innerHTML += `<div class="${cls}">${r}</div>`;
-    }
-    for (let i=0; i<hungerDice; i++) {
-        const r = Math.floor(Math.random()*10)+1;
-        let cls = 'die d-h';
-        if      (r===10) { hungerTens++;  successes++; cls += ' d-c'; }
-        else if (r >= 6) {                successes++; cls += ' d-s'; }
-        else if (r === 1){ hungerOnes++;               cls += ' d-b'; }
-        else             {                             cls += ' d-f'; }
-        display.innerHTML += `<div class="${cls}">${r}</div>`;
-    }
-
-    const totalTens  = normalTens + hungerTens;
-    const critPairs  = Math.floor(totalTens / 2);
-    successes += critPairs * 2;
-
-    const isCritical = critPairs > 0;
-    const isMessy    = isCritical && hungerTens > 0 && (normalTens + hungerTens >= 2);
-    const isBestial  = successes === 0 && hungerOnes > 0;
-
-    let txt = `${successes} SUCESSO(S)`, color = 'var(--text)';
-    if      (isMessy)       { txt = `CRÍTICO BAGUNÇADO! (${successes})`; color = '#e74c3c'; }
-    else if (isCritical)    { txt = `ACERTO CRÍTICO! (${successes})`;    color = '#f1c40f'; }
-    else if (isBestial)     { txt = 'FALHA BESTIAL! (0)';                color = '#e74c3c'; }
-    else if (successes===0) { txt = 'FALHA TOTAL.';                      color = '#555';    }
-    else { color = '#27ae60'; if (hungerOnes > 0) txt += ' ⚠ Bestial'; }
-
-    resultEl.innerText   = txt;
-    resultEl.style.color = color;
-};
-
-// ══ IMAGE CROP ══
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('vigor').addEventListener('input', window.calcularSaude);
-    document.getElementById('autocontrole').addEventListener('input', window.calcularFdV);
-    document.getElementById('determinacao').addEventListener('input', window.calcularFdV);
-    window.calcularSaude(); window.calcularFdV();
-
-    document.querySelectorAll('input[data-field],textarea[data-field]').forEach(el => {
-        el.addEventListener('input', window.marcarNaoSalvo);
-    });
-
-    window.addEventListener('offline', () => {
-        document.getElementById('offline-toast').style.display='block';
-        const m=document.getElementById('offline-toast-m');if(m)m.style.display='block';
-    });
-    window.addEventListener('online', () => {
-        document.getElementById('offline-toast').style.display='none';
-        const m=document.getElementById('offline-toast-m');if(m)m.style.display='none';
-    });
-
-    // sync mobile/desktop dice-pool via shared variable
-    const dp  = document.getElementById('dice-pool');
-    const dpm = document.getElementById('dice-pool-m');
-    function syncPool(val) {
-        window._dicePool = parseInt(val) || 5;
-        if (dp)  dp.value  = window._dicePool;
-        if (dpm) dpm.value = window._dicePool;
-    }
-    if (dp)  dp.addEventListener('input',  () => syncPool(dp.value));
-    if (dpm) dpm.addEventListener('input', () => syncPool(dpm.value));
-    syncPool(dp?.value || dpm?.value || 5);
-
-    // crop logic
-    let cImg=null,cX=0,cY=0,cScale=1,isDrag=false,lastX,lastY;
-    const cvs=document.getElementById('crop-canvas');
-    const ctx=cvs.getContext('2d');
-    function drawCrop(){ctx.fillStyle='#000';ctx.fillRect(0,0,cvs.width,cvs.height);if(!cImg)return;ctx.drawImage(cImg,cX,cY,cImg.width*cScale,cImg.height*cScale);}
-    document.getElementById('crop-zoom').addEventListener('input',e=>{cScale=parseFloat(e.target.value);drawCrop();});
-    cvs.addEventListener('mousedown',e=>{isDrag=true;lastX=e.offsetX;lastY=e.offsetY;});
-    cvs.addEventListener('mousemove',e=>{if(!isDrag)return;cX+=e.offsetX-lastX;cY+=e.offsetY-lastY;lastX=e.offsetX;lastY=e.offsetY;drawCrop();});
-    cvs.addEventListener('mouseup',()=>isDrag=false);
-    cvs.addEventListener('mouseleave',()=>isDrag=false);
-    cvs.addEventListener('touchstart',e=>{isDrag=true;const t=e.touches[0];const r=cvs.getBoundingClientRect();lastX=t.clientX-r.left;lastY=t.clientY-r.top;},{passive:false});
-    cvs.addEventListener('touchmove',e=>{if(!isDrag)return;e.preventDefault();const t=e.touches[0];const r=cvs.getBoundingClientRect();const cx=t.clientX-r.left,cy=t.clientY-r.top;cX+=cx-lastX;cY+=cy-lastY;lastX=cx;lastY=cy;drawCrop();},{passive:false});
-    cvs.addEventListener('touchend',()=>isDrag=false);
-
-    document.getElementById('bio-image-upload').addEventListener('change',function(e){
-        const file=e.target.files[0];if(!file)return;
-        const reader=new FileReader();
-        reader.onload=function(ev){
-            cImg=new Image();
-            cImg.onload=function(){
-                cScale=Math.max(cvs.width/cImg.width,cvs.height/cImg.height);
-                document.getElementById('crop-zoom').value=cScale;
-                cX=(cvs.width-cImg.width*cScale)/2;cY=(cvs.height-cImg.height*cScale)/2;
-                document.getElementById('crop-modal').style.display='flex';drawCrop();
-            };
-            cImg.src=ev.target.result;e.target.value='';
-        };
-        reader.readAsDataURL(file);
-    });
-    window.confirmCrop=function(){
-        const dataUrl=cvs.toDataURL('image/jpeg',.8);
-        document.getElementById('bio-image-preview').src=dataUrl;
-        document.getElementById('bio-image-data').value=dataUrl;
-        document.getElementById('crop-modal').style.display='none';
-        window.marcarNaoSalvo();
-    };
-});
-</script>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, deleteDoc, getDocs, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    let firebaseConfig;
-    try {
-        firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyDhsNNS7yUN2TTFDdHIZsDTv8qZaCGHETw",
-            authDomain: "vampiro-v5.firebaseapp.com",
-            projectId: "vampiro-v5",
-            storageBucket: "vampiro-v5.firebasestorage.app",
-            messagingSenderId: "524507710525",
-            appId: "1:524507710525:web:e3afa0ab40c7eb7e691654"
-        };
-    } catch(e) {
-        firebaseConfig = {
-            apiKey: "AIzaSyDhsNNS7yUN2TTFDdHIZsDTv8qZaCGHETw",
-            authDomain: "vampiro-v5.firebaseapp.com",
-            projectId: "vampiro-v5",
-            storageBucket: "vampiro-v5.firebasestorage.app",
-            messagingSenderId: "524507710525",
-            appId: "1:524507710525:web:e3afa0ab40c7eb7e691654"
-        };
-    }
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let userId = null;
-    window.currentCharacterId = null;
-    let _narratorUnsubscribe = null;
-
-    const IDs_NARRADORES = ['54zSlQcqB8fvZCMADeirLWU7zNw2'];
-
-    function getCharactersRef() { return collection(db, 'personagens'); }
-    function getCharacterDoc(id) { return doc(db, 'personagens', id); }
-    function getLibraryRef() { return collection(db, 'biblioteca'); }
-    function getLibraryDoc(id) { return doc(db, 'biblioteca', id); }
-
-    function coletarDados() {
-        const data = {};
-        document.querySelectorAll('[data-field]').forEach(el => { data[el.dataset.field] = el.value; });
-        return data;
-    }
-
-    function distribuirDados(data) {
-        document.querySelectorAll('[data-field]').forEach(el => {
-            const k = el.dataset.field;
-            if (data[k] !== undefined) el.value = data[k];
-        });
-        if (data['inventario']) {
-            try { window.inventory = JSON.parse(data['inventario']); } catch(e) { window.inventory = []; }
-        } else { window.inventory = []; }
-        window.renderInventory();
-        if (data['bio-image']) {
-            document.getElementById('bio-image-preview').src = data['bio-image'];
-        } else {
-            document.getElementById('bio-image-preview').src = 'https://placehold.co/120x150/111/555?text=FOTO';
-        }
-    }
-
-    const LOCAL_KEY = 'fichaV5_backup';
-    function salvarLocal(charId, charName, data) {
-        try { const l=JSON.parse(localStorage.getItem(LOCAL_KEY)||'{}'); l[charId]={name:charName,data,timestamp:Date.now()}; localStorage.setItem(LOCAL_KEY,JSON.stringify(l)); } catch(e){}
-    }
-    function carregarLocal() {
-        try { return JSON.parse(localStorage.getItem(LOCAL_KEY)||'{}'); } catch(e) { return {}; }
-    }
-
-    // helper: update both desktop and mobile select/status elements
-    function setStatus(txt, color) {
-        ['save-status','save-status-m'].forEach(id => {
-            const el=document.getElementById(id);
-            if(el){el.innerText=txt;el.style.color=color||'var(--red-hi)';}
-        });
-    }
-    function populateSelect(select, chars) {
-        if (!select) return;
-        const cur = select.value;
-        select.innerHTML = select.id.includes('-m')
-            ? '<option value="">-- Carregar Ficha --</option>'
-            : '<option value="">-- Carregar Ficha --</option>';
-        chars.forEach(({id, name}) => {
-            const opt=document.createElement('option');
-            opt.value=id; opt.innerText=name; select.appendChild(opt);
-        });
-        if(cur) select.value=cur;
-    }
-
-    async function initAuth() {
-        try {
-            let cred;
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                cred = await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                cred = await signInAnonymously(auth);
-            }
-            userId = cred.user.uid;
-            window.userId = userId;
-
-            // ── UID no console para debug ──
-            console.log('%c[Vampiro V5] UID autenticado:', 'color:#e74c3c;font-weight:bold;', userId);
-
-            const uiID=document.createElement('div');
-            uiID.style.cssText='position:fixed;bottom:4px;right:4px;font-size:10px;color:#222;cursor:pointer;z-index:9999;';
-            uiID.innerText=`UID:${userId.substring(0,5)}`;
-            uiID.onclick=()=>window.customAlert(`Seu UID:\n\n${userId}`);
-            document.body.appendChild(uiID);
-
-            window.loadCharacterList();
-            window.startLibraryListener();
-        } catch(e) {
-            setStatus('Offline — modo local ativo.', '#f1c40f');
-            carregarListaLocal();
-        }
-    }
-
-    window.startLibraryListener = function() {
-        if (!userId) return;
-        onSnapshot(getLibraryRef(), snap => {
-            window.libraryItems = [];
-            snap.forEach(d => window.libraryItems.push({id:d.id,...d.data()}));
-            window.renderLibraryAccordions();
-        });
-    };
-
-    window.renderLibraryAccordions = function() {
-        const panels = {
-            comum: document.getElementById('lib-panel-comum'),
-            arma: document.getElementById('lib-panel-arma'),
-            sobrenatural: document.getElementById('lib-panel-sobrenatural')
-        };
-        if (!panels.comum) return;
-        Object.values(panels).forEach(p => p.innerHTML='');
-
-        const isNarrador = IDs_NARRADORES.includes(window.userId);
-        const query = (document.getElementById('lib-search')?.value||'').toLowerCase().trim();
-
-        window.libraryItems.forEach(item => {
-            const p = panels[item.type]; if(!p) return;
-            const div=document.createElement('div');
-            div.className='lib-item';
-            div.dataset.name=item.name.toLowerCase();
-            if (query && !item.name.toLowerCase().includes(query)) div.classList.add('hidden');
-            const badge=item.displayVal?`<span class="inv-badge">${item.displayVal}</span>`:'';
-            const desc=item.desc?`<div class="inv-desc">${item.desc}</div>`:'';
-            let btns=`<button class="btn-sm" onclick="window.addFromLibrary('${item.id}')" style="white-space:nowrap;">+ Add</button>`;
-            if(isNarrador) btns+=`<button class="btn-sm btn-x" onclick="window.deleteFromLibrary('${item.id}')" style="margin-left:4px;">✕</button>`;
-            div.innerHTML=`<div class="inv-body"><div class="inv-name">${item.name}${badge}</div>${desc}</div><div style="display:flex;gap:4px;flex-shrink:0;">${btns}</div>`;
-            p.appendChild(div);
-        });
-
-        ['comum','arma','sobrenatural'].forEach(t => {
-            const p=panels[t];
-            if(!Array.from(p.querySelectorAll('.lib-item:not(.hidden)')).length) {
-                const msg=document.createElement('p');
-                msg.className='lib-empty'; msg.innerText=query?'Nenhum item encontrado.':'Nenhum item nesta categoria ainda.';
-                p.appendChild(msg);
-            }
-        });
-    };
-
-    window.filterLibrary = function() { window.renderLibraryAccordions(); };
-
-    window.syncItemToLibrary = async function(item) {
-        if(!userId) return;
-        if(window.libraryItems.find(i=>i.name.toLowerCase()===item.name.toLowerCase()&&i.type===item.type)) return;
-        try {
-            await addDoc(getLibraryRef(),{name:item.name,type:item.type,displayVal:item.displayVal||'',desc:item.desc||'',addedBy:userId,timestamp:Date.now()});
-        } catch(e){}
-    };
-
-    window.deleteFromLibrary = async function(libId) {
-        window.customConfirm('Remover este item da biblioteca?', async()=>{
-            try { await deleteDoc(getLibraryDoc(libId)); } catch(e){}
-        });
-    };
-
-    function carregarListaLocal() {
-        const local=carregarLocal();
-        const chars=Object.entries(local).map(([id,e])=>({id,name:e.name+' [local]'}));
-        window.characterCache={};
-        Object.entries(local).forEach(([id,e])=>{
-            window.characterCache[id]=e.data;
-            window.characterCache[id]._ownerUserId='local';
-        });
-        ['char-select','char-select-m'].forEach(sid=>{
-            const sel=document.getElementById(sid);
-            if(sel){sel.innerHTML='<option value="">-- Carregar Ficha (Local) --</option>';chars.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.innerText=c.name;sel.appendChild(o);});}
-        });
-    }
-
-    window.salvarFicha = async function() {
-        setStatus('Salvando...', 'var(--red-hi)');
-        const data=coletarDados();
-        const charName=(data['nome']&&data['nome'].trim())?data['nome'].trim():'Neófito Desconhecido';
-        let charId=window.currentCharacterId||(charName.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase()+'_'+Date.now().toString().slice(-4));
-        window.currentCharacterId=charId;
-        const targetUID=(window.characterCache&&window.characterCache[charId]&&window.characterCache[charId]._ownerUserId)||userId;
-        salvarLocal(charId,charName,data);
-        if(!userId){setStatus('Salvo localmente (offline).','#f1c40f');setTimeout(()=>setStatus('',''),3000);window.marcarSalvo();return;}
-        try {
-            await setDoc(getCharacterDoc(charId),{name:charName,data,timestamp:Date.now(),_ownerUserId:targetUID});
-            setStatus(targetUID!==userId?'Ficha do jogador atualizada!':'Ficha Atualizada!','#27ae60');
-            setTimeout(()=>setStatus('',''),3000);
-            if(targetUID===userId) window.loadCharacterList();
-            window.marcarSalvo();
-        } catch(e) {
-            salvarLocal(charId,charName,data);
-            setStatus('Nuvem falhou — salvo local.','#f1c40f');
-            setTimeout(()=>setStatus('',''),4000);
-            window.marcarSalvo();
-        }
-    };
-
-    window.loadCharacterList = async function() {
-        if(!userId) return carregarListaLocal();
-        try {
-            const snap=await getDocs(getCharactersRef());
-            const chars=[];
-            window.characterCache={};
-            snap.forEach(d=>{
-                const dd=d.data();
-                if(dd._ownerUserId===userId){
-                    window.characterCache[d.id]=dd.data;
-                    window.characterCache[d.id]._ownerUserId=dd._ownerUserId;
-                    chars.push({id:d.id,name:dd.name});
-                }
-            });
-            ['char-select','char-select-m'].forEach(sid=>{
-                const sel=document.getElementById(sid);
-                if(sel){sel.innerHTML='<option value="">-- Carregar Ficha --</option>';chars.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.innerText=c.name;sel.appendChild(o);});}
-            });
-        } catch(e) { carregarListaLocal(); }
-    };
-
-    window.confirmarCarregamento = function(charId) {
-        // sync both selects
-        ['char-select','char-select-m'].forEach(sid=>{
-            const sel=document.getElementById(sid);
-            if(sel&&sel.value!==charId) sel.value=charId;
-        });
-        if(!charId) return;
-        if(window._temAlteracoes){
-            window.customConfirm('Alterações não salvas. Descartar e carregar?',
-                ()=>window.carregarFicha(charId),
-                ()=>{['char-select','char-select-m'].forEach(sid=>{const s=document.getElementById(sid);if(s)s.value=window.currentCharacterId||'';});}
-            );
-        } else { window.carregarFicha(charId); }
-    };
-
-    window.carregarFicha = function(charId) {
-        if(!charId||!window.characterCache||!window.characterCache[charId]) return;
-        distribuirDados(window.characterCache[charId]);
-        window.currentCharacterId=charId;
-        window.calcularSaude(); window.calcularFdV();
-        window.marcarSalvo();
-    };
-
-    window.novaFicha = function() {
-        if(window._temAlteracoes){window.customConfirm('Dados não salvos. Limpar tudo?',resetarFichaLimpa,()=>{});}
-        else resetarFichaLimpa();
-    };
-
-    function resetarFichaLimpa() {
-        window.currentCharacterId=null;
-        document.querySelectorAll('input[data-field],textarea[data-field]').forEach(el=>{
-            if(el.type==='number'){
-                el.value=(el.id==='vigor'||el.id==='autocontrole'||el.id==='determinacao')?1:0;
-            } else { el.value=''; }
-        });
-        document.getElementById('campo-humanidade').value=7;
-        document.getElementById('input-fome').value=1;
-        document.getElementById('campo-potencia').value=1;
-        document.getElementById('bio-image-preview').src='https://placehold.co/120x150/111/555?text=FOTO';
-        window.inventory=[];window.renderInventory();
-        window.calcularSaude();window.calcularFdV();window.marcarSalvo();
-        ['char-select','char-select-m'].forEach(sid=>{const s=document.getElementById(sid);if(s)s.value='';});
-    }
-
-    window.excluirFicha = async function() {
-        const charId=window.currentCharacterId;
-        if(!charId){window.customAlert('Nenhuma ficha carregada para excluir.');return;}
-        const charName=document.getElementById('campo-nome').value||'esta ficha';
-        window.customConfirm(`Excluir "${charName}"? Esta ação não pode ser desfeita.`, async()=>{
-            const targetUID=(window.characterCache&&window.characterCache[charId]&&window.characterCache[charId]._ownerUserId)||userId;
-            try{const l=JSON.parse(localStorage.getItem(LOCAL_KEY)||'{}');delete l[charId];localStorage.setItem(LOCAL_KEY,JSON.stringify(l));}catch(e){}
-            if(userId&&targetUID){
-                try{await deleteDoc(getCharacterDoc(charId));}
-                catch(e){window.customAlert('Erro ao excluir da nuvem.');return;}
-            }
-            resetarFichaLimpa();
-            setStatus('Ficha excluída.','#e74c3c');
-            setTimeout(()=>setStatus('',''),3000);
-            if(targetUID===userId) window.loadCharacterList();
-        });
-    };
-
-    window.carregarTodasAsFichas = function() {
-        if(!userId){window.customAlert('Modo online não disponível.');return;}
-        if(!IDs_NARRADORES.includes(userId)){
-            window.customPrompt("Acesso Restrito!\nDigite a senha ou seu UID:",'',senha=>{
-                if(senha!=='narrador'&&senha!==userId) return;
-                iniciarModoNarrador();
-            });
-        } else { iniciarModoNarrador(); }
-    };
-
-    function iniciarModoNarrador() {
-        if(_narratorUnsubscribe){_narratorUnsubscribe();_narratorUnsubscribe=null;}
-        setStatus('[ NARRADOR ATIVO — AO VIVO ]','var(--red-hi)');
-        _narratorUnsubscribe=onSnapshot(getCharactersRef(),snap=>{
-            const chars=[];
-            window.characterCache={};
-            snap.forEach(d=>{
-                const dd=d.data();
-                const cd=dd.data||{};cd._ownerUserId=dd._ownerUserId||'unknown';
-                window.characterCache[d.id]=cd;
-                chars.push({id:d.id,name:`[${(dd._ownerUserId||'?').slice(0,5)}] - ${dd.name}`});
-            });
-            ['char-select','char-select-m'].forEach(sid=>{
-                const sel=document.getElementById(sid);
-                if(sel){const cur=sel.value;sel.innerHTML='<option value="">-- NARRADOR (AO VIVO) --</option>';chars.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.innerText=c.name;sel.appendChild(o);});if(cur)sel.value=cur;}
-            });
-        });
-    }
-
-    initAuth();
-</script>
 </body>
 </html>
