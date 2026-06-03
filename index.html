@@ -344,6 +344,13 @@
             btn.addEventListener('click', function(e) {
                 e.preventDefault(); // Impede o redirecionamento imediato
                 targetUrl = this.getAttribute('href'); // Salva o link de destino
+                
+                // Verifica se o usuário já inseriu a senha corretamente antes
+                if (localStorage.getItem('vtm_access_granted') === 'true') {
+                    window.location.href = targetUrl;
+                    return; // Interrompe a execução para não mostrar o modal
+                }
+
                 modal.style.display = 'flex'; // Mostra o modal
                 passInput.value = ''; // Limpa o campo
                 errorMsg.style.display = 'none'; // Esconde erros antigos
@@ -366,6 +373,8 @@
         // Valida a senha
         function checkAccess() {
             if (passInput.value === 'H}f044') {
+                // Salva a permissão no navegador para acessos futuros
+                localStorage.setItem('vtm_access_granted', 'true');
                 window.location.href = targetUrl; // Redireciona se correto
             } else {
                 errorMsg.style.display = 'block'; // Mostra erro se incorreto
