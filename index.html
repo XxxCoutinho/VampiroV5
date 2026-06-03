@@ -150,6 +150,103 @@
             border-color: var(--text);
         }
 
+        /* --- Estilos do Pop-up (Modal) --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(6, 6, 8, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 40px 30px;
+            max-width: 550px;
+            width: 90%;
+            border-radius: 4px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 40px rgba(192, 57, 43, 0.15);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--red-hi);
+        }
+
+        .modal-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: var(--text);
+            text-align: justify;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .password-input {
+            width: 80%;
+            max-width: 300px;
+            padding: 12px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 1.2rem;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .password-input:focus {
+            border-color: var(--red);
+            box-shadow: 0 0 15px var(--red-glow);
+        }
+
+        .error-message {
+            color: var(--red-hi);
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            display: none;
+            margin-bottom: 15px;
+        }
+
+        .senha-label {
+            display: block;
+            margin-top: 15px;
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
         /* Animações */
         @keyframes fadeIn {
             from { opacity: 0; filter: drop-shadow(0 0 0px transparent) blur(5px); }
@@ -205,10 +302,85 @@
 
         <!-- Grupo de Botões de Redirecionamento -->
         <div class="button-group">
-            <a href="ficha.html" class="btn btn-jogar">Jogar</a>
-            <a href="vtm_compendium.html" class="btn btn-compendio">Compêndio</a>
+            <!-- Adicionada a classe 'auth-trigger' para interceptar o clique -->
+            <a href="ficha.html" class="btn btn-jogar auth-trigger">Jogar</a>
+            <a href="vtm_compendium.html" class="btn btn-compendio auth-trigger">Compêndio</a>
         </div>
     </div>
 
+    <!-- Pop-up de Senha (Modal) -->
+    <div id="auth-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" id="close-modal">&times;</button>
+            
+            <p class="modal-text">
+                Este projeto é um gerenciador de fichas não oficial para Vampire: The Masquerade V5, criado para fins de estudo e uso privado. Não possui afiliação com a Paradox Interactive. Todas as marcas registradas e artes pertencem aos seus respectivos proprietários. Se você caiu aqui sem querer, eu sinto muito você não encontrará nenhum uso para este site. Visite o site do mundo das trevas para mais informações sobre como entrar no mundo de vampiro.
+            </p>
+
+            <div class="error-message" id="error-msg">Acesso negado: senha incorreta.</div>
+
+            <div class="input-group">
+                <input type="password" id="password-input" class="password-input" placeholder="Insira a chave">
+                <button id="submit-password" class="btn btn-jogar" style="min-width: 150px; padding: 12px 30px; font-size: 1.1rem;">Desbloquear</button>
+            </div>
+            
+            <span class="senha-label">senha de acesso</span>
+        </div>
+    </div>
+
+    <!-- Script de Autenticação -->
+    <script>
+        const modal = document.getElementById('auth-modal');
+        const btns = document.querySelectorAll('.auth-trigger');
+        const closeBtn = document.getElementById('close-modal');
+        const submitBtn = document.getElementById('submit-password');
+        const passInput = document.getElementById('password-input');
+        const errorMsg = document.getElementById('error-msg');
+        
+        let targetUrl = '';
+
+        // Intercepta o clique nos botões
+        btns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault(); // Impede o redirecionamento imediato
+                targetUrl = this.getAttribute('href'); // Salva o link de destino
+                modal.style.display = 'flex'; // Mostra o modal
+                passInput.value = ''; // Limpa o campo
+                errorMsg.style.display = 'none'; // Esconde erros antigos
+                passInput.focus();
+            });
+        });
+
+        // Fecha o modal
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        // Fecha o modal ao clicar fora da caixa principal
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Valida a senha
+        function checkAccess() {
+            if (passInput.value === 'H}f044') {
+                window.location.href = targetUrl; // Redireciona se correto
+            } else {
+                errorMsg.style.display = 'block'; // Mostra erro se incorreto
+                passInput.value = '';
+                passInput.focus();
+            }
+        }
+
+        // Eventos para checar a senha (clique no botão e tecla enter)
+        submitBtn.addEventListener('click', checkAccess);
+        passInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAccess();
+            }
+        });
+    </script>
 </body>
 </html>
